@@ -15,12 +15,11 @@ import {
     Command,
     CommandEmpty,
     CommandGroup,
-    CommandInput,
     CommandItem,
     CommandList,
     CommandSeparator,
-    CommandShortcut,
 } from "@/components/ui/command"
+import { useRouter } from "next/navigation";
 
 const frameworks = [
     {
@@ -66,6 +65,7 @@ export default function SearchInput() {
     const [search, setSearch] = useState("")
     const [value, setValue] = useState("")
 
+    const router = useRouter()
 
     const [locations, setLocations] = useState([])
 
@@ -182,6 +182,7 @@ export default function SearchInput() {
                                                                 (framework) => framework.value === currentValue
                                                             )?.label ?? ""
                                                     )
+                                                    router.push(`/vendita-case/${address.id}`)
                                                     setOpen(false)
                                                 }}
                                             >
