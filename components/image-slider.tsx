@@ -15,7 +15,7 @@ export function ImagesSliderDemo() {
             <motion.div
                 initial={{
                     opacity: 0,
-                    y: -80,
+                    y: 0,
                 }}
                 animate={{
                     opacity: 1,
