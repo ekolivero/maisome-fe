@@ -6,11 +6,11 @@ import {
 import * as PopoverPrimitive from "@radix-ui/react-popover"
 import { Command as CommandPrimitive } from "cmdk"
 import { useState } from "react";
-
+import { Button } from "./ui/button";
 import {
     SewingPinIcon
 } from "@radix-ui/react-icons"
-
+import { cn } from "@/lib/utils";
 import {
     Command,
     CommandEmpty,
@@ -57,6 +57,7 @@ type Location = {
     label: string;
     id: string;
     level: number;
+    page: string;
     parents: Parents[];
 }
 
@@ -80,6 +81,7 @@ export default function SearchInput() {
             label: location.label + ' • ' + (location.level === 1 ? "Provincia" : (location.level === 2 && location.parents[0].label === location.label ? "Comune" : location.parents.find((l) => l.level === 1)?.label) ?? "Regione"),
             id: location.id,
             level: location.level,
+            page: location.page,
             parent: location.parents.find((parent) => parent.level === 1)?.label ?? "Comune"
         })))
     }
@@ -182,7 +184,7 @@ export default function SearchInput() {
                                                                 (framework) => framework.value === currentValue
                                                             )?.label ?? ""
                                                     )
-                                                    router.push(`/vendita-case/${address.id}`)
+                                                    router.push(`/vendita-case/${address.page}`)
                                                     setOpen(false)
                                                 }}
                                             >

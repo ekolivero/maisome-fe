@@ -26,10 +26,12 @@ export function ImagesSliderDemo() {
                 }}
                 className="z-50 flex flex-col justify-center items-center"
             >
+                <div className="flex justify-start flex-col md:w-[32rem] md:ml-12">
                 <motion.p className="font-bold text-3xl md:text-4xl text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 py-4 mb-8">
                     La tua prossima casa <br /> A portata di click.
                 </motion.p>
                 <SearchInput />
+                </div>
             </motion.div>
         </ImagesSlider>
     );
