@@ -104,7 +104,7 @@ export default async function Page({ params: { search } }: { params: { search: s
     
     return (
         <div className="flex flex-1 px-4 w-full dark:bg-black bg-white  dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex-col gap-8 pt-8">
-            <div className="flex px-2 max-w-xl md:mx-auto">
+            <div className="flex px-2 md:max-w-xl md:mx-auto h-full">
             <Suspense fallback={<LoadingListingCard />}>
                 <ListingItems search={search} />
             </Suspense>
