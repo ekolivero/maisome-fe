@@ -1,8 +1,6 @@
 import { Suspense } from "react";
 import ListingCard from "./components/listing-card";
 import { LoadingListingCard } from "./components/loading-listing-card";
-import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
-import SmartFilter from "./components/smart-filter";
 
 export type PropertyListing = {
     title: string;
@@ -78,16 +76,33 @@ type PropertyListingResponse = {
     houses: PropertyListing[];
 }
 
+const constructUrl = (baseUrl: string, search: string[], prezzoMinimo: string, prezzoMassimo: string) => {
+    const url = new URL(baseUrl);
+    url.searchParams.set('page', search.join('/'));
 
+    if (prezzoMinimo !== undefined && prezzoMinimo !== '') {
+        url.searchParams.set('prezzoMinimo', prezzoMinimo);
+    }
+
+    if (prezzoMassimo !== undefined && prezzoMassimo !== '') {
+        url.searchParams.set('prezzoMassimo', prezzoMassimo);
+    }
+
+    return url.toString();
+};
 
 async function ListingItems({ search, prezzoMinimo, prezzoMassimo }: { search: string[], prezzoMinimo: string, prezzoMassimo: string }) {
-    const response = await fetch(`https://test-locations-kohl.vercel.app/houses/?page=${search.join("/")}&prezzoMinimo=${prezzoMinimo}&prezzoMassimo=${prezzoMassimo}`)
+
+    const baseUrl = 'https://test-locations-kohl.vercel.app/houses/';
+    const url = constructUrl(baseUrl, search, prezzoMinimo, prezzoMassimo);
+
+    const response = await fetch(url);
     const propertyListing = await response.json() as PropertyListingResponse
 
     return (
         <div className="px-4 flex flex-1 flex-col gap-8">
             {
-                propertyListing.houses.map((house) => (
+                propertyListing?.houses?.map((house) => (
                     <ListingCard key={house.title} house={house} />
                 ))
             }
