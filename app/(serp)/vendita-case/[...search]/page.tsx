@@ -80,14 +80,12 @@ type PropertyListingResponse = {
 
 
 
-async function ListingItems({ search }: { search: string[]}) {
-    console.log(search.join('/'))
-    const response = await fetch(`https://test-locations-kohl.vercel.app/houses/?page=${search.join("/")}`)
+async function ListingItems({ search, prezzoMinimo, prezzoMassimo }: { search: string[], prezzoMinimo: string, prezzoMassimo: string }) {
+    const response = await fetch(`https://test-locations-kohl.vercel.app/houses/?page=${search.join("/")}&prezzoMinimo=${prezzoMinimo}&prezzoMassimo=${prezzoMassimo}`)
     const propertyListing = await response.json() as PropertyListingResponse
 
     return (
-        <div className="flex flex-1 flex-col gap-8">
-            <SmartFilter />
+        <div className="px-4 flex flex-1 flex-col gap-8">
             {
                 propertyListing.houses.map((house) => (
                     <ListingCard key={house.title} house={house} />
@@ -95,20 +93,19 @@ async function ListingItems({ search }: { search: string[]}) {
             }
         </div>
     )
-    
+
 }
 
 
-export default async function Page({ params: { search } }: { params: { search: string[] } }) {
-
-    
+export default async function Page({ params: { search }, searchParams: {
+    prezzoMinimo,
+    prezzoMassimo
+} }: { params: { search: string[] }, searchParams: { prezzoMinimo: string, prezzoMassimo: string} }) {
     return (
-        <div className="flex flex-1 px-4 w-full dark:bg-black bg-white  dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex-col gap-8 pt-8">
-            <div className="flex px-2 md:max-w-xl md:mx-auto h-full">
-            <Suspense fallback={<LoadingListingCard />}>
-                <ListingItems search={search} />
+        <div className="flex px-2 md:max-w-xl md:mx-auto h-full">
+            <Suspense fallback={<LoadingListingCard />} key={`${prezzoMinimo}-${prezzoMassimo}`}>
+                <ListingItems search={search} prezzoMinimo={prezzoMinimo} prezzoMassimo={prezzoMassimo} />
             </Suspense>
-            </div>
         </div>
     )
 }
