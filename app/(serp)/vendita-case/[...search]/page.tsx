@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import ListingCard from "./components/listing-card";
 import { LoadingListingCard } from "./components/loading-listing-card";
+import PaginationComponent from "./components/pagination";
 
 export type PropertyListing = {
     title: string;
@@ -74,11 +75,22 @@ export type PropertyListing = {
 
 type PropertyListingResponse = {
     houses: PropertyListing[];
+    location: string;
+    page: number;
+    per_page: number;
+    total_results: number;
+    total_pages: number;
 }
 
-const constructUrl = (baseUrl: string, search: string[], prezzoMinimo: string, prezzoMassimo: string) => {
+const constructUrl = (baseUrl: string, search: string[], prezzoMinimo: string, prezzoMassimo: string, page: string) => {
     const url = new URL(baseUrl);
-    url.searchParams.set('page', search.join('/'));
+    url.searchParams.set('location', search.join('/'));
+
+    if (page === undefined || page === '') {
+        url.searchParams.set('page', '1');
+    } else {
+        url.searchParams.set('page', page);
+    }
 
     if (prezzoMinimo !== undefined && prezzoMinimo !== '') {
         url.searchParams.set('prezzoMinimo', prezzoMinimo);
@@ -91,35 +103,54 @@ const constructUrl = (baseUrl: string, search: string[], prezzoMinimo: string, p
     return url.toString();
 };
 
-async function ListingItems({ search, prezzoMinimo, prezzoMassimo }: { search: string[], prezzoMinimo: string, prezzoMassimo: string }) {
-
-    const baseUrl = 'https://test-locations-kohl.vercel.app/houses/';
-    const url = constructUrl(baseUrl, search, prezzoMinimo, prezzoMassimo);
+async function ListingItems({ search, prezzoMinimo, prezzoMassimo, page }: {
+    search: string[],
+    prezzoMinimo: string,
+    prezzoMassimo: string,
+    page: string
+}) {
+    const baseUrl = process.env.BASE_URL + '/houses';
+    const url = constructUrl(baseUrl, search, prezzoMinimo, prezzoMassimo, page);
 
     const response = await fetch(url);
-    const propertyListing = await response.json() as PropertyListingResponse
+    const propertyListing = await response.json() as PropertyListingResponse;
+
+    const currentPage = propertyListing.page;
+    const totalPages = propertyListing.total_pages;
+
+    // Helper function to generate page range
+    const getPageRange = (current: number, total: number) => {
+        if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+        if (current <= 4) return [1, 2, 3, 4, 5, '...', total];
+        if (current >= total - 3) return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+        return [1, '...', current - 1, current, current + 1, '...', total];
+    };
+
+    const pageRange = getPageRange(currentPage, totalPages);
 
     return (
-        <div className="px-4 flex flex-1 flex-col gap-8">
-            {
-                propertyListing?.houses?.map((house) => (
-                    <ListingCard key={house.title} house={house} />
-                ))
-            }
-        </div>
-    )
+        <div className="px-4 flex flex-1 flex-col gap-8 mb-8">
+            {propertyListing?.houses?.map((house) => (
+                <ListingCard key={house.title} house={house} />
+            ))}
 
+            <PaginationComponent pageRange={pageRange} currentPage={currentPage} totalPages={totalPages}  />
+            
+        </div>
+    );
 }
 
 
 export default async function Page({ params: { search }, searchParams: {
     prezzoMinimo,
-    prezzoMassimo
-} }: { params: { search: string[] }, searchParams: { prezzoMinimo: string, prezzoMassimo: string} }) {
+    prezzoMassimo,
+    page
+} }: { params: { search: string[] }, searchParams: { prezzoMinimo: string, prezzoMassimo: string, page: string} }) {
     return (
         <div className="flex px-2 md:max-w-xl md:mx-auto h-full">
-            <Suspense fallback={<LoadingListingCard />} key={`${prezzoMinimo}-${prezzoMassimo}`}>
-                <ListingItems search={search} prezzoMinimo={prezzoMinimo} prezzoMassimo={prezzoMassimo} />
+            <Suspense fallback={<LoadingListingCard />} key={`${prezzoMinimo}-${prezzoMassimo}-${page}`}>
+                <ListingItems search={search} prezzoMinimo={prezzoMinimo} prezzoMassimo={prezzoMassimo} page={page}/>
+                
             </Suspense>
         </div>
     )

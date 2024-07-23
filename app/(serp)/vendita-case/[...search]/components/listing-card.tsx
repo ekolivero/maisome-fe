@@ -2,6 +2,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import Image from "next/image"
 import { PropertyListing } from "../page"
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion"
+import { MapView } from "./map-view"
 
 export default function ListingCard({ house }: { house: PropertyListing }) {
     return (
@@ -40,6 +47,14 @@ export default function ListingCard({ house }: { house: PropertyListing }) {
                         <span> { house.surface }</span>
                     </div>
                 </div>
+                <Accordion type="single" collapsible>
+                    <AccordionItem value="item-1">
+                        <AccordionTrigger>Vedi su mappa</AccordionTrigger>
+                        <AccordionContent>
+                            <MapView lat={house.location.location.coordinates.latitude} long={house.location.location.coordinates.longitude} />
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             </CardContent>
         </Card>
     )
