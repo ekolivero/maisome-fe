@@ -15,6 +15,7 @@ export default function ListingCard({ house }: { house: PropertyListing }) {
         <Card className="w-full rounded-lg overflow-hidden shadow-lg transition-all hover:shadow-xl hover:cursor-pointer">
             <Link href={house.link} className="block" prefetch={false}>
                 <Image
+                    unoptimized
                     src={house.image[0].url}
                     alt="Property Image"
                     width={400}
