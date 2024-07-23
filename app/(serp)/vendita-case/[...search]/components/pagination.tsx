@@ -32,9 +32,9 @@ export default function PaginationComponent({
     };
 
     return (
-        <Pagination>
+        <Pagination className="mt-4">
             <PaginationContent>
-                <PaginationItem>
+                <PaginationItem className="hidden md:block">
                     <PaginationPrevious
                         href={`?${updateSearchParams(currentPage - 1)}`}
                         aria-disabled={currentPage === 1}
@@ -54,7 +54,7 @@ export default function PaginationComponent({
                         )}
                     </PaginationItem>
                 ))}
-                <PaginationItem>
+                <PaginationItem className="hidden md:block">
                     <PaginationNext
                         href={`?${updateSearchParams(currentPage + 1)}`}
                         aria-disabled={currentPage === totalPages}

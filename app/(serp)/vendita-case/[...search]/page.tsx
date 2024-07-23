@@ -129,12 +129,13 @@ async function ListingItems({ search, prezzoMinimo, prezzoMassimo, page }: {
     const pageRange = getPageRange(currentPage, totalPages);
 
     return (
-        <div className="px-4 flex flex-1 flex-col gap-8 mb-8">
+        <div className="flex flex-1 flex-col gap-8 mb-8">
+            <div className="px-2 gap-4 flex flex-col">
             {propertyListing?.houses?.map((house) => (
                 <ListingCard key={house.title} house={house} />
             ))}
-
-            <PaginationComponent pageRange={pageRange} currentPage={currentPage} totalPages={totalPages}  />
+            <PaginationComponent pageRange={pageRange} currentPage={currentPage} totalPages={totalPages} />
+            </div>
             
         </div>
     );
