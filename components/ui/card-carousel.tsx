@@ -283,6 +283,7 @@ export const BlurImage = ({
                 isLoading ? "blur-sm" : "blur-0",
                 className
             )}
+            unoptimized
             onLoad={() => setLoading(false)}
             src={src}
             width={width}
