@@ -6,11 +6,9 @@ import {
 import * as PopoverPrimitive from "@radix-ui/react-popover"
 import { Command as CommandPrimitive } from "cmdk"
 import { useState } from "react";
-import { Button } from "./ui/button";
 import {
     SewingPinIcon
 } from "@radix-ui/react-icons"
-import { cn } from "@/lib/utils";
 import {
     Command,
     CommandEmpty,
@@ -20,6 +18,8 @@ import {
     CommandSeparator,
 } from "@/components/ui/command"
 import { useRouter } from "next/navigation";
+import type { paths } from "@/app/types/schema";
+import createClient from "openapi-fetch";
 
 const frameworks = [
     {
@@ -61,6 +61,8 @@ type Location = {
     parents: Parents[];
 }
 
+const client = createClient<paths>({ baseUrl: process.env.NEXT_PUBLIC_BASE_URL });
+
 export default function SearchInput() {
     const [open, setOpen] = useState(false)
     const [search, setSearch] = useState("")
@@ -73,17 +75,25 @@ export default function SearchInput() {
     const handleSearch = async (value: string) => {
         setSearch(value)
 
-        const response = await fetch(`https://test-locations-kohl.vercel.app/suggest/?query=${value}`)
+        const { data } = await client.GET("/locations/suggest/", {
+            params: {
+                query: {
+                    query: value,
+                },
+            }
+        })
 
-        const jsonResponse = await response.json()
-
-        setLocations(jsonResponse.suggestions?.map((location: Location) => ({
-            label: location.label + ' • ' + (location.level === 1 ? "Provincia" : (location.level === 2 && location.parents[0].label === location.label ? "Comune" : location.parents.find((l) => l.level === 1)?.label) ?? "Regione"),
-            id: location.id,
-            level: location.level,
-            page: location.page,
-            parent: location.parents.find((parent) => parent.level === 1)?.label ?? "Comune"
-        })))
+        // @ts-ignore
+        setLocations(() => {
+            if (!data) return []
+            return data.suggestions?.map((location) => ({
+                label: location.label + ' • ' + (location.level === 1 ? "Provincia" : (location.level === 2 && location?.parents![0]?.label === location.label ? "Comune" : location?.parents?.find((l) => l.level === 1)?.label) ?? "Regione"),
+                id: location.id,
+                level: location.level,
+                page: location.page,
+                parent: location?.parents?.find((parent) => parent.level === 1)?.label ?? "Comune" ?? []
+            }))
+        })
     }
 
 

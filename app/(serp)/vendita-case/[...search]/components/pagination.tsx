@@ -24,10 +24,9 @@ export default function PaginationComponent({
 
     const searchParams = useSearchParams();
 
-
     const updateSearchParams = (newPage: number) => {
         const current = new URLSearchParams(Array.from(searchParams.entries()));
-        current.set('page', newPage.toString());
+        current.set('page_number', newPage.toString());
         return current.toString();
     };
 

@@ -1,7 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import Image from "next/image"
-import { PropertyListing } from "../page"
 import {
     Accordion,
     AccordionContent,
@@ -9,14 +8,15 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion"
 import { MapView } from "./map-view"
+import { components } from "@/app/types/schema"
 
-export default function ListingCard({ house }: { house: PropertyListing }) {
+export default function ListingCard({ house }: { house: components["schemas"]["House"] }) {
     return (
         <Card className="w-full rounded-lg overflow-hidden shadow-lg transition-all hover:shadow-xl hover:cursor-pointer">
             <Link href={house.link} className="block" prefetch={false}>
                 <Image
                     unoptimized
-                    src={house.image[0].url}
+                    src={house.image}
                     alt="Property Image"
                     width={400}
                     height={240}
@@ -31,8 +31,8 @@ export default function ListingCard({ house }: { house: PropertyListing }) {
                     
                 </div>
                 <div className="flex flex-row justify-between mb-2 items-center">
-                    <p className="text-2xl font-bold">{house.price.formattedValue}</p>
-                    <p className="text-muted-foreground text-sm justify-center">{house.location.location.address.split(",").slice(-1)}</p>
+                    <p className="text-2xl font-bold">{house.price.text}</p>
+                    <p className="text-muted-foreground text-sm justify-center">{house.location.hierarchy.city?.label}</p>
                 </div>
                 <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
@@ -41,18 +41,18 @@ export default function ListingCard({ house }: { house: PropertyListing }) {
                     </div>
                     <div className="flex items-center gap-2">
                         <BathIcon className="w-5 h-5" />
-                        <span>2 {house.bathrooms} bagni </span>
+                        <span> {house.bathrooms} bagni </span>
                     </div>
                     <div className="flex items-center gap-2">
                         <RulerIcon className="w-5 h-5" />
-                        <span> { house.surface }</span>
+                        <span> { house.surface.text }</span>
                     </div>
                 </div>
                 <Accordion type="single" collapsible>
                     <AccordionItem value="item-1">
                         <AccordionTrigger>Vedi su mappa</AccordionTrigger>
                         <AccordionContent>
-                            <MapView lat={house.location.location.coordinates.latitude} long={house.location.location.coordinates.longitude} />
+                            <MapView lat={house.location.coordinates.latitude} long={house.location.coordinates.longitude} />
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
