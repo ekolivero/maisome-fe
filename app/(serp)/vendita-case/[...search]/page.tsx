@@ -2,18 +2,37 @@ import { Suspense } from "react";
 import { LoadingListingCard } from "./components/loading-listing-card";
 import HouseList from "./components/house-list";
 import createClient from "openapi-fetch";
-import type { paths } from "@/app/types/schema"; 
+import type { paths } from "@/app/types/schema";
 import { operations } from "@/app/types/schema";
 import { notFound } from "next/navigation";
+import { NeighboorsCarousel } from "./components/neighbors-carousel";
+import SmartFilter from "./components/smart-filter";
 
 const client = createClient<paths>({ baseUrl: process.env.NEXT_PUBLIC_BASE_URL });
 
-async function ListingItems({ search, searchParams }: { search: string[], searchParams: operations["houses_by_page_houses_page_name_get"]["parameters"]["query"] }) {
-    const { data, error } = await client.GET("/houses/page_name", {
+export type SearchParamsProps = operations["houses_by_id_houses_location_ids__get"]["parameters"]["query"];
+
+async function ListingItems({ search, searchParams }: { search: string[], searchParams: SearchParamsProps }) {
+
+    const { data: lookupData } = await client.GET("/locations/lookup_id/", {
+        params: {
+            query: {
+                page: search.join("/"),
+            }
+        }
+    })
+
+    if (!lookupData) return notFound();
+
+    const { id: locationId, level: locationLevel, neighbors } = lookupData.location;
+
+    const hasIds = searchParams.ids !== undefined;
+
+    const { data, error } = await client.GET("/houses/location_ids/", {
         params: {
             query: {
                 ...searchParams,
-                page_name: search.join("/"),
+                ids: hasIds ? searchParams.ids : [locationId],
             },
         }
     })
@@ -34,16 +53,39 @@ async function ListingItems({ search, searchParams }: { search: string[], search
     const pageRange = getPageRange(currentPage, totalPages);
 
     return (
-        <HouseList propertyListing={data?.houses} currentPage={currentPage} pageRange={pageRange} totalPages={totalPages} />
+        <div className="flex flex-col w-full">
+            <HouseList propertyListing={data?.houses} currentPage={currentPage} pageRange={pageRange} totalPages={totalPages} />
+            {
+                neighbors?.splice(0, 3)?.map((neighbor, index) => (
+                    <NeighboorsCarousel key={index} neighbor={neighbor} />
+                ))
+            }
+        </div>
     )
 }
 
-export default async function Page({ params: { search }, searchParams }: { params: { search: string[] }, searchParams: operations["houses_by_page_houses_page_name_get"]["parameters"]["query"] }) {
+export default async function Page({ params: { search }, searchParams }: { params: { search: string[] }, searchParams: SearchParamsProps }) {
+    const { data: lookupData } = await client.GET("/locations/lookup_id/", {
+        params: {
+            query: {
+                page: search.join("/"),
+            }
+        }
+    })
+
+    const { location } = lookupData!;
+
     return (
-        <div className="flex px-2 md:max-w-xl md:mx-auto h-full">
-            <Suspense fallback={<LoadingListingCard />} key={`${JSON.stringify(searchParams)}`}>
-                <ListingItems search={search} searchParams={searchParams} />
-            </Suspense>
+        <div className="flex flex-1 w-full dark:bg-black bg-white  dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex-col">
+            <SmartFilter location={location} />
+            <div className="mt-8">
+                <div className="flex px-2 md:max-w-xl md:mx-auto h-full">
+                    <Suspense fallback={<LoadingListingCard />} key={`${JSON.stringify(searchParams)}`}>
+                        <ListingItems search={search} searchParams={searchParams} />
+                    </Suspense>
+                </div>
+            </div>
         </div>
+
     )
 }

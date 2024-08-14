@@ -1,15 +1,14 @@
-'use client'
 import ListingCard from "./listing-card"
 import PaginationComponent from "./pagination"
 import React from "react";
 import { components } from "@/app/types/schema";
 
-
-export default function HouseList({
+export default async function HouseList({
     propertyListing,
     pageRange,
     currentPage,
     totalPages,
+
 }: {
     propertyListing: components["schemas"]["House"][] | undefined;
     pageRange: (string | number | '...')[],

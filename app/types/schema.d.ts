@@ -21,15 +21,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/locations/location_id": {
+    "/locations/lookup_id/": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Location By Id */
-        get: operations["location_by_id_locations_location_id_get"];
+        /** Lookup */
+        get: operations["lookup_locations_lookup_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -38,7 +38,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/houses/location_id": {
+    "/locations/lookup_page/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lookup */
+        get: operations["lookup_locations_lookup_page__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/houses/location_ids/": {
         parameters: {
             query?: never;
             header?: never;
@@ -46,7 +63,7 @@ export interface paths {
             cookie?: never;
         };
         /** Houses By Id */
-        get: operations["houses_by_id_houses_location_id_get"];
+        get: operations["houses_by_id_houses_location_ids__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -55,24 +72,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/houses/page_name": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Houses By Page */
-        get: operations["houses_by_page_houses_page_name_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/houses/aggregation/location_id": {
+    "/houses/aggregation/location_ids": {
         parameters: {
             query?: never;
             header?: never;
@@ -80,24 +80,7 @@ export interface paths {
             cookie?: never;
         };
         /** Houses Aggregation By Id */
-        get: operations["houses_aggregation_by_id_houses_aggregation_location_id_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/houses/aggregation/page_name": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Houses Aggregation By Page */
-        get: operations["houses_aggregation_by_page_houses_aggregation_page_name_get"];
+        get: operations["houses_aggregation_by_id_houses_aggregation_location_ids_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -119,10 +102,21 @@ export interface components {
         };
         /** AggregationResponse */
         AggregationResponse: {
+            /** Ids */
+            ids: string[];
             /** Aggregation */
             aggregation: {
                 [key: string]: components["schemas"]["AggregationBucket"][];
             };
+        };
+        /** BaseLocation */
+        BaseLocation: {
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+            /** Level */
+            level: number;
         };
         /** Coordinates */
         Coordinates: {
@@ -175,10 +169,10 @@ export interface components {
         };
         /** HousesResponse */
         HousesResponse: {
+            /** Ids */
+            ids: string[];
             /** Houses */
             houses: components["schemas"]["House"][];
-            /** Page Name */
-            page_name: string;
             /** Page Number */
             page_number: number;
             /** Per Page */
@@ -199,7 +193,11 @@ export interface components {
             /** Page */
             page: string;
             /** Parents */
-            parents?: string[];
+            parents?: components["schemas"]["BaseLocation"][] | null;
+            /** Children */
+            children?: components["schemas"]["BaseLocation"][] | null;
+            /** Neighbors */
+            neighbors?: components["schemas"]["BaseLocation"][] | null;
         };
         /** LocationHierarchy */
         LocationHierarchy: {
@@ -218,19 +216,22 @@ export interface components {
                 [key: string]: components["schemas"]["LocationHierarchy"];
             };
         };
-        /** Parent */
-        Parent: {
+        /** LookupIdResponse */
+        LookupIdResponse: {
+            /** Page */
+            page: string;
+            location: components["schemas"]["Location"];
+        };
+        /** LookupPageResponse */
+        LookupPageResponse: {
             /** Id */
             id: string;
-            /** Label */
-            label: string;
-            /** Level */
-            level: number;
+            location: components["schemas"]["Location"];
         };
         /** Price */
         Price: {
             /** Value */
-            value: number;
+            value?: number | null;
             /** Text */
             text: string;
             /** Enum */
@@ -238,6 +239,8 @@ export interface components {
         };
         /** SuggestResponse */
         SuggestResponse: {
+            /** Query */
+            query: string;
             /** Suggestions */
             suggestions: components["schemas"]["Suggestion"][];
         };
@@ -251,8 +254,8 @@ export interface components {
             level: number;
             /** Page */
             page: string;
-            /** Parents */
-            parents?: components["schemas"]["Parent"][] | null;
+            /** Autocomplete */
+            autocomplete: string;
         };
         /** Surface */
         Surface: {
@@ -312,45 +315,72 @@ export interface operations {
             };
         };
     };
-    location_by_id_locations_location_id_get: {
+    lookup_locations_lookup_id__get: {
         parameters: {
             query: {
-                /** @description List of location IDs to filter by */
+                page: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LookupIdResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    lookup_locations_lookup_page__get: {
+        parameters: {
+            query: {
+                id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LookupPageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    houses_by_id_houses_location_ids__get: {
+        parameters: {
+            query: {
                 ids: string[];
-                /** @description Whether to include the geometry field in the results */
-                include_geometry?: boolean | null;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Location"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    houses_by_id_houses_location_id_get: {
-        parameters: {
-            query: {
-                location_id: string;
-                location_level: number;
                 categories?: string[] | null;
                 contract?: string | null;
                 condition?: string | null;
@@ -393,101 +423,10 @@ export interface operations {
             };
         };
     };
-    houses_by_page_houses_page_name_get: {
+    houses_aggregation_by_id_houses_aggregation_location_ids_get: {
         parameters: {
             query: {
-                page_name: string;
-                categories?: string[] | null;
-                contract?: string | null;
-                condition?: string | null;
-                price_min?: number | null;
-                price_max?: number | null;
-                surface_min?: number | null;
-                surface_max?: number | null;
-                rooms?: string[] | null;
-                bathrooms?: string[] | null;
-                furniture?: string | null;
-                terrace?: string | null;
-                elevator?: string | null;
-                balcony?: string | null;
-                page_number?: number;
-                per_page?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HousesResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    houses_aggregation_by_id_houses_aggregation_location_id_get: {
-        parameters: {
-            query: {
-                location_id: string;
-                location_level: number;
-                categories?: string[] | null;
-                contract?: string | null;
-                condition?: string | null;
-                price_min?: number | null;
-                price_max?: number | null;
-                surface_min?: number | null;
-                surface_max?: number | null;
-                rooms?: string[] | null;
-                bathrooms?: string[] | null;
-                furniture?: string | null;
-                terrace?: string | null;
-                elevator?: string | null;
-                balcony?: string | null;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AggregationResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    houses_aggregation_by_page_houses_aggregation_page_name_get: {
-        parameters: {
-            query: {
-                page_name: string;
+                ids: string[];
                 categories?: string[] | null;
                 contract?: string | null;
                 condition?: string | null;

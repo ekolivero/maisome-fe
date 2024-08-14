@@ -86,12 +86,10 @@ export default function SearchInput() {
         // @ts-ignore
         setLocations(() => {
             if (!data) return []
-            return data.suggestions?.map((location) => ({
-                label: location.label + ' • ' + (location.level === 1 ? "Provincia" : (location.level === 2 && location?.parents![0]?.label === location.label ? "Comune" : location?.parents?.find((l) => l.level === 1)?.label) ?? "Regione"),
+            return data.suggestions.map((location) => ({
+                label: location.autocomplete,
                 id: location.id,
-                level: location.level,
                 page: location.page,
-                parent: location?.parents?.find((parent) => parent.level === 1)?.label ?? "Comune" ?? []
             }))
         })
     }
