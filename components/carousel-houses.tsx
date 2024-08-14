@@ -21,8 +21,8 @@ export function CarouselDemo() {
                                 <Card className="w-full max-w-md flex flex-col h-full">
                                     <div className="relative">
                                         <Image
-                                            src={house.images[0].url}
-                                            alt={house.images[0].caption}
+                                            src={house?.images?.[0]!.url}
+                                            alt={house?.images?.[0]?.caption ?? "house-image"}
                                             width={300}
                                             height={100}
                                             className="rounded-t-lg object-cover w-full h-[200px]"
