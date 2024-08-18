@@ -8,9 +8,58 @@ import { notFound } from "next/navigation";
 import { NeighboorsCarousel } from "./components/neighbors-carousel";
 import SmartFilter from "./components/smart-filter";
 
+export type SearchParamsProps = operations["houses_by_id_houses_location_ids__get"]["parameters"]["query"];
+
 const client = createClient<paths>({ baseUrl: process.env.NEXT_PUBLIC_BASE_URL });
 
-export type SearchParamsProps = operations["houses_by_id_houses_location_ids__get"]["parameters"]["query"];
+import type { Metadata, ResolvingMetadata } from 'next'
+import { BreadcrumbsParentAndChildren } from "./components/breadcrumb-list";
+import { createBreadcrumbJsonLD } from "./utils/breadcrumb";
+
+type Props = {
+    params: { search: string[] }
+    searchParams: SearchParamsProps
+}
+
+export async function generateMetadata(
+    { params, searchParams }: Props,
+    parent: ResolvingMetadata
+): Promise<Metadata> {
+
+    const { data: lookupData } = await client.GET("/locations/lookup_id/", {
+        params: {
+            query: {
+                page: params.search.join("/"),
+            }
+        }
+    })
+
+    const { data } = await client.GET("/houses/location_ids/", {
+        params: {
+            query: {
+                ...searchParams,
+                ids: [lookupData?.location.id!]
+            },
+        },
+    })
+
+    const formattedTitle = `${data?.total_results} case in vendita a ${lookupData?.location.label}`
+
+    const previousImages = (await parent).openGraph?.images || []
+
+    return {
+        title: formattedTitle,
+        publisher: 'Maisome.com - Case in vendita',
+        category: 'Real Estate in Italy',
+        description: `Scopri ${data?.total_results} case in vendita a ${lookupData?.location.label} su Maisome.com`,
+        openGraph: {
+            images: [...previousImages],
+        },
+    }
+}
+
+
+
 
 async function ListingItems({ search, searchParams }: { search: string[], searchParams: SearchParamsProps }) {
 
@@ -24,7 +73,7 @@ async function ListingItems({ search, searchParams }: { search: string[], search
 
     if (!lookupData) return notFound();
 
-    const { id: locationId, level: locationLevel, neighbors } = lookupData.location;
+    const { id: locationId, neighbors } = lookupData.location;
 
     const hasIds = searchParams.ids !== undefined;
 
@@ -52,7 +101,12 @@ async function ListingItems({ search, searchParams }: { search: string[], search
 
     const pageRange = getPageRange(currentPage, totalPages);
 
+    const jsonLd = createBreadcrumbJsonLD(lookupData.location);
+
+    console.log(JSON.stringify(jsonLd))
+
     return (
+        <section>
         <div className="flex flex-col w-full">
             <HouseList propertyListing={data?.houses} currentPage={currentPage} pageRange={pageRange} totalPages={totalPages} />
             {
@@ -61,6 +115,7 @@ async function ListingItems({ search, searchParams }: { search: string[], search
                 ))
             }
         </div>
+        </section>
     )
 }
 
@@ -76,16 +131,18 @@ export default async function Page({ params: { search }, searchParams }: { param
     const { location } = lookupData!;
 
     return (
-        <div className="flex flex-1 w-full dark:bg-black bg-white  dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex-col">
-            <SmartFilter location={location} />
-            <div className="mt-8">
-                <div className="flex px-2 md:max-w-xl md:mx-auto h-full">
-                    <Suspense fallback={<LoadingListingCard />} key={`${JSON.stringify(searchParams)}`}>
-                        <ListingItems search={search} searchParams={searchParams} />
-                    </Suspense>
+        <>
+            <div className="flex flex-1 w-full dark:bg-black bg-white  dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex-col">
+                <SmartFilter location={location} />
+                <div className="mt-8">
+                    <div className="flex px-2 md:max-w-xl md:mx-auto h-full flex-col gap-8">
+                        <Suspense fallback={<LoadingListingCard />} key={`${JSON.stringify(searchParams)}`}>
+                            <BreadcrumbsParentAndChildren location={lookupData?.location!} />
+                            <ListingItems search={search} searchParams={searchParams} />
+                        </Suspense>
+                    </div>
                 </div>
             </div>
-        </div>
-
+        </>
     )
 }

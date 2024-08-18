@@ -12,52 +12,54 @@ import { components } from "@/app/types/schema"
 
 export default function ListingCard({ house }: { house: components["schemas"]["House"] }) {
     return (
-        <Card className="w-full rounded-lg overflow-hidden shadow-lg transition-all hover:shadow-xl hover:cursor-pointer">
-            <Link href={house.link} className="block" prefetch={false}>
-                <Image
-                    unoptimized
-                    src={house.image}
-                    alt="Property Image"
-                    width={400}
-                    height={240}
-                    className="w-full h-60 object-cover"
-                />
-            </Link>
-            <CardContent className="p-6 bg-background">
-                <div className="flex justify-between items-start mb-2">
-                    <div>
-                        <h5 className="text-sm md:text-md font-semibold">{house.title}</h5>
+        <section>
+            <Card className="w-full rounded-lg overflow-hidden shadow-lg transition-all hover:shadow-xl hover:cursor-pointer">
+                <Link href={house.link} className="block" prefetch={false}>
+                    <Image
+                        unoptimized
+                        src={house.image}
+                        alt="Property Image"
+                        width={400}
+                        height={240}
+                        className="w-full h-60 object-cover"
+                    />
+                </Link>
+                <CardContent className="p-6 bg-background">
+                    <div className="flex justify-between items-start mb-2">
+                        <div>
+                            <h5 className="text-sm md:text-md font-semibold">{house.title}</h5>
+                        </div>
+
                     </div>
-                    
-                </div>
-                <div className="flex flex-row justify-between mb-2 items-center">
-                    <p className="text-2xl font-bold">{house.price.text}</p>
-                    <p className="text-muted-foreground text-sm justify-center">{house.location.hierarchy.city?.label}</p>
-                </div>
-                <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                        <BedIcon className="w-5 h-5" />
-                        <span>{house.rooms} locali</span>
+                    <div className="flex flex-row justify-between mb-2 items-center">
+                        <p className="text-2xl font-bold">{house.price.text}</p>
+                        <p className="text-muted-foreground text-sm justify-center">{house.location.hierarchy.city?.label}</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <BathIcon className="w-5 h-5" />
-                        <span> {house.bathrooms} bagni </span>
+                    <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                            <BedIcon className="w-5 h-5" />
+                            <span>{house.rooms} locali</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <BathIcon className="w-5 h-5" />
+                            <span> {house.bathrooms} bagni </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <RulerIcon className="w-5 h-5" />
+                            <span> {house.surface.text}</span>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <RulerIcon className="w-5 h-5" />
-                        <span> { house.surface.text }</span>
-                    </div>
-                </div>
-                <Accordion type="single" collapsible>
-                    <AccordionItem value="item-1">
-                        <AccordionTrigger>Vedi su mappa</AccordionTrigger>
-                        <AccordionContent>
-                            <MapView lat={house.location.coordinates.latitude} long={house.location.coordinates.longitude} />
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
-            </CardContent>
-        </Card>
+                    <Accordion type="single" collapsible>
+                        <AccordionItem value="item-1">
+                            <AccordionTrigger>Vedi su mappa</AccordionTrigger>
+                            <AccordionContent>
+                                <MapView lat={house.location.coordinates.latitude} long={house.location.coordinates.longitude} />
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+                </CardContent>
+            </Card>
+        </section>
     )
 }
 
