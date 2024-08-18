@@ -29,16 +29,18 @@ export function createBreadcrumbJsonLD(location: Location): any {
   // TODO: Here we should add the page. This way we can reference everywhere the page.
 
   return {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: breadcrumbPath.map((item, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      item: {
-        "@id": `https://maisome.com/${item.label}`,
-        name: item.label,
-      },
-    })),
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: breadcrumbPath.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@id": `https://maisome.com/vendita-case/${item.page}`,
+          name: item.label,
+        },
+      })),
+    }),
   };
 }
 

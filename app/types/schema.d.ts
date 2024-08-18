@@ -117,6 +117,8 @@ export interface components {
             label: string;
             /** Level */
             level: number;
+            /** Page */
+            page: string;
         };
         /** Coordinates */
         Coordinates: {

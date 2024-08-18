@@ -68,7 +68,7 @@ async function ListingItems({ search, searchParams }: { search: string[], search
             query: {
                 page: search.join("/"),
             }
-        }
+        }    
     })
 
     if (!lookupData) return notFound();
@@ -103,10 +103,13 @@ async function ListingItems({ search, searchParams }: { search: string[], search
 
     const jsonLd = createBreadcrumbJsonLD(lookupData.location);
 
-    console.log(JSON.stringify(jsonLd))
-
     return (
         <section>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={jsonLd}
+                key="srp-breadcrumb-jsonld"
+            />
         <div className="flex flex-col w-full">
             <HouseList propertyListing={data?.houses} currentPage={currentPage} pageRange={pageRange} totalPages={totalPages} />
             {

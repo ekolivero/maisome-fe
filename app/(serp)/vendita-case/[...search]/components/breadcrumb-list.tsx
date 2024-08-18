@@ -26,9 +26,8 @@ const trimText = (text: string, maxLength: number) => {
     return text.substr(0, maxLength - 1).trim() + '…';
 };
 
-const formatUrl = (base: string, label: string) => {
-    const encodedLabel = encodeURIComponent(label.toLowerCase().replace(/[\s,/-]+/g, '-').replace(/^-+|-+$/g, ''));
-    return `${base}/${encodedLabel}`;
+const formatUrl = (base: string, page: string) => {
+    return `${base}/${page}`;
 };
 
 export function BreadcrumbsParentAndChildren({
@@ -37,7 +36,7 @@ export function BreadcrumbsParentAndChildren({
     location: Location
 }) {
     const breadcrumbPath = React.useMemo(() => getBreadcrumbPath(location), [location]);
-    const baseUrl = `/vendita-case/${location.page.split('/')[0]}`;
+    const baseUrl = `/vendita-case`;
 
     const renderDropdownMenu = (items: BaseLocation[], title: string) => (
         <DropdownMenu>
@@ -49,7 +48,7 @@ export function BreadcrumbsParentAndChildren({
                 <DropdownMenuItem disabled>{title}</DropdownMenuItem>
                 {items.map((item) => (
                     <DropdownMenuItem key={item.id}>
-                        <BreadcrumbLink href={formatUrl(baseUrl, item.label)}>
+                        <BreadcrumbLink href={formatUrl(baseUrl, item.page)}>
                             {item.label}
                         </BreadcrumbLink>
                     </DropdownMenuItem>
@@ -69,7 +68,7 @@ export function BreadcrumbsParentAndChildren({
                     <DropdownMenuContent>
                         {children.map((child) => (
                             <DropdownMenuItem key={child.id}>
-                                <BreadcrumbLink href={formatUrl(baseUrl, child.label)}>
+                                <BreadcrumbLink href={formatUrl(baseUrl, child.page)}>
                                     {child.label}
                                 </BreadcrumbLink>
                             </DropdownMenuItem>
