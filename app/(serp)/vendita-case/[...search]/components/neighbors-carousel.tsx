@@ -27,7 +27,7 @@ export async function NeighboorsCarousel({ neighbor }: { neighbor: components["s
     }))
 
     const cards = neighborsData?.map((card, index) => (
-        <Card key={index} card={card} index={index} />
+        <Card key={index} card={card} index={index} layout/>
     ));
 
     if (!cards) return null;

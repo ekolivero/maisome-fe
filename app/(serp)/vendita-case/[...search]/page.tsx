@@ -7,6 +7,7 @@ import { operations } from "@/app/types/schema";
 import { notFound } from "next/navigation";
 import { NeighboorsCarousel } from "./components/neighbors-carousel";
 import SmartFilter from "./components/smart-filter";
+import SEO from "./components/seo";
 
 export type SearchParamsProps = operations["houses_by_id_houses_location_ids__get"]["parameters"]["query"];
 
@@ -57,9 +58,6 @@ export async function generateMetadata(
         },
     }
 }
-
-
-
 
 async function ListingItems({ search, searchParams }: { search: string[], searchParams: SearchParamsProps }) {
 
@@ -113,7 +111,7 @@ async function ListingItems({ search, searchParams }: { search: string[], search
         <div className="flex flex-col w-full">
             <HouseList propertyListing={data?.houses} currentPage={currentPage} pageRange={pageRange} totalPages={totalPages} />
             {
-                neighbors?.splice(0, 3)?.map((neighbor, index) => (
+                neighbors?.splice(0, 2)?.map((neighbor, index) => (
                     <NeighboorsCarousel key={index} neighbor={neighbor} />
                 ))
             }
@@ -142,6 +140,7 @@ export default async function Page({ params: { search }, searchParams }: { param
                         <Suspense fallback={<LoadingListingCard />} key={`${JSON.stringify(searchParams)}`}>
                             <BreadcrumbsParentAndChildren location={lookupData?.location!} />
                             <ListingItems search={search} searchParams={searchParams} />
+                            <SEO location={lookupData?.location!} city={lookupData?.page!} page={lookupData?.page!} />
                         </Suspense>
                     </div>
                 </div>
