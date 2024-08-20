@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import type { MetadataRoute } from "next";
 
-const BASE_URL = process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL ?? "http://localhost:3000";
+const BASE_URL = `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}` ?? "http://localhost:3000";
 
 type Region = {
   name: string;
