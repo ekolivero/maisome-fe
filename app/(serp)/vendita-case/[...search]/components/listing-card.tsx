@@ -14,7 +14,7 @@ export default function ListingCard({ house }: { house: components["schemas"]["H
     return (
         <section>
             <Card className="w-full rounded-lg overflow-hidden shadow-lg transition-all hover:shadow-xl hover:cursor-pointer">
-                <Link href={house.link} className="block" prefetch={false}>
+                <Link href={house.link} className="block" prefetch={false} target="_blank" rel="nofollow noopener noreferrer">
                     <Image
                         unoptimized
                         src={house.image}

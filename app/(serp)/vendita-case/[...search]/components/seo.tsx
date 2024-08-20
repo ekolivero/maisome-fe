@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/accordion"
 import Link from "next/link";
 import { components } from "@/app/types/schema"
-
+import { ArmchairIcon, BedIcon, EuroIcon, HouseIcon, HousePlusIcon, MapPinIcon, Scale3DIcon } from "lucide-react"
 
 type Location = components["schemas"]["Location"];
 
@@ -57,12 +57,17 @@ export default async function SEO({
             <h6 className="text-2xl md:text-xl font-semibold tracking-tight"> Trova la tua casa ideale </h6>
             <Accordion type="multiple" className="w-full" defaultValue={["rooms", "condition", "price", "furniture", "category", "surface", "neightboors"]}>
                 <AccordionItem value="rooms">
-                    <AccordionTrigger>Ricerca per numero di stanze</AccordionTrigger>
-                    <AccordionContent>
+                    <AccordionTrigger>
+                        <span className="flex gap-2 items-center">
+                            <BedIcon size={18} />
+                            Ricerca per stanze
+                        </span>
+                    </AccordionTrigger>
+                    <AccordionContent className="flex flex-col gap-2">
                         {
                             topThreeRooms.map((room, index) => (
                                 <Link key={index} href={`/vendita-case/${page}?rooms=${encodeURIComponent(room.key)}`}>
-                                    <div className="flex flex-row justify-between items-center gap-4">
+                                    <div className="flex flex-row justify-between">
                                         <p className="text-md text-blue-500"> {room.key} stanze in vendita a {city.split("/")[1]!.charAt(0).toUpperCase() + city.split("/")[1]!.slice(1)}</p>
                                         <p className="text-md text-muted-foreground"> {room.count} risultati </p>
                                     </div>
@@ -72,12 +77,17 @@ export default async function SEO({
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="condition">
-                    <AccordionTrigger>Ricerca per stato immobile</AccordionTrigger>
-                    <AccordionContent>
+                    <AccordionTrigger>
+                        <span className="flex gap-2 items-center">
+                            <HouseIcon size={18} />
+                            Ricerca per stato dell&apos; immobile
+                        </span>
+                    </AccordionTrigger>
+                    <AccordionContent className="flex flex-col gap-2">
                         {
                             topThreeConditions.map((condition, index) => (
                                 <Link key={index} href={`/vendita-case/${page}?condition=${encodeURIComponent(condition.key)}`}>
-                                    <div className="flex flex-row justify-between items-center gap-4">
+                                    <div className="flex flex-row justify-between">
                                         <p className="text-md  text-blue-500"> Stato {condition.key} in {city.split("/")[1]!.charAt(0).toUpperCase() + city.split("/")[1]!.slice(1)}</p>
                                         <p className="text-md text-muted-foreground"> {condition.count} risultati </p>
                                     </div>
@@ -87,12 +97,17 @@ export default async function SEO({
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="price">
-                    <AccordionTrigger>Ricerca per prezzo</AccordionTrigger>
-                    <AccordionContent>
+                    <AccordionTrigger>
+                        <span className="flex gap-2 items-center">
+                            <EuroIcon size={18} />
+                            Ricerca per prezzo
+                        </span>
+                    </AccordionTrigger>
+                    <AccordionContent className="flex flex-col gap-2">
                         {
                             priceHouses.map((price, index) => (
                                 <Link key={index} href={`/vendita-case/${page}`}>
-                                    <div className="flex flex-row justify-between items-center gap-4">
+                                    <div className="flex flex-row justify-between">
                                         <p className="text-md  text-blue-500"> Case a {price.key} in {city.split("/")[1]!.charAt(0).toUpperCase() + city.split("/")[1]!.slice(1)}</p>
                                         <p className="text-md text-muted-foreground"> {price.count} risultati </p>
                                     </div>
@@ -102,12 +117,17 @@ export default async function SEO({
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="category">
-                    <AccordionTrigger>Ricerca per tipologia</AccordionTrigger>
-                    <AccordionContent>
+                    <AccordionTrigger>
+                        <span className="flex gap-2 items-center">
+                            <HousePlusIcon size={18} />
+                            Ricerca per tipologia
+                        </span>
+                    </AccordionTrigger>
+                    <AccordionContent className="flex flex-col gap-2">
                         {
                             categoryHouses.map((category, index) => (
                                 <Link key={index} href={`/vendita-case/${page}?categories=${encodeURIComponent(category.key)}`}>
-                                    <div className="flex flex-row justify-between items-center gap-4">
+                                    <div className="flex flex-row justify-between">
                                         <p className="text-md  text-blue-500"> {category.key} in {city.split("/")[1]!.charAt(0).toUpperCase() + city.split("/")[1]!.slice(1)}</p>
                                         <p className="text-md text-muted-foreground"> {category.count} risultati </p>
                                     </div>
@@ -117,12 +137,17 @@ export default async function SEO({
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="surface">
-                    <AccordionTrigger>Ricerca per superficie</AccordionTrigger>
-                    <AccordionContent>
+                    <AccordionTrigger>
+                        <span className="flex gap-2 items-center">
+                            <Scale3DIcon size={18} />
+                            Ricerca per superficie
+                        </span>
+                    </AccordionTrigger>
+                    <AccordionContent className="flex flex-col gap-2">
                         {
                             surfaceHouses.map((surface, index) => (
                                 <Link key={index} href={`/vendita-case/${page}`}>
-                                    <div className="flex flex-row justify-between items-center gap-4">
+                                    <div className="flex flex-row justify-between items-center">
                                         <p className="text-md  text-blue-500"> Case di {surface.key} mq in {city.split("/")[1]!.charAt(0).toUpperCase() + city.split("/")[1]!.slice(1)}</p>
                                         <p className="text-md text-muted-foreground"> {surface.count} risultati </p>
                                     </div>
@@ -132,12 +157,17 @@ export default async function SEO({
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="furniture">
-                    <AccordionTrigger>Ricerca per arredo</AccordionTrigger>
-                    <AccordionContent>
+                    <AccordionTrigger>
+                        <span className="flex gap-2 items-center">
+                            <ArmchairIcon size={18} />
+                            Ricerca per arredo
+                        </span>
+                    </AccordionTrigger>
+                    <AccordionContent className="flex flex-col gap-2">
                         {
                             furnitureHouses.map((furniture, index) => (
                                 <Link key={index} href={`/vendita-case/${page}`}>
-                                    <div className="flex flex-row justify-between items-center gap-4">
+                                    <div className="flex flex-row justify-between items-center">
                                         <p className="text-md text-blue-500"> Case {furniture.key || "Non arredate"} in {city.split("/")[1]!.charAt(0).toUpperCase() + city.split("/")[1]!.slice(1)}</p>
                                         <p className="text-md text-muted-foreground"> {furniture.count} risultati </p>
                                     </div>
@@ -147,14 +177,17 @@ export default async function SEO({
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="neightboors">
-                    <AccordionTrigger>Ricerca per località vicine</AccordionTrigger>
-                    <AccordionContent>
+                    <AccordionTrigger>
+                        <span className="flex gap-2 items-center">
+                            <MapPinIcon size={18} />
+                            Ricerca per località vicine
+                        </span>
+                    </AccordionTrigger>
+                    <AccordionContent className="flex flex-col gap-2">
                         {
                             location?.neighbors?.map((neightboors, index) => (
                                 <Link key={index} href={`/vendita-case/${neightboors.page}`}>
-                                    <div className="flex flex-row justify-between items-center gap-4">
                                         <p className="text-md text-blue-500"> Case in vendita a {neightboors.label} </p>
-                                    </div>
                                 </Link>
                             ))
                         }

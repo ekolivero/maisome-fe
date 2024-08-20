@@ -15,7 +15,7 @@ const client = createClient<paths>({ baseUrl: process.env.NEXT_PUBLIC_BASE_URL }
 
 import type { Metadata, ResolvingMetadata } from 'next'
 import { BreadcrumbsParentAndChildren } from "./components/breadcrumb-list";
-import { createBreadcrumbJsonLD } from "./utils/breadcrumb";
+import { createBreadcrumbJsonLD, createItemListJsonLD } from "./utils/breadcrumb";
 
 type Props = {
     params: { search: string[] }
@@ -99,13 +99,26 @@ async function ListingItems({ search, searchParams }: { search: string[], search
 
     const pageRange = getPageRange(currentPage, totalPages);
 
-    const jsonLd = createBreadcrumbJsonLD(lookupData.location);
+    const breadcrumbJsonLD = createBreadcrumbJsonLD(lookupData.location);
+
+    const listingJsonLD = createItemListJsonLD({
+        propertyListing: data?.houses,
+        currentPage: currentPage,
+        pageSize: data?.per_page,
+        totalResults: data?.total_results,
+        baseUrl: `https://maisome.com/vendita-case/${lookupData.page}`,
+    });
 
     return (
         <section>
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={jsonLd}
+                dangerouslySetInnerHTML={listingJsonLD}
+                key="srp-collection-page"
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={breadcrumbJsonLD}
                 key="srp-breadcrumb-jsonld"
             />
         <div className="flex flex-col w-full">
