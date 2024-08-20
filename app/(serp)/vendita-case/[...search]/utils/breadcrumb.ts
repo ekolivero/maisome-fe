@@ -1,9 +1,11 @@
 import { components } from "@/app/types/schema";
-import {BreadcrumbList, Person, WithContext, CollectionPage, ItemList, ListItem, RealEstateListing } from 'schema-dts';
+import {BreadcrumbList, Person, WithContext, CollectionPage, ItemList, ListItem, RealEstateListing, SingleFamilyResidence } from 'schema-dts';
 
 type BaseLocation = components["schemas"]["BaseLocation"];
 type Location = components["schemas"]["Location"];
-type PropertyListing = components["schemas"]["House"][] | undefined;
+type PropertyListings = components["schemas"]["House"][] | undefined;
+type PropertyListing = components["schemas"]["House"];
+
 
 export function JsonLd<T extends BreadcrumbList>(json: WithContext<T>): string {
   return `<script type="application/ld+json">
@@ -12,7 +14,7 @@ ${JSON.stringify(json)}
 }
 
 type TypeListingJsonLD = {
-  propertyListing: PropertyListing;
+  propertyListing: PropertyListings;
   currentPage: number;
   pageSize: number;
   totalResults: number;
@@ -77,39 +79,58 @@ export function createItemListJsonLD({
   totalResults,
   baseUrl,
 }: TypeListingJsonLD): { __html: string } {
-  const itemList: WithContext<CollectionPage> = {
+  const itemList: WithContext<ItemList> = {
     "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    mainEntity: {
-      "@type": "ItemList",
-      itemListElement: propertyListing?.map(
-        (property, index): ListItem => ({
-          "@type": "ListItem",
-          position: (currentPage - 1) * pageSize + index + 1,
-          item: {
-            "@type": "RealEstateListing",
-            name: property.title,
-            description: property.description,
-            url: property.link,
-            image: property.image,
-            numberOfRooms: property.rooms,
-            floorSize: {
-              "@type": "QuantitativeValue",
-              value: property.surface.value,
-              unitCode: property.surface.text,
-            },
-            price: property.price.value,
-            priceCurrency: property.price.text,
-          } as RealEstateListing,
-        })
-      ),
-      numberOfItems: totalResults,
-      itemListOrder: "https://schema.org/ItemListOrderAscending" as const,
-    },
+    "@type": "ItemList",
+    itemListElement: propertyListing?.map(
+      (property, index): ListItem => ({
+        "@type": "ListItem",
+        position: (currentPage - 1) * pageSize + index + 1,
+        item: {
+          "@type": "RealEstateListing",
+          name: property.title,
+          description: property.description,
+          url: property.link,
+          image: property.image,
+          offers: {
+            "@type": "Offer",
+            price: property.price.value!,
+            priceCurrency: "EUR"
+          },
+        },
+      })
+    ),
+    numberOfItems: totalResults,
+    itemListOrder: "https://schema.org/ItemListOrderAscending",
     url: `${baseUrl}?page=${currentPage}`,
   };
 
   return {
     __html: JSON.stringify(itemList),
+  };
+}
+
+export function createSinglePropertyJsonLD(property: PropertyListing): {
+  __html: string;
+} {
+  const singleProperty: WithContext<SingleFamilyResidence> = {
+    "@context": "https://schema.org",
+    "@type": "SingleFamilyResidence",
+    name: property?.title,
+    description: property?.description,
+    url: property.link,
+    image: property.image,
+    numberOfRooms: Number(property.rooms) + Number(property.bathrooms),
+    floorSize: {
+      "@type": "QuantitativeValue",
+      value: property.surface.value,
+      unitCode: "MTK",
+    },
+    numberOfBedrooms: Number(property.bedrooms),
+    numberOfBathroomsTotal: Number(property.bathrooms),
+  };
+
+  return {
+    __html: JSON.stringify(singleProperty),
   };
 }
