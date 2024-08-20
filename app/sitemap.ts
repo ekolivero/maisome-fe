@@ -48,7 +48,7 @@ export async function generateSitemaps() {
   data.forEach((region) => {
     sitemaps.push({ id: region.url });
     region.province.forEach((province) => {
-      sitemaps.push({ id: `${region.url}-${province.url}` });
+      sitemaps.push({ id: `${region.url}__${province.url}` }); // Use double underscore as separator
     });
   });
 
@@ -79,8 +79,7 @@ export default async function sitemap({
     ] as MetadataRoute.Sitemap;
   }
 
-  const [regionUrl, ...provinceUrlParts] = id.split("-");
-  const provinceUrl = provinceUrlParts.join("-"); // Rejoin in case there are hyphens in the province name
+  const [regionUrl, provinceUrl] = id.split("__"); // Split using double underscore
   const region = data.find((r) => r.url === regionUrl);
 
   if (!region) {
@@ -89,7 +88,7 @@ export default async function sitemap({
 
   if (!provinceUrl) {
     return region.province.map((province) => ({
-      url: `${BASE_URL}/sitemap/${region.url}-${province.url}.xml`,
+      url: `${BASE_URL}/sitemap/${region.url}__${province.url}.xml`, // Use double underscore in URL
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
