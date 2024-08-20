@@ -63,12 +63,20 @@ export default async function sitemap({
   const data = loadJsonData("app/sitemap/sitemap.json");
 
   if (id === "index") {
-    return data.map((region) => ({
-      url: `${BASE_URL}/sitemap/${region.url}.xml`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.9,
-    })) as MetadataRoute.Sitemap;
+    return [
+      {
+        url: BASE_URL,
+        lastModified: new Date(),
+        changeFrequency: "daily",
+        priority: 1.0,
+      },
+      ...data.map((region) => ({
+        url: `${BASE_URL}/sitemap/${region.url}.xml`,
+        lastModified: new Date(),
+        changeFrequency: "yearly",
+        priority: 0.8,
+      })),
+    ] as MetadataRoute.Sitemap;
   }
 
   const [regionUrl, ...provinceUrlParts] = id.split("-");
