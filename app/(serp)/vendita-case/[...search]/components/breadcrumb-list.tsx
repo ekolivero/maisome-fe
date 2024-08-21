@@ -81,7 +81,7 @@ export function BreadcrumbsParentAndChildren({
     };
 
     return (
-        <Breadcrumb className="px-3 hidden md:flex">
+        <Breadcrumb className="px-3 md:flex">
             <BreadcrumbList>
                 <BreadcrumbItem>
                     <BreadcrumbLink href="/">
