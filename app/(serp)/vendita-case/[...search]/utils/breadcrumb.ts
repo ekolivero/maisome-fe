@@ -19,6 +19,7 @@ type TypeListingJsonLD = {
   pageSize: number;
   totalResults: number;
   baseUrl: string;
+  location: Location
 }
 
 export function getBreadcrumbPath(location: Location): BaseLocation[] {
@@ -39,31 +40,6 @@ export function getNeighborsForLocation(location: Location): BaseLocation[] {
   return location.neighbors || [];
 }
 
-export function createBreadcrumbJsonLD(location: Location): any {
-  const breadcrumbPath = [...(location.parents || []), location].sort(
-    (a, b) => a.level - b.level
-  );
-
-  // TODO: Here we should add the page. This way we can reference everywhere the page.
-
-  const breadcrumbList: WithContext<BreadcrumbList> = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: breadcrumbPath.map((item, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      item: {
-        "@type": "Thing",
-        "@id": `https://maisome.com/vendita-case/${item.page}`,
-        name: item.label,
-      },
-    })),
-  };
-
-  return {
-    __html: JSON.stringify(breadcrumbList),
-  };
-}
 
 // Helper function to check if a location is of type Location
 export function isLocation(
@@ -78,59 +54,132 @@ export function createItemListJsonLD({
   pageSize,
   totalResults,
   baseUrl,
+  location
 }: TypeListingJsonLD): { __html: string } {
-  const itemList: WithContext<ItemList> = {
+
+  const breadcrumbPath = [...(location.parents || []), location].sort(
+    (a, b) => a.level - b.level
+  );
+
+
+  const itemList: WithContext<CollectionPage> = {
     "@context": "https://schema.org",
-    "@type": "ItemList",
-    itemListElement: propertyListing?.map(
-      (property, index): ListItem => ({
-        "@type": "ListItem",
-        position: (currentPage - 1) * pageSize + index + 1,
-        item: {
+    "@type": "CollectionPage",
+    name: `Case in vendita a ${location.label}`,
+    audience: {
+      "@type": "Audience",
+      audienceType: "Acquirenti di case",
+      geographicArea: {
+        "@type": "Country",
+        name: "Italia",
+      },
+    },
+    contentLocation: {
+      "@type": "Place",
+      name: location.label,
+      containedInPlace: {
+        "@type": "AdministrativeArea",
+        name: location.parents && location.parents[0]?.label || "Italia",
+      },
+    },
+    mainEntity: {
+      "@type": "ItemList",
+      itemListOrder: "http://schema.org/ItemListUnordered",
+      numberOfItems: totalResults,
+      url: `${baseUrl}?page=${currentPage}`,
+      itemListElement: propertyListing?.map(
+        (property, index): RealEstateListing => ({
           "@type": "RealEstateListing",
           name: property.title,
-          description: property.description,
+          position: (currentPage - 1) * pageSize + index + 1,
           url: property.link,
           image: property.image,
+          potentialAction: {
+            "@type": "BuyAction",
+          },
           offers: {
             "@type": "Offer",
             price: property.price.value!,
-            priceCurrency: "EUR"
+            priceCurrency: "EUR",
           },
+          mainEntity: {
+            "@type": "SingleFamilyResidence",
+            name: property.title,
+            description: property.description,
+            url: property.link,
+            image: property.image,
+            numberOfRooms: Number(property.rooms) + Number(property.bathrooms),
+            floorSize: {
+              "@type": "QuantitativeValue",
+              value: property.surface.value,
+              unitCode: "MTK",
+            },
+            numberOfBedrooms: Number(property.bedrooms),
+            numberOfBathroomsTotal: Number(property.bathrooms),
+          },
+        })
+      ),
+      // Todo implement FaQ
+      // subjectOf: {
+      //   "@type": "FAQPage",
+      //   mainEntity: [
+      //     {
+      //       "@type": "Question",
+      //       name: "What is the median home price in Kings Point, NY?",
+      //       acceptedAnswer: {
+      //         "@type": "Answer",
+      //         text: "Homes for sale in Kings Point, NY have a median listing home price of $3,500,000.",
+      //       },
+      //     },
+      //     {
+      //       "@type": "Question",
+      //       name: "What is the average time to sell a house in Kings Point, NY?",
+      //       acceptedAnswer: {
+      //         "@type": "Answer",
+      //         text: "On Average the houses for sale in Kings Point, NY spend an average of 64 days on the market.",
+      //       },
+      //     },
+      //     {
+      //       "@type": "Question",
+      //       name: "What is the number of active homes for sale in Kings Point, NY?",
+      //       acceptedAnswer: {
+      //         "@type": "Answer",
+      //         text: "There are 26 active homes for sale in Kings Point, NY.",
+      //       },
+      //     },
+      //     {
+      //       "@type": "Question",
+      //       name: "What are some of the most popular neighborhoods near Kings Point, NY?",
+      //       acceptedAnswer: {
+      //         "@type": "Answer",
+      //         text: "Some of the hottest neighborhoods near Kings Point, NY are {ne_upper_east_side}, {ne_tribeca}, {ne_throgs_neck}, {ne_battery_park_city}, {ne_cobble_hill}.",
+      //       },
+      //     },
+      //     {
+      //       "@type": "Question",
+      //       name: "What are some popular zip codes and neighborhoods around Kings Point, NY?",
+      //       acceptedAnswer: {
+      //         "@type": "Answer",
+      //         text: "You may also be interested in single family homes and condo/townhomes for sale in popular zip codes like {11050}, {10022}, or three bedroom homes for sale in neighboring cities, such as {new_york}, {manhattan}, {queens}, {great_neck}, {flushing}.",
+      //       },
+      //     },
+      //   ],
+      // },
+    },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: breadcrumbPath.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@id": `https://maisome.com/vendita-case/${item.page}`,
+          name: item.label,
         },
-      })
-    ),
-    numberOfItems: totalResults,
-    itemListOrder: "https://schema.org/ItemListOrderAscending",
-    url: `${baseUrl}?page=${currentPage}`,
+      })),
+    },
   };
 
   return {
     __html: JSON.stringify(itemList),
-  };
-}
-
-export function createSinglePropertyJsonLD(property: PropertyListing): {
-  __html: string;
-} {
-  const singleProperty: WithContext<SingleFamilyResidence> = {
-    "@context": "https://schema.org",
-    "@type": "SingleFamilyResidence",
-    name: property?.title,
-    description: property?.description,
-    url: property.link,
-    image: property.image,
-    numberOfRooms: Number(property.rooms) + Number(property.bathrooms),
-    floorSize: {
-      "@type": "QuantitativeValue",
-      value: property.surface.value,
-      unitCode: "MTK",
-    },
-    numberOfBedrooms: Number(property.bedrooms),
-    numberOfBathroomsTotal: Number(property.bathrooms),
-  };
-
-  return {
-    __html: JSON.stringify(singleProperty),
   };
 }

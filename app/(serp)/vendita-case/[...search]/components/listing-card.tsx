@@ -8,7 +8,6 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion"
 import { components } from "@/app/types/schema"
-import { createSinglePropertyJsonLD } from "../utils/breadcrumb"
 import dynamic from 'next/dynamic';
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -19,15 +18,9 @@ const MapView = dynamic(() => import('./map-view').then((mod) => mod.MapView), {
 
 export default function ListingCard({ house, index }: { house: components["schemas"]["House"], index: number }) {
 
-    const houseJsonLD = createSinglePropertyJsonLD(house!)
 
     return (
         <section>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={houseJsonLD}
-                key={`house-json-ld-${index}`}
-            />
             <Card className="w-full rounded-lg overflow-hidden shadow-lg transition-all hover:shadow-xl hover:cursor-pointer">
                 <Link href={house.link} className="block" prefetch={false} target="_blank" rel="nofollow noopener noreferrer">
                     <Image
