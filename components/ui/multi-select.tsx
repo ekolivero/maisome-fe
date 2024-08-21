@@ -17,13 +17,14 @@ import type { paths } from "@/app/types/schema";
 import createClient from "openapi-fetch";
 import { FilterProps } from "@/app/(serp)/vendita-case/[...search]/components/smart-filter";
 import { useSearchParams, useRouter } from "next/navigation";
-import { ChevronDown as ChevronDownIcon, X as XIcon } from 'lucide-react'
+import { ChevronDown as ChevronDownIcon, X as XIcon, PlusIcon } from 'lucide-react'
 import { PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "./button";
 
 type Location = {
     label: string;
     id: string;
+    page: string;
 }
 
 const client = createClient<paths>({ baseUrl: process.env.NEXT_PUBLIC_BASE_URL });
@@ -34,7 +35,8 @@ export default function MultiSelectInput({ location }: FilterProps) {
     const [search, setSearch] = useState("")
     const [selectedLocations, setSelectedLocations] = useState<Location[]>([{
         id,
-        label
+        label,
+        page: location.page
     }])
     const [locations, setLocations] = useState<Location[]>([])
     const inputRef = useRef<HTMLInputElement>(null)
@@ -130,13 +132,17 @@ export default function MultiSelectInput({ location }: FilterProps) {
         const newLocations = selectedLocations.filter(sel => sel.id !== location.id)
         setSelectedLocations(newLocations)
         updateSearchParams(newLocations)
+
+        if (newLocations.length === 1) {
+            router.push(`/vendita-case/${newLocations[0]!.page}`, { scroll: false })
+        }
     }
 
     return (
-        <div className="flex flex-wrap flex-col items-center p-1 border rounded-lg bg-white md:max-w-xl mx-auto">
+        <div className="flex flex-wrap flex-col p-1 items-center border rounded-lg bg-white md:max-w-xl mx-auto">
             <Popover open={open} onOpenChange={setOpen}>
                 <Command shouldFilter={false}>
-                    <div className="flex items-center px-3 py-2 bg-white rounded-md focus-within:ring-1 focus-within:ring-gray-400 focus-within:border-gray-400 transition-all duration-200 ease-in-out">
+                    <div className="flex items-center px-3 p-1 bg-white rounded-md">
                         <PopoverTrigger asChild>
                             <div className="flex-grow flex items-center cursor-text" onClick={() => inputRef.current?.focus()}>
                                 <Input
@@ -144,42 +150,47 @@ export default function MultiSelectInput({ location }: FilterProps) {
                                     placeholder="Inserisci un altro comune o quartiere ..."
                                     value={search}
                                     onChange={(e) => handleSearch(e.target.value)}
-                                    className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-transparent p-0"
+                                    className="flex-grow border-none shadow-none focus-visible:ring-0 focus-visible:ring-transparent p-0"
                                 />
                             </div>
                         </PopoverTrigger>
                         <Popover>
-                            <PopoverTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="ml-2 px-2 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
-                                >
-                                    <span>{selectedLocations.length}</span>
-                                    <ChevronDownIcon className="w-4 h-4 ml-1" />
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-[250px] p-0 z-[200000000000]">
-                                <Command>
-                                    <CommandList>
-                                        <CommandGroup heading="Località selezionate">
-                                            {selectedLocations.map((location) => (
-                                                <CommandItem
-                                                    key={location.id}
-                                                    className="flex justify-between items-center"
-                                                >
-                                                    <span>{location.label}</span>
-                                                    <XIcon onClick={() => handleRemove(location)} className="w-4 h-4 text-gray-500 hover:text-gray-700" />
-                                                </CommandItem>
-                                            ))}
-                                        </CommandGroup>
-                                    </CommandList>
-                                </Command>
-                            </PopoverContent>
+                            {selectedLocations.length > 1 && (
+                                <>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="ml-2 px-2 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
+                                        >
+                                            <span>{selectedLocations.length}</span>
+                                            <ChevronDownIcon className="w-4 h-4 ml-1" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-[250px] p-0 z-[200000000000] mt-2">
+                                        <Command>
+                                            <CommandList>
+                                                <CommandGroup heading="Località selezionate">
+                                                    {selectedLocations.map((location) => (
+                                                        <CommandItem
+                                                            key={location.id}
+                                                            className="flex justify-between items-center"
+                                                        >
+                                                            <span>{location.label}</span>
+                                                            <XIcon onClick={() => handleRemove(location)} className="w-4 h-4 text-gray-500 hover:text-gray-700" />
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </CommandList>
+                                        </Command>
+                                    </PopoverContent>
+                                </>
+                            )}
                         </Popover>
                     </div>
                     {!open && <CommandList aria-hidden="true" className="hidden" />}
                     <PopoverContent
+                        align="center"
                         asChild
                         onOpenAutoFocus={(e) => e.preventDefault()}
                         onInteractOutside={(e) => {
@@ -190,7 +201,7 @@ export default function MultiSelectInput({ location }: FilterProps) {
                                 e.preventDefault()
                             }
                         }}
-                        className="w-[--radix-popover-trigger-width] p-0 z-[10000000000]"
+                        className="w-[calc(100vw-1rem)] ml-2 md:ml-0 md:w-[--radix-popover-trigger-width] p-0 z-[10000000000] mt-2"
                     >
                         <CommandList>
                             <CommandEmpty>Non abbiamo trovato risultati</CommandEmpty>
@@ -203,9 +214,24 @@ export default function MultiSelectInput({ location }: FilterProps) {
                                                 key={neighbor.id}
                                                 value={neighbor.id}
                                                 onMouseDown={(e) => e.preventDefault()}
-                                                onSelect={() => handleSelect({ label: neighbor.label, id: neighbor.id })}
+                                                onSelect={() => {
+                                                    router.push(`/vendita-case/${neighbor.page}`, { scroll: false })
+                                                }}
+                                                className="flex justify-between items-center"
                                             >
                                                 {neighbor.label}
+                                                <Button
+                                                    variant={"ghost"}
+                                                    size={"sm"}
+                                                    className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors duration-200"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        handleSelect(neighbor)
+                                                    }}
+                                                >
+                                                    Aggiungi
+                                                    <PlusIcon className="w-4 h-4 ml-2" />
+                                                </Button>
                                             </CommandItem>
                                         ))}
                                     </CommandGroup>
@@ -219,9 +245,24 @@ export default function MultiSelectInput({ location }: FilterProps) {
                                                 key={address.id}
                                                 value={address.label}
                                                 onMouseDown={(e) => e.preventDefault()}
-                                                onSelect={() => handleSelect(address)}
+                                                onSelect={() => {
+                                                    router.push(`/vendita-case/${address.page}`, { scroll: false })
+                                                }}
+                                                className="flex justify-between items-center"
                                             >
                                                 <HighlightedText text={address.label} highlight={search} />
+                                                <Button
+                                                    variant={"ghost"}
+                                                    size={"sm"}
+                                                    className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors duration-200"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        handleSelect(address)
+                                                    }}
+                                                >
+                                                    Aggiungi
+                                                    <PlusIcon className="w-4 h-4 ml-2" />
+                                                </Button>
                                             </CommandItem>
                                         ))}
                                     </CommandGroup>

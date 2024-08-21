@@ -44,7 +44,7 @@ export default async function SeoRegionAndProvince() {
             {regions.map((region) => (
                 <div key={region.region} className="border-l-2 border-blue-200 pl-4 py-1">
                     <h3 className="text-lg font-semibold mb-2 flex items-center">
-                        <Link href={`/vendita-case/${region.region.toLowerCase().replace(" ", "-")}`} className="text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                        <Link href={`/vendita-case/${region.region.toLowerCase().replaceAll(" ", "-").replaceAll("'", "-") }`} className="text-blue-600 hover:text-blue-800 transition-colors duration-200">
                             {region.region}
                         </Link>
                         <span className="text-gray-500 ml-2 text-sm">({region.count})</span>
@@ -53,7 +53,7 @@ export default async function SeoRegionAndProvince() {
                         {region.provinces.map((province) => (
                             <li key={province.province} className="flex items-center text-sm">
                                 <Link
-                                    href={`/vendita-case/${province.province.toLowerCase().replaceAll(" ", "-").replace("'", "-")}-provincia`}
+                                    href={`/vendita-case/${province.province.toLowerCase().replaceAll(" ", "-").replaceAll("'", "-")}-provincia`}
                                     className="text-gray-600 hover:text-blue-600 transition-colors duration-200 flex-grow"
                                 >
                                     {province.province}
