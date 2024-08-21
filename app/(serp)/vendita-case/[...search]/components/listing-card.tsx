@@ -7,9 +7,15 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { MapView } from "./map-view"
 import { components } from "@/app/types/schema"
 import { createSinglePropertyJsonLD } from "../utils/breadcrumb"
+import dynamic from 'next/dynamic';
+import { Skeleton } from "@/components/ui/skeleton"
+
+const MapView = dynamic(() => import('./map-view').then((mod) => mod.MapView), {
+    loading: () => <Skeleton />,
+    ssr: false
+});
 
 export default function ListingCard({ house, index }: { house: components["schemas"]["House"], index: number }) {
 

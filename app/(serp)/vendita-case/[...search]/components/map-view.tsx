@@ -1,9 +1,7 @@
 'use client'
 
-//Map component Component from library
-import { GoogleMap } from "@react-google-maps/api";
 import { GoogleMapsEmbed } from '@next/third-parties/google'
-//Map's styling
+
 export const defaultMapContainerStyle = {
     width: '100%',
     height: '80vh',
@@ -20,6 +18,9 @@ const MapView = ({ lat, long }: { lat: number, long: number }) => {
                 mode="place"
                 q={`${lat},${long}`}
                 zoom="14"
+                loading='lazy'
+                allowfullscreen={false}
+                language='it'
             />
         </div>
     )

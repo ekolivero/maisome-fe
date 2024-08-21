@@ -1,8 +1,7 @@
 "use client";
 import { animate, motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { GoCopilot } from "react-icons/go";
 import Image from "next/image";
 
 export function CardDemo() {
@@ -11,10 +10,6 @@ export function CardDemo() {
             <CardSkeletonContainer>
                 <Skeleton />
             </CardSkeletonContainer>
-            <CardTitle>Il miglior modo di cercare casa</CardTitle>
-            <CardDescription>
-                Tra tutti gli annunci immobiliari, trova la tua prossima casa con il minimo sforzo.
-            </CardDescription>
         </Card>
     );
 }
