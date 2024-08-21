@@ -170,7 +170,7 @@ export default function MultiSelectInput({ location }: FilterProps) {
                             onMouseDown={() => setOpen((open) => !!search || !open)}
                             onFocus={() => setOpen(true)}
                         >
-                            <Input placeholder="Aggiungi un'altra località" className="flex-grow border-none shadow-none focus-visible:ring-0 focus-visible:ring-transparent mt-1" />
+                            <Input placeholder="Aggiungi un altro comune o quartiere" className="flex-grow border-none shadow-none focus-visible:ring-0 focus-visible:ring-transparent mt-1" />
                         </CommandPrimitive.Input>
                     </PopoverPrimitive.Anchor>
                     {!open && <CommandList aria-hidden="true" className="hidden" />}

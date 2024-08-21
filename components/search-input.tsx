@@ -36,14 +36,19 @@ const frameworks = [
     },
 ]
 
-const lastResearch = [
+
+const commonCities = [
     {
-        value: "Dronero",
-        label: "Dronero - Cuneo",
+        value: "milano/milano",
+        label: "Milano"
     },
     {
-        value: "Borgo",
-        label: "Borgo san Dalmazzo - Cuneo",
+        value: "roma/roma",
+        label: "Roma"
+    },
+    {
+        value: "napoli/napoli",
+        label: "Napoli"
     }
 ]
 
@@ -119,7 +124,10 @@ export default function SearchInput() {
                                 }
                             }}
                         >
-                            <Input placeholder="Inserisci indirizzo" className="w-[20rem] md:w-full h-12 text-xl px-4 rounded-lg" />
+                            <Input
+                                placeholder="Inserisci un comune, quartiere ..."
+                                className="w-full h-12 text-base px-4 rounded-lg md:h-16 md:text-xl md:px-6"
+                            />
                         </CommandPrimitive.Input>
                     </PopoverPrimitive.Anchor>
                     {!open && <CommandList aria-hidden="true" className="hidden" />}
@@ -150,12 +158,12 @@ export default function SearchInput() {
                             </CommandGroup>
                             <CommandSeparator />
                             {
-                                !search && (<CommandGroup heading="Ricerche recenti">
+                                !search && (<CommandGroup heading="Ricerche frequenti">
                                     {
-                                        lastResearch.map((framework) => (
+                                        commonCities.map((city) => (
                                             <CommandItem
-                                                key={framework.value}
-                                                value={framework.value}
+                                                key={city.value}
+                                                value={city.value}
                                                 onMouseDown={(e) => e.preventDefault()}
                                                 onSelect={(currentValue) => {
                                                     setValue(currentValue === value ? "" : currentValue)
@@ -166,10 +174,11 @@ export default function SearchInput() {
                                                                 (framework) => framework.value === currentValue
                                                             )?.label ?? ""
                                                     )
+                                                    router.push(`/vendita-case/${city.value}`)
                                                     setOpen(false)
                                                 }}
                                             >
-                                                {framework.label}
+                                                {city.label}
                                             </CommandItem>
                                         ))
                                     }

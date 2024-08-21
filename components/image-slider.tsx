@@ -1,38 +1,27 @@
 "use client";
-import { motion } from "framer-motion";
 import React from "react";
-import { ImagesSlider } from "./ui/images-slide";
 import SearchInput from "./search-input";
+import Image from "next/image";
 
 export function ImagesSliderDemo() {
-    const images = [
-        "https://plus.unsplash.com/premium_photo-1687960116228-13d383d20188?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "https://plus.unsplash.com/premium_photo-1687960116741-d3a1468fdec1?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "https://plus.unsplash.com/premium_photo-1668383196824-e6d010e02711?q=80&w=2874&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    ];
     return (
-        <ImagesSlider className="h-[19rem] md:h-[26rem]" images={images}>
-            <motion.div
-                initial={{
-                    opacity: 0,
-                    y: 0,
-                }}
-                animate={{
-                    opacity: 1,
-                    y: 0,
-                }}
-                transition={{
-                    duration: 0.2,
-                }}
-                className="z-50 flex flex-col justify-center items-center"
-            >
-                <div className="flex justify-start flex-col md:w-[32rem] md:ml-12">
-                <motion.p className="font-bold text-3xl md:text-4xl text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 py-4 mb-8">
-                    La tua prossima casa <br /> A portata di click.
-                </motion.p>
+        <div className="relative h-[400px] md:h-[500px] w-full overflow-hidden">
+            <Image
+                alt="Background image of a room with people and plants"
+                src="https://plus.unsplash.com/premium_photo-1687960116741-d3a1468fdec1?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                fill
+                style={{objectFit: 'cover'}}
+                priority
+            />
+            <div className="absolute inset-0 bg-black/50" />
+            <div className="relative flex h-full flex-col items-center justify-center px-4 text-center">
+                <h1 className="mb-4 text-3xl font-bold text-white sm:text-4xl md:text-5xl max-w-screen-sm">
+                Trova oggi la tua casa dei sogni
+                </h1>
+                <div className="w-full max-w-md mt-8">
                 <SearchInput />
                 </div>
-            </motion.div>
-        </ImagesSlider>
+            </div>
+        </div>
     );
 }
