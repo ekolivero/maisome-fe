@@ -150,7 +150,7 @@ export default function MultiSelectInput({ location }: FilterProps) {
                             ) : (
                                 <>
                                     {selectedLocations.map((location) => (
-                                        <Badge key={location.id} variant="outline" className="h-4 gap-1">
+                                        <Badge key={location.id} variant="secondary" className="h-4 gap-1">
                                             <p className="text-xs">{location.label.split(" • ")[0]} </p>
                                             <button onClick={() => handleRemove(location)} className="ml-1">
                                                 <Cross2Icon className="h-2 w-2" />

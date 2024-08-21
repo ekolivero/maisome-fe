@@ -37,10 +37,10 @@ export async function NeighboorsCarousel({ neighbor }: { neighbor: components["s
             <div className="flex items-center justify-between">
                 <div className="space-y-1">
                     <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
-                        Prova anche a cercare a {neighbor.label}
+                        Cerca a {neighbor.label}
                     </h2>
                     <p className="text-sm md:text-xl md  text-muted-foreground">
-                        Basato sui tuoi interessi
+                        Scopri case in vendita
                     </p>
                 </div>
             </div>

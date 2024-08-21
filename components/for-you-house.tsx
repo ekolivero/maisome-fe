@@ -6,7 +6,7 @@ import { Carousel, Card } from "@/components/ui/card-carousel";
 
 export function ForYouHouse() {
     const cards = data.map((card, index) => (
-        <Card key={card.src} card={card} index={index} />
+        <Card key={card.src} card={card} index={index} layout />
     ));
     return (
         <div className="flex flex-col gap-4">
