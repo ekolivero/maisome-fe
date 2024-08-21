@@ -150,7 +150,7 @@ export default function MultiSelectInput({ location }: FilterProps) {
                                     placeholder="Inserisci un altro comune o quartiere ..."
                                     value={search}
                                     onChange={(e) => handleSearch(e.target.value)}
-                                    className="flex-grow border-none shadow-none focus-visible:ring-0 focus-visible:ring-transparent p-0"
+                                    className="flex-grow border-none shadow-none focus-visible:ring-0 focus-visible:ring-transparent p-0 text-[16px]"
                                 />
                             </div>
                         </PopoverTrigger>
