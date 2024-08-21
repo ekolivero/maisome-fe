@@ -146,14 +146,14 @@ export default function MultiSelectInput({ location }: FilterProps) {
                     <div className="flex flex-row gap-1.5 whitespace-nowrap overflow-x-auto scrollbar-hide">
                         {
                             isLoading ? (
-                                <Skeleton className="h-8 w-[80%] opacity-80" />
+                                <Skeleton className="h-4 w-[80%] opacity-80" />
                             ) : (
                                 <>
                                     {selectedLocations.map((location) => (
-                                        <Badge key={location.id} variant="secondary" className="h-8 gap-1">
-                                            {location.label.split(" • ")[0]}
+                                        <Badge key={location.id} variant="outline" className="h-4 gap-1">
+                                            <p className="text-xs">{location.label.split(" • ")[0]} </p>
                                             <button onClick={() => handleRemove(location)} className="ml-1">
-                                                <Cross2Icon className="h-3 w-3" />
+                                                <Cross2Icon className="h-2 w-2" />
                                             </button>
                                         </Badge>
                                     ))}
@@ -170,7 +170,7 @@ export default function MultiSelectInput({ location }: FilterProps) {
                             onMouseDown={() => setOpen((open) => !!search || !open)}
                             onFocus={() => setOpen(true)}
                         >
-                            <Input placeholder="Aggiungi un'altra località" className="flex-grow border-none shadow-none focus-visible:ring-0 focus-visible:ring-transparent mt-1.5" />
+                            <Input placeholder="Aggiungi un'altra località" className="flex-grow border-none shadow-none focus-visible:ring-0 focus-visible:ring-transparent mt-1" />
                         </CommandPrimitive.Input>
                     </PopoverPrimitive.Anchor>
                     {!open && <CommandList aria-hidden="true" className="hidden" />}
@@ -185,7 +185,7 @@ export default function MultiSelectInput({ location }: FilterProps) {
                                 e.preventDefault()
                             }
                         }}
-                        className="w-[--radix-popover-trigger-width] p-0"
+                        className="w-[--radix-popover-trigger-width] p-0 z-[10000000000]"
                     >
                         <CommandList>
                             <CommandEmpty>Non abbiamo trovato risultati</CommandEmpty>

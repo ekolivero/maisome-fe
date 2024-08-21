@@ -52,6 +52,24 @@ export default async function SEO({
 
     const surfaceHouses = data.aggregation.surface!
 
+    let formattedLocationName = "";
+
+    switch (location.level) {
+        case 0: {
+            formattedLocationName = location.label
+            break
+        }
+        case 1: {
+            formattedLocationName = location.label
+            break
+        }
+        default: {
+            formattedLocationName = city.split("/")[1]!.charAt(0).toUpperCase() + city.split("/")[1]!.slice(1)
+            break;
+        }
+    }
+
+
     return (
         <div className="flex flex-col gap-4">
             <h6 className="text-2xl md:text-xl font-semibold tracking-tight"> Trova la tua casa ideale </h6>
@@ -68,7 +86,7 @@ export default async function SEO({
                             topThreeRooms.map((room, index) => (
                                 <Link key={index} href={`/vendita-case/${page}?rooms=${encodeURIComponent(room.key)}`}>
                                     <div className="flex flex-row justify-between">
-                                        <p className="text-md text-blue-500"> {room.key} stanze in vendita a {city.split("/")[1]!.charAt(0).toUpperCase() + city.split("/")[1]!.slice(1)}</p>
+                                        <p className="text-md text-blue-500"> {room.key} stanze in vendita a {formattedLocationName}</p>
                                         <p className="text-md text-muted-foreground"> {room.count} risultati </p>
                                     </div>
                                 </Link>
@@ -88,7 +106,7 @@ export default async function SEO({
                             topThreeConditions.map((condition, index) => (
                                 <Link key={index} href={`/vendita-case/${page}?condition=${encodeURIComponent(condition.key)}`}>
                                     <div className="flex flex-row justify-between">
-                                        <p className="text-md  text-blue-500"> Stato {condition.key} in {city.split("/")[1]!.charAt(0).toUpperCase() + city.split("/")[1]!.slice(1)}</p>
+                                        <p className="text-md  text-blue-500"> Stato {condition.key} in {formattedLocationName}</p>
                                         <p className="text-md text-muted-foreground"> {condition.count} risultati </p>
                                     </div>
                                 </Link>
@@ -108,7 +126,7 @@ export default async function SEO({
                             priceHouses.map((price, index) => (
                                 <Link key={index} href={`/vendita-case/${page}`}>
                                     <div className="flex flex-row justify-between">
-                                        <p className="text-md  text-blue-500"> Case a {price.key} in {city.split("/")[1]!.charAt(0).toUpperCase() + city.split("/")[1]!.slice(1)}</p>
+                                        <p className="text-md  text-blue-500"> Case a {price.key} in {formattedLocationName}</p>
                                         <p className="text-md text-muted-foreground"> {price.count} risultati </p>
                                     </div>
                                 </Link>
@@ -128,7 +146,7 @@ export default async function SEO({
                             categoryHouses.map((category, index) => (
                                 <Link key={index} href={`/vendita-case/${page}?categories=${encodeURIComponent(category.key)}`}>
                                     <div className="flex flex-row justify-between">
-                                        <p className="text-md  text-blue-500"> {category.key} in {city.split("/")[1]!.charAt(0).toUpperCase() + city.split("/")[1]!.slice(1)}</p>
+                                        <p className="text-md  text-blue-500"> {category.key} in {formattedLocationName}</p>
                                         <p className="text-md text-muted-foreground"> {category.count} risultati </p>
                                     </div>
                                 </Link>
@@ -148,7 +166,7 @@ export default async function SEO({
                             surfaceHouses.map((surface, index) => (
                                 <Link key={index} href={`/vendita-case/${page}`}>
                                     <div className="flex flex-row justify-between items-center">
-                                        <p className="text-md  text-blue-500"> Case di {surface.key} mq in {city.split("/")[1]!.charAt(0).toUpperCase() + city.split("/")[1]!.slice(1)}</p>
+                                        <p className="text-md  text-blue-500"> Case di {surface.key} mq in {formattedLocationName}</p>
                                         <p className="text-md text-muted-foreground"> {surface.count} risultati </p>
                                     </div>
                                 </Link>
@@ -168,7 +186,7 @@ export default async function SEO({
                             furnitureHouses.map((furniture, index) => (
                                 <Link key={index} href={`/vendita-case/${page}`}>
                                     <div className="flex flex-row justify-between items-center">
-                                        <p className="text-md text-blue-500"> Case {furniture.key || "Non arredate"} in {city.split("/")[1]!.charAt(0).toUpperCase() + city.split("/")[1]!.slice(1)}</p>
+                                        <p className="text-md text-blue-500"> Case {furniture.key || "Non arredate"} in {formattedLocationName}</p>
                                         <p className="text-md text-muted-foreground"> {furniture.count} risultati </p>
                                     </div>
                                 </Link>

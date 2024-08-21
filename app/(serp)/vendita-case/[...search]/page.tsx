@@ -123,11 +123,13 @@ async function ListingItems({ search, searchParams }: { search: string[], search
             />
         <div className="flex flex-col w-full">
             <HouseList propertyListing={data?.houses} currentPage={currentPage} pageRange={pageRange} totalPages={totalPages} />
-            {
-                neighbors?.splice(0, 2)?.map((neighbor, index) => (
-                    <NeighboorsCarousel key={index} neighbor={neighbor} />
-                ))
-            }
+                {neighbors
+                    ?.filter(neighbor => !searchParams.ids?.includes(neighbor.id))
+                    .splice(0, 2)
+                    ?.map((neighbor, index) => (
+                        <NeighboorsCarousel key={neighbor.id} neighbor={neighbor} />
+                    ))
+                }
         </div>
         </section>
     )
@@ -148,8 +150,8 @@ export default async function Page({ params: { search }, searchParams }: { param
         <>
             <div className="flex flex-1 w-full dark:bg-black bg-white  dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex-col">
                 <SmartFilter location={location} />
-                <div className="mt-8">
-                    <div className="flex px-2 md:max-w-xl md:mx-auto h-full flex-col gap-8">
+                <div className="mt-6">
+                    <div className="flex px-2 md:max-w-xl md:mx-auto h-full flex-col gap-6">
                         <Suspense fallback={<LoadingListingCard />} key={`${JSON.stringify(searchParams)}`}>
                             <BreadcrumbsParentAndChildren location={lookupData?.location!} />
                             <ListingItems search={search} searchParams={searchParams} />

@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ChevronDown, Home } from 'lucide-react';
 import { components } from "@/app/types/schema"
-import { getBreadcrumbPath, getChildrenForLocation, isLocation, getNeighborsForLocation } from '../utils/breadcrumb';
+import { getBreadcrumbPath, getChildrenForLocation } from '../utils/breadcrumb';
 
 type Location = components["schemas"]["Location"];
 type BaseLocation = components["schemas"]["BaseLocation"];
@@ -38,34 +38,33 @@ export function BreadcrumbsParentAndChildren({
     const breadcrumbPath = React.useMemo(() => getBreadcrumbPath(location), [location]);
     const baseUrl = `/vendita-case`;
 
-    const renderDropdownMenu = (items: BaseLocation[], title: string) => (
-        <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center focus:outline-none">
-                <span className="mr-1">{trimText(title, 15)}</span>
-                <ChevronDown size={16} />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-                <DropdownMenuItem disabled>{title}</DropdownMenuItem>
-                {items.map((item) => (
-                    <DropdownMenuItem key={item.id}>
-                        <BreadcrumbLink href={formatUrl(baseUrl, item.page)}>
-                            {item.label}
-                        </BreadcrumbLink>
-                    </DropdownMenuItem>
-                ))}
-            </DropdownMenuContent>
-        </DropdownMenu>
-    );
+    const formatLevel = (level: number) => {
+        switch (level) {
+            case 0:
+                return "Vedi Provincie";
+            case 1:
+                return "Vedi Comuni";
+            case 2:
+                return "Vedi Aree";
+            case 3:
+                return "Vedi Quartiere";
+            default:
+                return "";
+        }
+    }
 
     const renderChildrenCTA = (item: BaseLocation | Location) => {
         const children = getChildrenForLocation(item);
         if (children.length > 0) {
             return (
+                <>
+                <BreadcrumbSeparator />
                 <DropdownMenu>
                     <DropdownMenuTrigger>
-                        Vedi quartieri <ChevronDown size={14} className="inline ml-1" />
+                        {formatLevel(item.level)}
+                    <ChevronDown size={14} className="inline ml-1" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
+                    <DropdownMenuContent className="overflow-auto max-h-96">
                         {children.map((child) => (
                             <DropdownMenuItem key={child.id}>
                                 <BreadcrumbLink href={formatUrl(baseUrl, child.page)}>
@@ -75,13 +74,14 @@ export function BreadcrumbsParentAndChildren({
                         ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
+                </>
             );
         }
         return null;
     };
 
     return (
-        <Breadcrumb className="px-3">
+        <Breadcrumb className="px-3 hidden md:flex">
             <BreadcrumbList>
                 <BreadcrumbItem>
                     <BreadcrumbLink href="/">
@@ -90,14 +90,16 @@ export function BreadcrumbsParentAndChildren({
                     </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
-                {breadcrumbPath.slice(location.level === 3 ? -2 : -3).map((item, index, arr) => (
+                {breadcrumbPath.slice(location.level === 3 ? -3 : -4).map((item, index, arr) => (
                     <React.Fragment key={item.id}>
                         <BreadcrumbItem>
-                            {index === arr.length - 1 && isLocation(item) && getNeighborsForLocation(item).length > 0 ? (
-                                renderDropdownMenu(getNeighborsForLocation(item), item.label)
-                            ) : (
-                                <BreadcrumbPage>{trimText(item.label, 15)}</BreadcrumbPage>
-                            )}
+                            {
+                                item.level === location.level ? (
+                                    <BreadcrumbPage>{trimText(item.label, 15)}</BreadcrumbPage>
+                                ) : (
+                                    <BreadcrumbLink href={formatUrl(baseUrl, item.page)}>{trimText(item.label, 15)}</BreadcrumbLink>
+                                )
+                            }
                         </BreadcrumbItem>
                         <>
                             {index < arr.length - 1 && <BreadcrumbSeparator />}
