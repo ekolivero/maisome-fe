@@ -31,6 +31,7 @@ export default function ListingCard({ house, index }: { house: components["schem
                         width={400}
                         height={240}
                         className="w-full h-60 object-cover"
+                        priority={index < 4}
                     />
                 </Link>
                 <CardContent className="p-6 bg-background">
