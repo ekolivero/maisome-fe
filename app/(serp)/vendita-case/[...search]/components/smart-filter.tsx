@@ -9,7 +9,7 @@ export default function SmartFilter({ location }: FilterProps) {
     return (
         <>
         <div
-            className={"sticky top-0"}
+            className={"sticky top-0 z-[20000000]"}
         >
             <div className={`bg-white dark:bg-black transition-all duration-300 ease-in-out`}>
                 <div className="bg-white shadow-lg px-4 py-2">
