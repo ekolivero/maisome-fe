@@ -4,12 +4,7 @@ import {
     Popover,
     PopoverContent,
 } from "@/components/ui/popover"
-import * as PopoverPrimitive from "@radix-ui/react-popover"
-import { Command as CommandPrimitive } from "cmdk"
-import { useState, useEffect } from "react";
-import {
-    Cross2Icon
-} from "@radix-ui/react-icons"
+import { useState, useEffect, useRef } from "react";
 import {
     Command,
     CommandEmpty,
@@ -20,11 +15,11 @@ import {
 } from "@/components/ui/command"
 import type { paths } from "@/app/types/schema";
 import createClient from "openapi-fetch";
-import { Badge } from "@/components/ui/badge";
 import { FilterProps } from "@/app/(serp)/vendita-case/[...search]/components/smart-filter";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton"
-
+import { ChevronDown as ChevronDownIcon, X as XIcon } from 'lucide-react'
+import { PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "./button";
 
 type Location = {
     label: string;
@@ -42,7 +37,7 @@ export default function MultiSelectInput({ location }: FilterProps) {
         label
     }])
     const [locations, setLocations] = useState<Location[]>([])
-    const [isLoading, setIsLoading] = useState(true)
+    const inputRef = useRef<HTMLInputElement>(null)
 
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -50,7 +45,6 @@ export default function MultiSelectInput({ location }: FilterProps) {
 
     useEffect(() => {
         const fetchLocations = async () => {
-            setIsLoading(true)
             const ids = searchParams.getAll('ids')
             if (ids.length > 0) {
                 const results = await Promise.allSettled(ids.map(async (id: string) => {
@@ -75,7 +69,6 @@ export default function MultiSelectInput({ location }: FilterProps) {
 
                 setSelectedLocations(validLocations)
             }
-            setIsLoading(false)
         }
 
         fetchLocations()
@@ -143,36 +136,48 @@ export default function MultiSelectInput({ location }: FilterProps) {
         <div className="flex flex-wrap flex-col items-center p-1 border rounded-lg bg-white md:max-w-xl mx-auto">
             <Popover open={open} onOpenChange={setOpen}>
                 <Command shouldFilter={false}>
-                    <div className="flex flex-row gap-1.5 whitespace-nowrap overflow-x-auto scrollbar-hide">
-                        {
-                            isLoading ? (
-                                <Skeleton className="h-4 w-[80%] opacity-80" />
-                            ) : (
-                                <>
-                                    {selectedLocations.map((location) => (
-                                        <Badge key={location.id} variant="secondary" className="h-4 gap-1">
-                                            <p className="text-xs">{location.label.split(" • ")[0]} </p>
-                                            <button onClick={() => handleRemove(location)} className="ml-1">
-                                                <Cross2Icon className="h-2 w-2" />
-                                            </button>
-                                        </Badge>
-                                    ))}
-                                </>
-                            )
-                        }
+                    <div className="flex items-center px-3 py-2 bg-white rounded-md focus-within:ring-1 focus-within:ring-gray-400 focus-within:border-gray-400 transition-all duration-200 ease-in-out">
+                        <PopoverTrigger asChild>
+                            <div className="flex-grow flex items-center cursor-text" onClick={() => inputRef.current?.focus()}>
+                                <Input
+                                    ref={inputRef}
+                                    placeholder="Inserisci un altro comune o quartiere ..."
+                                    value={search}
+                                    onChange={(e) => handleSearch(e.target.value)}
+                                    className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-transparent p-0"
+                                />
+                            </div>
+                        </PopoverTrigger>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="ml-2 px-2 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
+                                >
+                                    <span>{selectedLocations.length}</span>
+                                    <ChevronDownIcon className="w-4 h-4 ml-1" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[250px] p-0 z-[200000000000]">
+                                <Command>
+                                    <CommandList>
+                                        <CommandGroup heading="Località selezionate">
+                                            {selectedLocations.map((location) => (
+                                                <CommandItem
+                                                    key={location.id}
+                                                    className="flex justify-between items-center"
+                                                >
+                                                    <span>{location.label}</span>
+                                                    <XIcon onClick={() => handleRemove(location)} className="w-4 h-4 text-gray-500 hover:text-gray-700" />
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
                     </div>
-                    <PopoverPrimitive.Anchor asChild>
-                        <CommandPrimitive.Input
-                            asChild
-                            value={search}
-                            onValueChange={handleSearch}
-                            onKeyDown={(e) => setOpen(e.key !== "Escape")}
-                            onMouseDown={() => setOpen((open) => !!search || !open)}
-                            onFocus={() => setOpen(true)}
-                        >
-                            <Input placeholder="Aggiungi un altro comune o quartiere" className="flex-grow border-none shadow-none focus-visible:ring-0 focus-visible:ring-transparent mt-1" />
-                        </CommandPrimitive.Input>
-                    </PopoverPrimitive.Anchor>
                     {!open && <CommandList aria-hidden="true" className="hidden" />}
                     <PopoverContent
                         asChild
