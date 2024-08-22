@@ -1,15 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import Image from "next/image"
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion"
 import { components } from "@/app/types/schema"
 import dynamic from 'next/dynamic';
 import { Skeleton } from "@/components/ui/skeleton"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { MapIcon, HouseIcon } from "lucide-react";
 
 const MapView = dynamic(() => import('./map-view').then((mod) => mod.MapView), {
     loading: () => <Skeleton />,
@@ -17,56 +13,72 @@ const MapView = dynamic(() => import('./map-view').then((mod) => mod.MapView), {
 });
 
 export default function ListingCard({ house, index }: { house: components["schemas"]["House"], index: number }) {
-
-
     return (
         <section>
-            <Card className="w-full rounded-lg overflow-hidden shadow-lg transition-all hover:shadow-xl hover:cursor-pointer">
-                <Link href={house.link} className="block" prefetch={false} target="_blank" rel="nofollow noopener noreferrer">
-                    <Image
-                        unoptimized
-                        src={house.image}
-                        alt="Property Image"
-                        width={400}
-                        height={240}
-                        className="w-full h-60 object-cover"
-                        priority={index < 4}
-                    />
-                </Link>
-                <CardContent className="p-6 bg-background">
-                    <div className="flex justify-between items-start mb-2">
-                        <div>
-                            <h5 className="text-sm md:text-md font-semibold">{house.title}</h5>
+            <Card className="w-full h-[375px] rounded-lg overflow-hidden shadow-md transition-all hover:shadow-xl hover:cursor-pointer relative group">
+                <Tabs defaultValue="list" className="w-full h-full">
+                    <div className="relative">
+                        <TabsContent value="list" className="mt-0">
+                            <Link href={house.link} className="block" prefetch={false} target="_blank" rel="nofollow noopener noreferrer">
+                                <Image
+                                    unoptimized
+                                    src={house.image}
+                                    alt="Property Image"
+                                    width={400}
+                                    height={240}
+                                    className="w-full h-60 object-cover"
+                                    priority={index < 4}
+                                />
+                            </Link>
+                        </TabsContent>
+                        <TabsContent value="map" className="mt-0 h-60">
+                            <MapView lat={house.location.coordinates.latitude} long={house.location.coordinates.longitude} />
+                        </TabsContent>
+                        <div className="absolute top-2 right-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+                            <TabsList className="bg-white/80 backdrop-blur-sm rounded-full p-1 shadow-lg">
+                                <TabsTrigger
+                                    value="list"
+                                    className="data-[state=inactive]:flex data-[state=active]:hidden items-center p-2 rounded-full transition-all hover:bg-white"
+                                >
+                                    <HouseIcon className="h-5 w-5 mr-1" /> Vedi offerta
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="map"
+                                    className="data-[state=inactive]:flex data-[state=active]:hidden items-center p-2 rounded-full transition-all hover:bg-white"
+                                >
+                                    <MapIcon className="h-5 w-5 mr-1" /> Vedi su mappa
+                                </TabsTrigger>
+                            </TabsList>
                         </div>
-
                     </div>
-                    <div className="flex flex-row justify-between mb-2 items-center">
-                        <p className="text-2xl font-bold">{house.price.text}</p>
-                        <p className="text-muted-foreground text-sm justify-center">{house.location.hierarchy.city?.label}</p>
-                    </div>
-                    <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                            <BedIcon className="w-5 h-5" />
-                            <span>{house.rooms} locali</span>
+                    <CardContent className="p-6 bg-background">
+                        <div className="flex justify-between items-start mb-2">
+                            <div>
+                                <h5 className="text-sm md:text-md font-semibold line-clamp-1">
+                                    {house.title}
+                                </h5>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <BathIcon className="w-5 h-5" />
-                            <span> {house.bathrooms} bagni </span>
+                        <div className="flex flex-row justify-between mb-2 items-center">
+                            <p className="text-2xl font-bold truncate">{house.price.text}</p>
+                            <p className="text-muted-foreground text-sm justify-center truncate">{house.location.hierarchy.city?.label}</p>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <RulerIcon className="w-5 h-5" />
-                            <span> {house.surface.text}</span>
+                        <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-2">
+                                <BedIcon className="w-5 h-5" />
+                                <span>{house.rooms} locali</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <BathIcon className="w-5 h-5" />
+                                <span> {house.bathrooms} bagni </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <RulerIcon className="w-5 h-5" />
+                                <span> {house.surface.text}</span>
+                            </div>
                         </div>
-                    </div>
-                    <Accordion type="single" collapsible>
-                        <AccordionItem value="item-1">
-                            <AccordionTrigger>Vedi su mappa</AccordionTrigger>
-                            <AccordionContent>
-                                <MapView lat={house.location.coordinates.latitude} long={house.location.coordinates.longitude} />
-                            </AccordionContent>
-                        </AccordionItem>
-                    </Accordion>
-                </CardContent>
+                    </CardContent>
+                </Tabs>
             </Card>
         </section>
     )

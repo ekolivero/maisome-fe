@@ -13,13 +13,12 @@ import {
     CommandList,
     CommandSeparator,
 } from "@/components/ui/command"
-import type { paths } from "@/app/types/schema";
-import createClient from "openapi-fetch";
-import { FilterProps } from "@/app/(serp)/vendita-case/[...search]/components/smart-filter";
+import { FilterProps } from "@/app/(serp)/vendita-case/[...search]/components/header";
 import { useSearchParams, useRouter } from "next/navigation";
-import { ChevronDown as ChevronDownIcon, X as XIcon, PlusIcon } from 'lucide-react'
+import { ChevronDown as ChevronDownIcon, X as XIcon, PlusIcon, SearchIcon } from 'lucide-react'
 import { PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "./button";
+import client from "@/app/utils/client";
 
 type Location = {
     label: string;
@@ -27,7 +26,6 @@ type Location = {
     page: string;
 }
 
-const client = createClient<paths>({ baseUrl: process.env.NEXT_PUBLIC_BASE_URL });
 
 export default function MultiSelectInput({ location }: FilterProps) {
     const { neighbors, label, id } = location
@@ -43,50 +41,21 @@ export default function MultiSelectInput({ location }: FilterProps) {
 
     const router = useRouter()
     const searchParams = useSearchParams()
+    const ids = searchParams.getAll('ids')
 
-
-    useEffect(() => {
-        const fetchLocations = async () => {
-            const ids = searchParams.getAll('ids')
-            if (ids.length > 0) {
-                const results = await Promise.allSettled(ids.map(async (id: string) => {
-                    try {
-                        const { data } = await client.GET("/locations/lookup_page/", {
-                            params: {
-                                query: {
-                                    id,
-                                }
-                            }
-                        })
-                        return { id, label: data?.location.label }
-                    } catch (error) {
-                        console.error(`Failed to fetch location for id ${id}`, error)
-                        return null
-                    }
-                }))
-
-                const validLocations = results
-                    .filter((result): result is PromiseFulfilledResult<Location | null> => result.status === 'fulfilled' && result.value !== null)
-                    .map(result => result.value as Location)
-
-                setSelectedLocations(validLocations)
-            }
+    const updateSearchParams = (newId: string) => {
+        const current = new URLSearchParams(searchParams.toString());
+        if (ids.length === 0) {
+            current.append('ids', location.id)
         }
-
-        fetchLocations()
-    }, [])
-
-    const updateSearchParams = (location: Location[]) => {
-        const newSearchParams = new URLSearchParams(searchParams.toString())
-        newSearchParams.delete('ids')
-        location.forEach(loc => {
-            newSearchParams.append('ids', loc.id)
-        })
-        router.push(`?${newSearchParams.toString()}`, { scroll: false })
-    }
+        if (!ids.includes(newId)) {
+            current.append('ids', newId);
+        }
+        router.push(`?${current.toString()}`, { scroll: false });
+    };
 
     const handleSearch = async (value: string) => {
-        setSearch(value)
+        setSearch(value);
 
         const { data } = await client.GET("/locations/suggest/", {
             params: {
@@ -94,57 +63,32 @@ export default function MultiSelectInput({ location }: FilterProps) {
                     query: value,
                 },
             }
-        })
+        });
 
         setLocations(() => {
-            if (!data) return []
+            if (!data) return [];
             return data.suggestions.map((location) => ({
                 label: location.autocomplete,
                 id: location.id,
                 page: location.page,
-            }))
-        })
-    }
+            }));
+        });
+    };
 
-    const handleSelect = async (location: Location) => {
-        if (selectedLocations.length === 0) {
-            const { data } = await client.GET("/locations/lookup_page/", {
-                params: {
-                    query: {
-                        id: location.id
-                    }
-                }
-            })
-
-            router.push(`/vendita-case/${data?.location.page}`, { scroll: false })
-            return
-        }
-        if (!selectedLocations.some(sel => sel.id === location.id)) {
-            const newLocations = [...selectedLocations, location]
-            setSelectedLocations(newLocations)
-            updateSearchParams(newLocations)
-        }
-        setSearch("")
-        setOpen(false)
-    }
-
-    const handleRemove = (location: Location) => {
-        const newLocations = selectedLocations.filter(sel => sel.id !== location.id)
-        setSelectedLocations(newLocations)
-        updateSearchParams(newLocations)
-
-        if (newLocations.length === 1) {
-            router.push(`/vendita-case/${newLocations[0]!.page}`, { scroll: false })
-        }
-    }
+    const handleAppendLocation = async (selectedLocation: Location) => {
+        updateSearchParams(selectedLocation.id);
+        setSearch("");
+        setOpen(false);
+    };
 
     return (
-        <div className="flex flex-wrap flex-col p-1 items-center border rounded-lg bg-white md:max-w-xl mx-auto">
+        <div className="flex flex-wrap flex-col p-1 items-center border rounded-sm bg-white md:max-w-xl mx-auto">
             <Popover open={open} onOpenChange={setOpen}>
                 <Command shouldFilter={false}>
-                    <div className="flex items-center px-3 p-1 bg-white rounded-md">
+                    <div className="flex items-center p-1 px-3 bg-white rounded-md">
                         <PopoverTrigger asChild>
                             <div className="flex-grow flex items-center cursor-text" onClick={() => inputRef.current?.focus()}>
+                                <SearchIcon className="w-5 h-5 text-gray-400 mr-2" />
                                 <Input
                                     ref={inputRef}
                                     placeholder="Inserisci un altro comune o quartiere ..."
@@ -154,39 +98,6 @@ export default function MultiSelectInput({ location }: FilterProps) {
                                 />
                             </div>
                         </PopoverTrigger>
-                        <Popover>
-                            {selectedLocations.length > 1 && (
-                                <>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="ml-2 px-2 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
-                                        >
-                                            <span>{selectedLocations.length}</span>
-                                            <ChevronDownIcon className="w-4 h-4 ml-1" />
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-[250px] p-0 z-[200000000000] mt-2">
-                                        <Command>
-                                            <CommandList>
-                                                <CommandGroup heading="Località selezionate">
-                                                    {selectedLocations.map((location) => (
-                                                        <CommandItem
-                                                            key={location.id}
-                                                            className="flex justify-between items-center"
-                                                        >
-                                                            <span>{location.label}</span>
-                                                            <XIcon onClick={() => handleRemove(location)} className="w-4 h-4 text-gray-500 hover:text-gray-700" />
-                                                        </CommandItem>
-                                                    ))}
-                                                </CommandGroup>
-                                            </CommandList>
-                                        </Command>
-                                    </PopoverContent>
-                                </>
-                            )}
-                        </Popover>
                     </div>
                     {!open && <CommandList aria-hidden="true" className="hidden" />}
                     <PopoverContent
@@ -226,7 +137,7 @@ export default function MultiSelectInput({ location }: FilterProps) {
                                                     className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors duration-200"
                                                     onClick={(e) => {
                                                         e.stopPropagation()
-                                                        handleSelect(neighbor)
+                                                        handleAppendLocation(neighbor)
                                                     }}
                                                 >
                                                     Aggiungi
@@ -257,7 +168,7 @@ export default function MultiSelectInput({ location }: FilterProps) {
                                                     className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors duration-200"
                                                     onClick={(e) => {
                                                         e.stopPropagation()
-                                                        handleSelect(address)
+                                                        handleAppendLocation(address)
                                                     }}
                                                 >
                                                     Aggiungi

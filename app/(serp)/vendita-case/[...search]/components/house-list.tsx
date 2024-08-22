@@ -16,12 +16,18 @@ export default async function HouseList({
     totalPages: number;
 }) {
     return (
-        <div className="flex flex-1 flex-col gap-8 mb-8">
-            <div className="px-2 gap-4 flex flex-col">
+        <div className="px-2 py-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {propertyListing?.map((house, index) => (
                     <ListingCard house={house} index={index} key={index} />
                 ))}
-                <PaginationComponent pageRange={pageRange} currentPage={currentPage} totalPages={totalPages} />
+            </div>
+            <div className="mt-8">
+                <PaginationComponent
+                    pageRange={pageRange}
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                />
             </div>
         </div>
     )

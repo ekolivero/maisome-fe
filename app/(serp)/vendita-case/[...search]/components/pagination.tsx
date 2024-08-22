@@ -34,10 +34,14 @@ export default function PaginationComponent({
         <Pagination className="mt-4">
             <PaginationContent>
                 <PaginationItem className="hidden md:block">
-                    <PaginationPrevious
-                        href={`?${updateSearchParams(currentPage - 1)}`}
-                        aria-disabled={currentPage === 1}
-                    />
+                    {
+                        currentPage > 1 && (
+                            <PaginationPrevious
+                                href={`?${updateSearchParams(currentPage - 1)}`}
+                                aria-disabled={currentPage === 1}
+                            />
+                        )
+                    }
                 </PaginationItem>
                 {pageRange.map((pageNum, index) => (
                     <PaginationItem key={index}>
@@ -54,10 +58,15 @@ export default function PaginationComponent({
                     </PaginationItem>
                 ))}
                 <PaginationItem className="hidden md:block">
-                    <PaginationNext
-                        href={`?${updateSearchParams(currentPage + 1)}`}
-                        aria-disabled={currentPage === totalPages}
-                    />
+                    {
+                        currentPage < totalPages && (
+                            <PaginationNext
+                                href={`?${updateSearchParams(currentPage + 1)}`}
+                                aria-disabled={currentPage === totalPages}
+                            />
+                        )
+                    }
+                    
                 </PaginationItem>
             </PaginationContent>
         </Pagination>

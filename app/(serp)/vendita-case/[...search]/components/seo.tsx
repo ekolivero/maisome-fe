@@ -1,4 +1,3 @@
-import createClient from "openapi-fetch"
 import type { paths } from "@/app/types/schema"; 
 import {
     Accordion,
@@ -9,10 +8,9 @@ import {
 import Link from "next/link";
 import { components } from "@/app/types/schema"
 import { ArmchairIcon, BedIcon, EuroIcon, HouseIcon, HousePlusIcon, MapPinIcon, Scale3DIcon } from "lucide-react"
+import client from "@/app/utils/client";
 
 type Location = components["schemas"]["Location"];
-
-const client = createClient<paths>({ baseUrl: process.env.NEXT_PUBLIC_BASE_URL });
 
 export default async function SEO({
     location,
@@ -71,7 +69,7 @@ export default async function SEO({
 
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 px-4">
             <h6 className="text-2xl md:text-xl font-semibold tracking-tight"> Trova la tua casa ideale </h6>
             <Accordion type="multiple" className="w-full" defaultValue={["rooms", "condition", "price", "furniture", "category", "surface", "neightboors"]}>
                 <AccordionItem value="rooms">

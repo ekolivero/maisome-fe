@@ -1,11 +1,9 @@
-import createClient from "openapi-fetch";
-import type { paths } from "@/app/types/schema";
 import Link from "next/link";
 import { components } from "@/app/types/schema";
+import client from "@/app/utils/client";
 
 type RegionList = components["schemas"]["HomeAggregationRegion"][]
 
-const client = createClient<paths>({ baseUrl: process.env.NEXT_PUBLIC_BASE_URL });
 
 const balanceColumns = (data: RegionList) => {
     let leftSum = 0

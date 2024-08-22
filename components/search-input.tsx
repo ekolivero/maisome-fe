@@ -18,8 +18,7 @@ import {
     CommandSeparator,
 } from "@/components/ui/command"
 import { useRouter } from "next/navigation";
-import type { paths } from "@/app/types/schema";
-import createClient from "openapi-fetch";
+import client from "@/app/utils/client";
 
 const frameworks = [
     {
@@ -51,22 +50,6 @@ const commonCities = [
         label: "Napoli"
     }
 ]
-
-type Parents = {
-    id: string;
-    level: number;
-    label: string;
-}
-
-type Location = {
-    label: string;
-    id: string;
-    level: number;
-    page: string;
-    parents: Parents[];
-}
-
-const client = createClient<paths>({ baseUrl: process.env.NEXT_PUBLIC_BASE_URL });
 
 export default function SearchInput() {
     const [open, setOpen] = useState(false)

@@ -4,8 +4,6 @@ import {BreadcrumbList, Person, WithContext, CollectionPage, ItemList, ListItem,
 type BaseLocation = components["schemas"]["BaseLocation"];
 type Location = components["schemas"]["Location"];
 type PropertyListings = components["schemas"]["House"][] | undefined;
-type PropertyListing = components["schemas"]["House"];
-
 
 export function JsonLd<T extends BreadcrumbList>(json: WithContext<T>): string {
   return `<script type="application/ld+json">

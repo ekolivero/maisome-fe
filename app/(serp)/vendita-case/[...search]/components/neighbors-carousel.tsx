@@ -1,13 +1,8 @@
 import * as React from "react"
 
 import { components } from "@/app/types/schema"
-import createClient from "openapi-fetch"
-import type { paths } from "@/app/types/schema"; 
 import { Carousel, Card } from "@/components/ui/card-carousel";
-
-
-const client = createClient<paths>({ baseUrl: process.env.NEXT_PUBLIC_BASE_URL });
-
+import client from "@/app/utils/client";
 
 export async function NeighboorsCarousel({ neighbor }: { neighbor: components["schemas"]["BaseLocation"] }) {
     const { data } = await client.GET("/houses/location_ids/", {
@@ -33,13 +28,13 @@ export async function NeighboorsCarousel({ neighbor }: { neighbor: components["s
     if (!cards) return null;
 
     return (
-        <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 px-2">
+            <div className="flex items-center justify-between px-2">
                 <div className="space-y-1">
-                    <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
+                    <h2 className="text-xl md:text-2xl font-semibold tracking-tight">
                         Cerca a {neighbor.label}
                     </h2>
-                    <p className="text-sm md:text-xl md  text-muted-foreground">
+                    <p className="text-sm md:text-xl md text-muted-foreground">
                         Scopri case in vendita
                     </p>
                 </div>

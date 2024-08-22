@@ -1,21 +1,18 @@
 import { Suspense } from "react";
 import { LoadingListingCard } from "./components/loading-listing-card";
 import HouseList from "./components/house-list";
-import createClient from "openapi-fetch";
-import type { paths } from "@/app/types/schema";
 import { operations } from "@/app/types/schema";
 import { notFound } from "next/navigation";
 import { NeighboorsCarousel } from "./components/neighbors-carousel";
-import SmartFilter from "./components/smart-filter";
 import SEO from "./components/seo";
+import client from "@/app/utils/client";
 
 export type SearchParamsProps = operations["houses_by_id_houses_location_ids__get"]["parameters"]["query"];
-
-const client = createClient<paths>({ baseUrl: process.env.NEXT_PUBLIC_BASE_URL });
 
 import type { Metadata, ResolvingMetadata } from 'next'
 import { BreadcrumbsParentAndChildren } from "./components/breadcrumb-list";
 import { createItemListJsonLD } from "./utils/breadcrumb";
+import Header from "./components/header";
 
 type Props = {
     params: { search: string[] }
@@ -26,6 +23,8 @@ export async function generateMetadata(
     { params, searchParams }: Props,
     parent: ResolvingMetadata
 ): Promise<Metadata> {
+
+    const hasMultipleLocations = searchParams.ids !== undefined && searchParams.ids.length > 1;
 
     const { data: lookupData } = await client.GET("/locations/lookup_id/", {
         params: {
@@ -39,12 +38,13 @@ export async function generateMetadata(
         params: {
             query: {
                 ...searchParams,
-                ids: [lookupData?.location.id!]
+                ids: hasMultipleLocations ? searchParams.ids : [lookupData?.location.id!],
+                per_page: 42,
             },
         },
     })
 
-    const formattedTitle = `${data?.total_results} case in vendita a ${lookupData?.location.label}`
+    const formattedTitle = `${data?.total_results} case in vendita a ${lookupData?.location.label} e vicini`
 
     const previousImages = (await parent).openGraph?.images || []
 
@@ -80,6 +80,7 @@ async function ListingItems({ search, searchParams }: { search: string[], search
             query: {
                 ...searchParams,
                 ids: hasIds ? searchParams.ids : [locationId],
+                per_page: 42,
             },
         }
     })
@@ -143,11 +144,11 @@ export default async function Page({ params: { search }, searchParams }: { param
     return (
         <>
             <div className="flex flex-1 w-full dark:bg-black bg-white  dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex-col">
-                <SmartFilter location={location} />
-                <div className="mt-6">
-                    <div className="flex px-2 md:max-w-xl md:mx-auto h-full flex-col gap-6">
+                <Header location={location} />
+                <div className="mt-6 w-full md:max-w-screen-2xl mx-auto">
+                    <div className="flex h-full flex-col gap-6">
                         <Suspense fallback={<LoadingListingCard />} key={`${JSON.stringify(searchParams)}`}>
-                            <BreadcrumbsParentAndChildren location={lookupData?.location!} />
+                            <BreadcrumbsParentAndChildren location={lookupData?.location!} searchParams={searchParams} />
                             <ListingItems search={search} searchParams={searchParams} />
                             <SEO location={lookupData?.location!} city={lookupData?.page!} page={lookupData?.page!} />
                         </Suspense>

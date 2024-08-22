@@ -4,7 +4,7 @@ import { GoogleMapsEmbed } from '@next/third-parties/google'
 
 export const defaultMapContainerStyle = {
     width: '100%',
-    height: '80vh',
+    height: '100%',
     borderRadius: '15px 0px 0px 15px',
 };
 
@@ -13,7 +13,7 @@ const MapView = ({ lat, long }: { lat: number, long: number }) => {
         <div>
             <GoogleMapsEmbed
                 apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY as string}
-                height={350}
+                height={375}
                 width="100%"
                 mode="place"
                 q={`${lat},${long}`}
