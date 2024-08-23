@@ -5,6 +5,7 @@ import {  openai } from "@ai-sdk/openai";
 import dedent from "dedent"
 import { redirect } from 'next/navigation';
 import z from "zod";
+import client from '@/app/utils/client';
 
 interface Params {
   price_min: number | null;
@@ -13,7 +14,8 @@ interface Params {
   surface_max: number | null;
   rooms: string[] | null;
   bathrooms: string[] | null;
-  furniture: boolean | null;
+  furniture: string | null;
+  category: string | null;
 }
 
 function createUrlParams(paramsArray: Params[]): string {
@@ -39,12 +41,21 @@ function createUrlParams(paramsArray: Params[]): string {
 }
 
 
-export async function generateSmartFilters(prompt: string) {
+export async function generateSmartFilters(prompt: string, locationId: string) {
 
-    const { object,  } = await generateObject({
+    const { object } = await generateObject({
       model: openai("gpt-4o"),
       prompt: dedent`
-        You are tasked to generate filters for the given prompt "${prompt}".
+        Sei un agente immobiliare esperto. Con conoscenza su tutto il territorio italiano. 
+        Il cliente ti ha chiesto di aiutarlo a trovare la casa che necessita, sulla base delle informazioni che ti ha fornito
+        cerca di capire che filtri applicare alla pagina di ricerca.
+  
+        Queste sono le informazioni sulle case che hai a disposizione:
+        <info>${prompt}</info>
+
+        Sulla base di queste informazioni il tuo obiettivo è creare un filtro che ti permetta di trovare la casa che il cliente necessita.
+        
+        Rispondi solamente se sei sicuro di ciò che dici, altrimenti rispondi no.
       `,
       schema: z.object({
         filters: z.array(
@@ -53,9 +64,27 @@ export async function generateSmartFilters(prompt: string) {
             price_max: z.number().nullable(),
             surface_min: z.number().nullable(),
             surface_max: z.number().nullable(),
-            rooms: z.array(z.string()).nullable().describe("When more than 5 rooms return 5+"),
+            rooms: z
+              .array(z.string())
+              .nullable()
+              .describe("When more than 5 rooms return 5+"),
             bathrooms: z.array(z.string()).nullable(),
-            furniture: z.boolean().nullable(),
+            category: z
+              .enum([
+                "Rustico",
+                "Mansarda",
+                "Appartamento",
+                "Villa unifamiliare",
+                "Villa bifamiliare",
+              ])
+              .nullable(),
+            // condition: z.enum([
+            //   "Nuovo / In costruzione",
+            //   "Ottimo / Ristrutturato",
+            //   "Buono / Abitabile",
+            //   "Da ristrutturare",
+            // ]).nullable(),
+            furniture: z.enum(["Arredato", "Parzialmente arredato", "Non arredato"]).nullable(),
           })
         ),
       }),

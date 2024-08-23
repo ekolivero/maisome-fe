@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/command"
 import { FilterProps } from "@/app/(serp)/vendita-case/[...search]/components/header";
 import { useSearchParams, useRouter } from "next/navigation";
-import { ChevronDown as ChevronDownIcon, X as XIcon, PlusIcon, SearchIcon } from 'lucide-react'
+import { PlusIcon, SearchIcon } from 'lucide-react'
 import { PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "./button";
 import client from "@/app/utils/client";
@@ -28,14 +28,9 @@ type Location = {
 
 
 export default function MultiSelectInput({ location }: FilterProps) {
-    const { neighbors, label, id } = location
+    const { neighbors } = location
     const [open, setOpen] = useState(false)
     const [search, setSearch] = useState("")
-    const [selectedLocations, setSelectedLocations] = useState<Location[]>([{
-        id,
-        label,
-        page: location.page
-    }])
     const [locations, setLocations] = useState<Location[]>([])
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -82,7 +77,7 @@ export default function MultiSelectInput({ location }: FilterProps) {
     };
 
     return (
-        <div className="flex flex-wrap flex-col p-1 items-center border rounded-sm bg-white md:max-w-xl mx-auto">
+        <div className="flex flex-wrap flex-col p-1 items-center border rounded-sm bg-white md:w-[500px] md:mx-auto flex-grow">
             <Popover open={open} onOpenChange={setOpen}>
                 <Command shouldFilter={false}>
                     <div className="flex items-center p-1 px-3 bg-white rounded-md">

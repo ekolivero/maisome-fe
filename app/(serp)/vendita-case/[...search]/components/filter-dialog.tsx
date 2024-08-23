@@ -83,7 +83,7 @@ export function FilterDialog({ isOpen, setIsOpenDialog }: { isOpen: boolean, set
                     <DrawerClose asChild>
                         <Button className="w-full" variant="outline">Chiudi</Button>
                     </DrawerClose>
-                    <Button className="w-full" type="submit" form="filter-form">Applica Filtri</Button>
+                    <Button className="w-full bg-[#0070f3]" type="submit" form="filter-form">Applica Filtri</Button>
                 </DrawerFooter>
             </DrawerContent>
         </Drawer>
