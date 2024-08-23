@@ -4,9 +4,9 @@ import { components } from "@/app/types/schema";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FilterDialog } from "./filter-dialog";
-import { useEffect } from "react";
-import { SearchIcon } from "lucide-react";
-import { useMediaQuery } from "@/lib/hooks/use-media-query";
+import { PriceFilter } from "./desktop-filters/price-filter";
+import { CategoryFilter } from "./desktop-filters/category-filter";
+import { RoomsFilter } from "./desktop-filters/rooms-filter";
 
 export type FilterProps = {
     location: components["schemas"]["Location"];
@@ -14,50 +14,38 @@ export type FilterProps = {
 
 export default function SmartFilter({ location }: FilterProps) {
     const [isOpen, setIsOpen] = useState(false)
-    const [showChangeSearch, setShowChangeSearch] = useState(false)
-    const isMobile = useMediaQuery("(max-width: 768px)");
-
-    useEffect(() => {
-        const handleScroll = () => {
-            if (isMobile) {
-                const vh = window.innerHeight * 0.01;
-                setShowChangeSearch(window.scrollY > 100 * vh);
-            }
-        }
-
-        window.addEventListener('scroll', handleScroll)
-        return () => window.removeEventListener('scroll', handleScroll)
-    }, [isMobile])
-
-    const handleChangeLocation = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
 
     return (
         <>
-            <div
-                className={"md:sticky top-0 z-[20000000]"}
-            >
-                <div className={`bg-white`}>
-                    <div className="bg-white border-b-2 border-gray-50 px-4 py-2">
-                        <MultiSelectInput location={location} />
+            <div className="sticky top-0 z-[20000000] w-full md:mx-auto bg-white border-b-2 border-gray-50 shadow-lg">
+                <div className="md:max-w-screen-2xl md:mx-auto">
+                    <div className="py-2 px-2">
+                        <div className="flex flex-col md:flex-row md:items-center gap-4">
+                            <div className="flex items-center gap-4">
+                                <MultiSelectInput location={location} />
+                                <Button 
+                                    size="sm" 
+                                    onClick={() => setIsOpen(!isOpen)} 
+                                    variant={"outline"} 
+                                    className="text-sm px-2 py-1 h-[58px] flex-shrink-0 md:hidden bg-[#0070f3] text-white"
+                                > 
+                                    Applica filtri 
+                                </Button>
+                            </div>
+                            <div className="hidden md:flex gap-4">
+                                <PriceFilter />
+                                <CategoryFilter />
+                                <RoomsFilter />
+                            </div>
+                            {/* <FilterButton label="Filtra categoria" ContentComponent={CategoryFilterContent} />
+                                <FilterButton label="Filtra camere" ContentComponent={RoomsFilterContent} />
+                                <FilterButton label="Filtra stato" ContentComponent={StatusFilterContent} />
+                                <FilterButton label="Altri filtri" ContentComponent={OtherFiltersContent} /> */}
+                        </div>
                     </div>
                 </div>
             </div>
-            <div className="sticky top-0 z-[20000000] md:hidden">
-                <div className="bg-white border-b-2 border-gray-50 px-4 py-2 sticky md:hidden flex flex-row justify-between">
-                    <Button size="sm" onClick={() => setIsOpen(!isOpen)} variant={"outline"} className="text-sm px-2 py-1 h-10"> Applica filtri </Button>
-                    {showChangeSearch && (
-                        <Button size="sm" variant={"outline"} onClick={handleChangeLocation} className="text-sm px-2 py-1 h-10">
-                            <SearchIcon className="w-3 h-3 mr-1" />
-                            Cambia località
-                        </Button>
-                    )}
-                    <Button size="sm" className="bg-[#0070f3] text-sm px-2 py-1 h-10"> Salva ricerca </Button>
-  
-                </div>
-            </div>
-            <FilterDialog isOpen={isOpen} setIsOpenDialog={setIsOpen}/>
+            <FilterDialog isOpen={isOpen} setIsOpenDialog={setIsOpen} />
         </>
     )
 }
