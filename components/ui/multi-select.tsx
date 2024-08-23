@@ -46,7 +46,7 @@ export default function MultiSelectInput({ location }: FilterProps) {
         if (!ids.includes(newId)) {
             current.append('ids', newId);
         }
-        router.push(`?${current.toString()}`, { scroll: false });
+        router.push(`?${current.toString()}`);
     };
 
     const handleSearch = async (value: string) => {
@@ -121,7 +121,7 @@ export default function MultiSelectInput({ location }: FilterProps) {
                                                 value={neighbor.id}
                                                 onMouseDown={(e) => e.preventDefault()}
                                                 onSelect={() => {
-                                                    router.push(`/vendita-case/${neighbor.page}`, { scroll: false })
+                                                    router.push(`/vendita-case/${neighbor.page}`)
                                                 }}
                                                 className="flex justify-between items-center"
                                             >
@@ -152,7 +152,7 @@ export default function MultiSelectInput({ location }: FilterProps) {
                                                 value={address.label}
                                                 onMouseDown={(e) => e.preventDefault()}
                                                 onSelect={() => {
-                                                    router.push(`/vendita-case/${address.page}`, { scroll: false })
+                                                    router.push(`/vendita-case/${address.page}`)
                                                 }}
                                                 className="flex justify-between items-center"
                                             >
