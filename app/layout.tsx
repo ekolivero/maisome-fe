@@ -3,6 +3,7 @@ import { Inter as FontSans } from "next/font/google"
 import "./globals.css";
 import { cn } from "@/lib/utils"
 import { Analytics } from '@vercel/analytics/react';
+import { VercelToolbar } from '@vercel/toolbar/next';
 
 
 const fontSans = FontSans({
@@ -20,6 +21,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const shouldInjectToolbar = process.env.NODE_ENV === 'development';
   return (
     <html lang="en">
       <body
@@ -29,6 +31,7 @@ export default function RootLayout({
         )}
       >
         {children}
+        {shouldInjectToolbar && <VercelToolbar />}
         <Analytics />
       </body>
     </html>
