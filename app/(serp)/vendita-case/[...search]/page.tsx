@@ -6,13 +6,14 @@ import { notFound } from "next/navigation";
 import { NeighboorsCarousel } from "./components/neighbors-carousel";
 import SEO from "./components/seo";
 import client from "@/app/utils/client";
-
-export type SearchParamsProps = operations["houses_by_id_houses_location_ids__get"]["parameters"]["query"];
-
 import type { Metadata, ResolvingMetadata } from 'next'
 import { BreadcrumbsParentAndChildren } from "./components/breadcrumb-list";
 import { createItemListJsonLD } from "./utils/breadcrumb";
 import Header from "./components/header";
+import { HeaderTitle } from "./components/header-title";
+
+export type SearchParamsProps = operations["houses_by_id_houses_location_ids__get"]["parameters"]["query"];
+
 
 type Props = {
     params: { search: string[] }
@@ -44,7 +45,7 @@ export async function generateMetadata(
         },
     })
 
-    const formattedTitle = `${data?.total_results} case in vendita a ${lookupData?.location.label} e vicini`
+    const formattedTitle = `${data?.total_results} case in vendita a ${lookupData?.location.label}`
 
     const previousImages = (await parent).openGraph?.images || []
 
@@ -82,7 +83,8 @@ async function ListingItems({ search, searchParams }: { search: string[], search
                 ids: hasIds ? searchParams.ids : [locationId],
                 per_page: 42,
             },
-        }
+        },
+        cache: 'no-cache'
     })
 
     if (error) return notFound();
@@ -149,6 +151,7 @@ export default async function Page({ params: { search }, searchParams }: { param
                     <div className="flex h-full flex-col gap-6">
                         <Suspense fallback={<LoadingListingCard />} key={`${JSON.stringify(searchParams)}`}>
                             <BreadcrumbsParentAndChildren location={lookupData?.location!} searchParams={searchParams} />
+                            <HeaderTitle location={lookupData?.location!} searchParams={searchParams} />
                             <ListingItems search={search} searchParams={searchParams} />
                             <SEO location={lookupData?.location!} city={lookupData?.page!} page={lookupData?.page!} />
                         </Suspense>

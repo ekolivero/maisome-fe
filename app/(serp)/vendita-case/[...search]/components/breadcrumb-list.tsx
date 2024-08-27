@@ -1,63 +1,139 @@
+'use client'
 import React from 'react';
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { ChevronDown, Home } from 'lucide-react';
 import { components } from "@/app/types/schema"
+import { getBreadcrumbPath, getChildrenForLocation } from '../utils/breadcrumb';
+import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import { SearchParamsProps } from '../page';
-import client from "@/app/utils/client";
-import DeleteLocationBadge from './delete-location-badge';
+
 
 type Location = components["schemas"]["Location"];
+type BaseLocation = components["schemas"]["BaseLocation"];
 
-async function resolveLocations(id: string) {
-    const { data } = await client.GET("/locations/lookup_page/", {
-        params: {
-            query: {
-                id,
-            }
-        }
-    });
-    return data?.location
-}
+const trimText = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) return text;
+    return text.substr(0, maxLength - 1).trim() + '…';
+};
 
-export async function BreadcrumbsParentAndChildren({
+const formatUrl = (base: string, page: string) => {
+    return `${base}/${page}`;
+};
+
+export function BreadcrumbsParentAndChildren({
     location,
     searchParams
 }: {
     location: Location,
     searchParams: SearchParamsProps
 }) {
+    const breadcrumbPath = React.useMemo(() => getBreadcrumbPath(location), [location]);
+    const baseUrl = `/vendita-case`;
 
-    const { id: locationId } = location;
-    const ids = Array.isArray(searchParams.ids) ? searchParams.ids : [searchParams.ids].filter(Boolean);
-    const hasMultipleLocations = ids.length > 1;
-    
-    const { data } = await client.GET("/houses/location_ids/", {
-        params: {
-            query: {
-                ...searchParams,
-                ids: hasMultipleLocations ? searchParams.ids : [locationId],
-                per_page: 42,
-            },
+    const isMobile = useMediaQuery('(max-width: 768px)');
+
+    const hasMultipleLocations = searchParams.ids && searchParams.ids.length > 1;
+
+    const formatLevel = (level: number) => {
+        switch (level) {
+            case 1:
+                return "Vedi Area";
+            case 2:
+                return "Vedi Comune";
+            case 3:
+                return "Vedi Zona";
+            case 4:
+                return "Vedi Quartiere";
+            default:
+                return "";
         }
-    })
+    }
 
-    const locations = await Promise.allSettled(ids.map((id) => resolveLocations(id)));    
-    const resolvedLocations = locations
-        .filter(result => result.status === 'fulfilled')
-        .map(result => result.value);
-
-
-    const totalResults = data?.total_results
+    const renderChildrenCTA = (item: BaseLocation | Location) => {
+        const children = getChildrenForLocation(item);
+        if (children.length > 0) {
+            return (
+                <>
+                    <BreadcrumbSeparator />
+                    <DropdownMenu>
+                        <DropdownMenuTrigger>
+                            {formatLevel(item.level)}
+                            <ChevronDown size={14} className="inline ml-1" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="overflow-auto max-h-96">
+                            {children.map((child) => (
+                                <DropdownMenuItem key={child.id}>
+                                    <BreadcrumbLink href={formatUrl(baseUrl, child.page)}>
+                                        {child.label}
+                                    </BreadcrumbLink>
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </>
+            );
+        }
+        return null;
+    };
 
     return (
-        <div className="w-full px-4">
-            <h3 className="text-2xl font-bold mb-2 text-primary">
-                {totalResults} case in vendita a{ hasMultipleLocations ? ':' : ` ${location.label}` }
-            </h3>
-            <div className="mt-2">
-                {hasMultipleLocations && (
-                    <DeleteLocationBadge resolvedLocations={resolvedLocations} />
-                )}
-            </div>
-        </div>
+        <Breadcrumb className={`${hasMultipleLocations ? "hidden" : "px-4 flex"}`}>
+            <BreadcrumbList>
+                <BreadcrumbItem>
+                    <BreadcrumbLink href="/">
+                        <Home className="h-4 w-4" />
+                        <span className="sr-only">Home</span>
+                    </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                {breadcrumbPath
+                    .filter(item => item.level !== 0) // Filter out regions (level 0)
+                    .map((item, index, arr) => (
+                    <React.Fragment key={item.id}>
+                        <BreadcrumbItem className={item.level === 1 ? "hidden md:block" : ""}>
+                            {
+                                item.level === location.level ? (
+                                    <BreadcrumbPage>
+                                        {item.level === 1 ? (
+                                            <>
+                                                <span className="hidden md:inline">Provincia di </span>
+                                                {isMobile ? trimText(item.label, 15) : item.label}
+                                            </>
+                                        ) : isMobile ? trimText(item.label, 15) : item.label}
+                                    </BreadcrumbPage>
+                                ) : (
+                                    <BreadcrumbLink href={formatUrl(baseUrl, item.page)}>
+                                        {item.level === 1 ? (
+                                            <>
+                                                <span className="hidden md:inline">Provincia di </span>
+                                                {isMobile ? trimText(item.label, 15) : item.label}
+                                            </>
+                                        ) : isMobile ? trimText(item.label, 15) : item.label}
+                                    </BreadcrumbLink>
+                                )
+                            }
+                        </BreadcrumbItem>
+                        <>
+                            {index < arr.length - 1 && <BreadcrumbSeparator className={item.level === 1 ? "hidden md:block" : ""} />}
+                            {renderChildrenCTA(item)}
+                        </>
+                    </React.Fragment>
+                ))}
+            </BreadcrumbList>
+        </Breadcrumb>
     );
 }
 
