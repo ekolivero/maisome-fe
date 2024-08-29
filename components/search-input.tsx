@@ -133,7 +133,7 @@ export default function SearchInput() {
                                 <CommandItem
                                     key="current-location"
                                     value="current-location"
-                                    onMouseDown={(e) => console.log("use current location")}
+                                    onMouseDown={console.log}
                                 >
                                     <SewingPinIcon className="mr-2 h-4 w-4" />
                                     Usa la tua posizione

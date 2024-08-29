@@ -1,3 +1,4 @@
+'use client'
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import Image from "next/image"
@@ -14,28 +15,26 @@ const MapView = dynamic(() => import('./map-view').then((mod) => mod.MapView), {
 
 export default function ListingCard({ house, index }: { house: components["schemas"]["House"], index: number }) {
     return (
-        <section>
-            <Card className="w-full h-[375px] rounded-lg overflow-hidden shadow-md transition-all hover:shadow-xl hover:cursor-pointer relative group">
+        <Card className="w-full h-[375px] rounded-lg overflow-hidden shadow-md transition-all hover:shadow-xl hover:cursor-pointer relative group">
+            <Link href={house.link} className="block h-full" prefetch={false} target="_blank" rel="nofollow noopener noreferrer">
                 <Tabs defaultValue="list" className="w-full h-full">
                     <div className="relative">
                         <TabsContent value="list" className="mt-0">
-                            <Link href={house.link} className="block" prefetch={false} target="_blank" rel="nofollow noopener noreferrer">
-                                <Image
-                                    unoptimized
-                                    src={house.image}
-                                    alt="Property Image"
-                                    width={400}
-                                    height={240}
-                                    className="w-full h-60 object-cover"
-                                    priority={index < 4}
-                                />
-                            </Link>
+                            <Image
+                                unoptimized
+                                src={house.image}
+                                alt="Property Image"
+                                width={400}
+                                height={240}
+                                className="w-full h-60 object-cover rounded-b-lg"
+                                priority={index < 4}
+                            />
                         </TabsContent>
                         <TabsContent value="map" className="mt-0 h-60">
                             <MapView lat={house.location.coordinates.latitude} long={house.location.coordinates.longitude} />
                         </TabsContent>
                         <div className="absolute top-2 right-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
-                            <TabsList className="bg-white/80 backdrop-blur-sm rounded-full p-1 shadow-lg">
+                            <TabsList className="bg-white/80 backdrop-blur-sm rounded-full p-1 shadow-lg" onClick={(e) => e.preventDefault()}>
                                 <TabsTrigger
                                     value="list"
                                     className="data-[state=inactive]:flex data-[state=active]:hidden items-center p-2 rounded-full transition-all hover:bg-white"
@@ -79,8 +78,8 @@ export default function ListingCard({ house, index }: { house: components["schem
                         </div>
                     </CardContent>
                 </Tabs>
-            </Card>
-        </section>
+            </Link>
+        </Card>
     )
 }
 

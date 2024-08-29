@@ -20,7 +20,7 @@ const Posts = ({ posts = [], category }: { posts: SanityDocument[], category: st
                             alt={"an house"}
                             width={400}
                             height={300}
-                            className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl"
+                            className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl object-cover"
                         />
                     }
                     description={convertDate(post.publishedAt)}
