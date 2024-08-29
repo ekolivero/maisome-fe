@@ -76,7 +76,7 @@ export function BreadcrumbsParentAndChildren({
                         <DropdownMenuContent className="overflow-auto max-h-96">
                             {children.map((child) => (
                                 <DropdownMenuItem key={child.id}>
-                                    <BreadcrumbLink href={formatUrl(baseUrl, child.page)}>
+                                    <BreadcrumbLink href={formatUrl(baseUrl, child.page)} className="w-full">
                                         {child.label}
                                     </BreadcrumbLink>
                                 </DropdownMenuItem>
