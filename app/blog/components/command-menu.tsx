@@ -69,6 +69,7 @@ export function CommandMenu({ ...props }: DialogProps) {
                 setSearchResults([])
             }
         } else {
+            // If search term is empty or less than 3 characters, fetch latest articles
             fetchLatestArticles()
         }
     }, [fetchLatestArticles])
@@ -82,8 +83,10 @@ export function CommandMenu({ ...props }: DialogProps) {
     useEffect(() => {
         if (debouncedSearchTerm) {
             handleSearch(debouncedSearchTerm)
+        } else {
+            fetchLatestArticles()
         }
-    }, [debouncedSearchTerm, handleSearch])
+    }, [debouncedSearchTerm, handleSearch, fetchLatestArticles])
 
     return (
         <>

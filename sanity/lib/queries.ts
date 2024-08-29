@@ -24,7 +24,8 @@ export const postPathsQuery = groq`*[_type == "post" && defined(slug.current)][]
 export const categorizedPostsQuery = groq`{
   "categories": *[_type == "category"] {
     "name": title,
-    "posts": *[_type == "post" && references(^._id)] {
+    "slug": slug.current,
+    "posts": *[_type == "post" && references(^._id)] | order(publishedAt desc)[0...4] {
       _createdAt,
       title,
       slug,

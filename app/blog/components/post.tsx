@@ -15,10 +15,16 @@ const Post = ({ post }: { post: SanityDocument }) => {
             <p>{post.description}</p>
             {post?.mainImage ? (
                 <Image
-                    src={builder.image(post.mainImage).width(300).height(300).url()}
+                    src={builder.image(post.mainImage).url()}
                     alt={post?.mainImage?.alt}
-                    width={300}
-                    height={300}
+                    width={1920}
+                    height={1080}
+                    className="w-full rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out"
+                    unoptimized
+                    style={{
+                        objectFit: 'cover',
+                        objectPosition: 'center',
+                    }}
                 />
             ) : null}
             {post?.body ? <PortableText value={post.body} /> : null}
