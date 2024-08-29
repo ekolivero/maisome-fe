@@ -12,6 +12,44 @@ import client from "@/app/utils/client";
 
 type Location = components["schemas"]["Location"];
 
+function mapPriceRange(key: string): { min: number | null; max: number | null } {
+    if (key === 'Prezzo su richiesta') {
+        return { min: null, max: null };
+    }
+
+    const match = key.match(/(\d+(?:\.\d+)?)/g);
+    if (match) {
+        if (key.startsWith('fino a')) {
+            return { min: 0, max: parseInt(match[0].replace('.', '')) };
+        } else if (match.length === 2) {
+            return {
+                min: parseInt(match[0].replace('.', '')),
+                max: parseInt(match[1]!.replace('.', ''))
+            };
+        }
+    }
+    return { min: null, max: null };
+}
+
+function mapSurfaceRange(key: string): { min: number | null; max: number | null } {
+    if (key === 'oltre 201 m²') {
+        return { min: 201, max: null };
+    }
+
+    const match = key.match(/(\d+)/g);
+    if (match) {
+        if (key.startsWith('fino a')) {
+            return { min: 0, max: parseInt(match[0]) };
+        } else if (match.length === 2) {
+            return {
+                min: parseInt(match[0]),
+                max: parseInt(match[1]!)
+            };
+        }
+    }
+    return { min: null, max: null };
+}
+
 export default async function SEO({
     location,
     city,
@@ -44,11 +82,17 @@ export default async function SEO({
 
     const categoryHouses = data.aggregation.category!
 
-    const priceHouses = data.aggregation.price!
+    const priceHouses = data.aggregation.price!.map(price => ({
+        ...price,
+        range: mapPriceRange(price.key)
+    }));
 
     const furnitureHouses = data.aggregation.furniture!
 
-    const surfaceHouses = data.aggregation.surface!
+    const surfaceHouses = data.aggregation.surface!.map(surface => ({
+        ...surface,
+        range: mapSurfaceRange(surface.key)
+    }));
 
     let formattedLocationName = "";
 
@@ -121,14 +165,23 @@ export default async function SEO({
                     </AccordionTrigger>
                     <AccordionContent className="flex flex-col gap-2">
                         {
-                            priceHouses.map((price, index) => (
-                                <Link key={index} href={`/vendita-case/${page}`}>
-                                    <div className="flex flex-row justify-between">
-                                        <p className="text-md  text-blue-500"> Case a {price.key} in {formattedLocationName}</p>
-                                        <p className="text-md text-muted-foreground"> {price.count} risultati </p>
-                                    </div>
-                                </Link>
-                            ))
+                            priceHouses
+                                .sort((a, b) => {
+                                    if (a.key === 'Prezzo su richiesta') return 1;
+                                    if (b.key === 'Prezzo su richiesta') return -1;
+                                    return (a.range.min ?? 0) - (b.range.min ?? 0);
+                                })
+                                .map((price, index) => (
+                                    <Link key={index} href={`/vendita-case/${page}${price.range.min !== null ? `?price_min=${price.range.min}` : ''}${price.range.max !== null ? `&price_max=${price.range.max}` : ''}`}>
+                                        <div className="flex flex-row justify-between">
+                                            <p className="text-md text-blue-500">
+                                                {price.key === 'Prezzo su richiesta' ? 'Prezzo su richiesta' :
+                                                    `Case ${price.range.min === 0 ? 'fino a' : price.range.max ? 'da' : ''} ${price.range.min?.toLocaleString() ?? ''}${price.range.max ? ` a ${price.range.max.toLocaleString()}€` : ''} in ${formattedLocationName}`}
+                                            </p>
+                                            <p className="text-md text-muted-foreground"> {price.count} risultati </p>
+                                        </div>
+                                    </Link>
+                                ))
                         }
                     </AccordionContent>
                 </AccordionItem>
@@ -161,14 +214,20 @@ export default async function SEO({
                     </AccordionTrigger>
                     <AccordionContent className="flex flex-col gap-2">
                         {
-                            surfaceHouses.map((surface, index) => (
-                                <Link key={index} href={`/vendita-case/${page}`}>
-                                    <div className="flex flex-row justify-between items-center">
-                                        <p className="text-md  text-blue-500"> Case di {surface.key} mq in {formattedLocationName}</p>
-                                        <p className="text-md text-muted-foreground"> {surface.count} risultati </p>
-                                    </div>
-                                </Link>
-                            ))
+                            surfaceHouses
+                                .sort((a, b) => (a.range.min ?? 0) - (b.range.min ?? 0))
+                                .map((surface, index) => (
+                                    <Link key={index} href={`/vendita-case/${page}${surface.range.min !== null ? `?surface_min=${surface.range.min}` : ''}${surface.range.max !== null ? `&surface_max=${surface.range.max}` : ''}`}>
+                                        <div className="flex flex-row justify-between items-center">
+                                            <p className="text-md text-blue-500">
+                                                {surface.range.min === 0 ? `Case fino a ${surface.range.max} mq` :
+                                                 surface.range.max === null ? `Case oltre ${surface.range.min} mq` :
+                                                 `Case da ${surface.range.min} a ${surface.range.max} mq`} in {formattedLocationName}
+                                            </p>
+                                            <p className="text-md text-muted-foreground"> {surface.count} risultati </p>
+                                        </div>
+                                    </Link>
+                                ))
                         }
                     </AccordionContent>
                 </AccordionItem>
