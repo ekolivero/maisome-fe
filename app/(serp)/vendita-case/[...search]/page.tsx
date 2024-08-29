@@ -53,7 +53,7 @@ export async function generateMetadata(
         title: formattedTitle,
         publisher: 'Maisome.com - Case in vendita',
         category: 'Real Estate in Italy',
-        description: `Scopri ${data?.total_results} case in vendita a ${lookupData?.location.label} su Maisome.com`,
+        description: `${data?.total_results.toLocaleString('it-IT')} annunci di case in vendita a ${lookupData?.location.label}. Scopri tutte le offerte, confronta i prezzi e trova la tua casa ideale su Maisome.com.`,
         openGraph: {
             images: [...previousImages],
         },

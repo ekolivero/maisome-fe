@@ -1,16 +1,24 @@
 import { sanityFetch } from "@/sanity/lib/fetch";
-import { postsQuery } from "@/sanity/lib/queries";
+import { categorizedPostsQuery } from "@/sanity/lib/queries";
 import { SanityDocument } from "next-sanity";
 import Posts from "./components/posts";
-import Menu from "./components/menu";
+import { SiteHeader } from "./components/menu";
+interface Category {
+  name: string;
+  posts: SanityDocument[];
+}
 
 export default async function Home() {
-    const posts = await sanityFetch<SanityDocument[]>({ query: postsQuery });
-
+    const { categories } = await sanityFetch<{ categories: Category[] }>({ query: categorizedPostsQuery });
     return (
-        <main className="max-w-7xl min-h-screen mx-auto px-4">
-            <Menu />
-            <Posts posts={posts} />
+        <main className="min-h-screen mx-auto px-4">
+            <SiteHeader />
+            {categories.map((category) => (
+                <section key={category.name}>
+                    <h2>{category.name}</h2>
+                    <Posts posts={category.posts} />
+                </section>
+            ))}
         </main>
     );
 }
