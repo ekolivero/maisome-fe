@@ -1,4 +1,3 @@
-'use client'
 import React from 'react';
 import {
     Breadcrumb,
@@ -17,17 +16,10 @@ import {
 import { ChevronDown, Home } from 'lucide-react';
 import { components } from "@/app/types/schema"
 import { getBreadcrumbPath, getChildrenForLocation } from '../utils/breadcrumb';
-import { useMediaQuery } from '@/lib/hooks/use-media-query';
-import { SearchParamsProps } from '../page';
-
+import { searchParamsCache } from '@/lib/nuqs/searchParams';
 
 type Location = components["schemas"]["Location"];
 type BaseLocation = components["schemas"]["BaseLocation"];
-
-const trimText = (text: string, maxLength: number) => {
-    if (text.length <= maxLength) return text;
-    return text.substr(0, maxLength - 1).trim() + '…';
-};
 
 const formatUrl = (base: string, page: string) => {
     return `${base}/${page}`;
@@ -35,17 +27,14 @@ const formatUrl = (base: string, page: string) => {
 
 export function BreadcrumbsParentAndChildren({
     location,
-    searchParams
 }: {
     location: Location,
-    searchParams: SearchParamsProps
 }) {
+    const ids = searchParamsCache.get('ids')
     const breadcrumbPath = React.useMemo(() => getBreadcrumbPath(location), [location]);
     const baseUrl = `/vendita-case`;
 
-    const isMobile = useMediaQuery('(max-width: 768px)');
-
-    const hasMultipleLocations = searchParams.ids && searchParams.ids.length > 1;
+    const hasMultipleLocations = ids && ids.length > 1;
 
     const formatLevel = (level: number) => {
         switch (level) {
@@ -69,9 +58,9 @@ export function BreadcrumbsParentAndChildren({
                 <>
                     <BreadcrumbSeparator />
                     <DropdownMenu>
-                        <DropdownMenuTrigger>
+                        <DropdownMenuTrigger className="flex items-center ml-2">
                             {formatLevel(item.level)}
-                            <ChevronDown size={14} className="inline ml-1" />
+                            <ChevronDown size={14} className="ml-2" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="overflow-auto max-h-96">
                             {children.map((child) => (
@@ -90,10 +79,10 @@ export function BreadcrumbsParentAndChildren({
     };
 
     return (
-        <Breadcrumb className={`${hasMultipleLocations ? "hidden" : "px-4 flex"}`}>
-            <BreadcrumbList>
+        <Breadcrumb className={`${hasMultipleLocations ? "hidden" : "px-4 flex items-center"}`}>
+            <BreadcrumbList className="flex items-center">
                 <BreadcrumbItem>
-                    <BreadcrumbLink href="/">
+                    <BreadcrumbLink href="/" className="flex items-center">
                         <Home className="h-4 w-4" />
                         <span className="sr-only">Home</span>
                     </BreadcrumbLink>
@@ -103,33 +92,33 @@ export function BreadcrumbsParentAndChildren({
                     .filter(item => item.level !== 0) // Filter out regions (level 0)
                     .map((item, index, arr) => (
                     <React.Fragment key={item.id}>
-                        <BreadcrumbItem className={item.level === 1 ? "hidden md:block" : ""}>
+                        <BreadcrumbItem className={`flex items-center ${item.level === 1 ? "hidden md:flex" : ""}`}>
                             {
                                 item.level === location.level ? (
-                                    <BreadcrumbPage>
+                                    <BreadcrumbPage className="flex items-center">
                                         {item.level === 1 ? (
                                             <>
                                                 <span className="hidden md:inline">Provincia di </span>
-                                                {isMobile ? trimText(item.label, 15) : item.label}
+                                                <span className="inline-block max-w-[15ch] truncate md:max-w-none">{item.label}</span>
                                             </>
-                                        ) : isMobile ? trimText(item.label, 15) : item.label}
+                                        ) : <span className="inline-block max-w-[15ch] truncate md:max-w-none">{item.label}</span>}
                                     </BreadcrumbPage>
                                 ) : (
-                                    <BreadcrumbLink href={formatUrl(baseUrl, item.page)}>
+                                    <BreadcrumbLink href={formatUrl(baseUrl, item.page)} className="flex items-center">
                                         {item.level === 1 ? (
                                             <>
-                                                <span className="hidden md:inline">Provincia di </span>
-                                                {isMobile ? trimText(item.label, 15) : item.label}
+                                                <span className="hidden md:inline mr-1">Provincia di</span>
+                                                <span className="inline-block max-w-[15ch] truncate md:max-w-none">{item.label}</span>
                                             </>
-                                        ) : isMobile ? trimText(item.label, 15) : item.label}
+                                        ) : <span className="inline-block max-w-[15ch] truncate md:max-w-none">{item.label}</span>}
                                     </BreadcrumbLink>
                                 )
                             }
                         </BreadcrumbItem>
-                        <>
+                        <div className="flex items-center">
                             {index < arr.length - 1 && <BreadcrumbSeparator className={item.level === 1 ? "hidden md:block" : ""} />}
                             {renderChildrenCTA(item)}
-                        </>
+                        </div>
                     </React.Fragment>
                 ))}
             </BreadcrumbList>

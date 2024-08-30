@@ -1,8 +1,8 @@
 import React from 'react';
 import { components } from "@/app/types/schema"
-import { SearchParamsProps } from '../page';
 import client from "@/app/utils/client";
 import DeleteLocationBadge from './delete-location-badge';
+import { searchParamsCache } from '@/lib/nuqs/searchParams';
 
 type Location = components["schemas"]["Location"];
 
@@ -19,11 +19,11 @@ async function resolveLocations(id: string) {
 
 export async function HeaderTitle({
     location,
-    searchParams
 }: {
     location: Location,
-    searchParams: SearchParamsProps
 }) {
+
+    const searchParams = searchParamsCache.all();
 
     const { id: locationId } = location;
     const ids = Array.isArray(searchParams.ids) ? searchParams.ids : [searchParams.ids].filter(Boolean);
@@ -33,15 +33,16 @@ export async function HeaderTitle({
         params: {
             query: {
                 ...searchParams,
-                ids: hasMultipleLocations ? searchParams.ids : [locationId],
+                ids: hasMultipleLocations ? searchParams.ids! : [locationId],
                 per_page: 42,
+                page_number: searchParams.page_number ?? undefined,
             },
         }
     })
 
-    const locations = await Promise.allSettled(ids.map((id) => resolveLocations(id)));
+    const locations = await Promise.allSettled(ids.filter((id): id is string => id !== null).map(resolveLocations));
     const resolvedLocations = locations
-        .filter(result => result.status === 'fulfilled')
+        .filter((result): result is PromiseFulfilledResult<Location> => result.status === 'fulfilled')
         .map(result => result.value);
 
 

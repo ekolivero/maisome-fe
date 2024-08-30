@@ -1,4 +1,3 @@
-import type { paths } from "@/app/types/schema"; 
 import {
     Accordion,
     AccordionContent,
@@ -9,6 +8,7 @@ import Link from "next/link";
 import { components } from "@/app/types/schema"
 import { ArmchairIcon, BedIcon, EuroIcon, HouseIcon, HousePlusIcon, MapPinIcon, Scale3DIcon } from "lucide-react"
 import client from "@/app/utils/client";
+import { serialize } from "@/lib/nuqs/searchParams";
 
 type Location = components["schemas"]["Location"];
 
@@ -106,7 +106,10 @@ export default async function SEO({
             break
         }
         default: {
-            formattedLocationName = city.split("/")[1]!.charAt(0).toUpperCase() + city.split("/")[1]!.slice(1)
+            formattedLocationName = city.split("/")[1]!
+                .split("-")
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ");
             break;
         }
     }
@@ -126,7 +129,7 @@ export default async function SEO({
                     <AccordionContent className="flex flex-col gap-2">
                         {
                             topThreeRooms.map((room, index) => (
-                                <Link key={index} href={`/vendita-case/${page}?rooms=${encodeURIComponent(room.key)}`}>
+                                <Link key={index} href={`/vendita-case/${page}${serialize({ rooms: [room.key] })}`}>
                                     <div className="flex flex-row justify-between">
                                         <p className="text-md text-blue-500"> {room.key} stanze in vendita a {formattedLocationName}</p>
                                         <p className="text-md text-muted-foreground"> {room.count} risultati </p>
@@ -146,7 +149,7 @@ export default async function SEO({
                     <AccordionContent className="flex flex-col gap-2">
                         {
                             topThreeConditions.map((condition, index) => (
-                                <Link key={index} href={`/vendita-case/${page}?condition=${encodeURIComponent(condition.key)}`}>
+                                <Link key={index} href={`/vendita-case/${page}${serialize({ condition: condition.key })}`}>
                                     <div className="flex flex-row justify-between">
                                         <p className="text-md  text-blue-500"> Stato {condition.key} in {formattedLocationName}</p>
                                         <p className="text-md text-muted-foreground"> {condition.count} risultati </p>
@@ -172,7 +175,10 @@ export default async function SEO({
                                     return (a.range.min ?? 0) - (b.range.min ?? 0);
                                 })
                                 .map((price, index) => (
-                                    <Link key={index} href={`/vendita-case/${page}${price.range.min !== null ? `?price_min=${price.range.min}` : ''}${price.range.max !== null ? `&price_max=${price.range.max}` : ''}`}>
+                                    <Link key={index} href={`/vendita-case/${page}${serialize({
+                                        price_min: price.range.min,
+                                        price_max: price.range.max
+                                    })}`}>
                                         <div className="flex flex-row justify-between">
                                             <p className="text-md text-blue-500">
                                                 {price.key === 'Prezzo su richiesta' ? 'Prezzo su richiesta' :
@@ -195,7 +201,7 @@ export default async function SEO({
                     <AccordionContent className="flex flex-col gap-2">
                         {
                             categoryHouses.map((category, index) => (
-                                <Link key={index} href={`/vendita-case/${page}?categories=${encodeURIComponent(category.key)}`}>
+                                <Link key={index} href={`/vendita-case/${page}${serialize({ categories: [category.key] })}`}>
                                     <div className="flex flex-row justify-between">
                                         <p className="text-md  text-blue-500"> {category.key} in {formattedLocationName}</p>
                                         <p className="text-md text-muted-foreground"> {category.count} risultati </p>
@@ -217,7 +223,10 @@ export default async function SEO({
                             surfaceHouses
                                 .sort((a, b) => (a.range.min ?? 0) - (b.range.min ?? 0))
                                 .map((surface, index) => (
-                                    <Link key={index} href={`/vendita-case/${page}${surface.range.min !== null ? `?surface_min=${surface.range.min}` : ''}${surface.range.max !== null ? `&surface_max=${surface.range.max}` : ''}`}>
+                                    <Link key={index} href={`/vendita-case/${page}${serialize({
+                                        surface_min: surface.range.min,
+                                        surface_max: surface.range.max
+                                    })}`}>
                                         <div className="flex flex-row justify-between items-center">
                                             <p className="text-md text-blue-500">
                                                 {surface.range.min === 0 ? `Case fino a ${surface.range.max} mq` :
@@ -241,7 +250,7 @@ export default async function SEO({
                     <AccordionContent className="flex flex-col gap-2">
                         {
                             furnitureHouses.map((furniture, index) => (
-                                <Link key={index} href={`/vendita-case/${page}`}>
+                                <Link key={index} href={`/vendita-case/${page}${serialize({ furniture: furniture.key || null })}`}>
                                     <div className="flex flex-row justify-between items-center">
                                         <p className="text-md text-blue-500"> Case {furniture.key || "Non arredate"} in {formattedLocationName}</p>
                                         <p className="text-md text-muted-foreground"> {furniture.count} risultati </p>
