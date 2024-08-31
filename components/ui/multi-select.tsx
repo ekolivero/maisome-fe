@@ -14,11 +14,13 @@ import {
     CommandSeparator,
 } from "@/components/ui/command"
 import { FilterProps } from "@/app/(serp)/vendita-case/[...search]/components/header";
-import { useSearchParams, useRouter } from "next/navigation";
 import { PlusIcon, SearchIcon } from 'lucide-react'
 import { PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "./button";
 import client from "@/app/utils/client";
+import { useQueryStates } from "nuqs"
+import { searchParams } from "@/lib/nuqs/searchParams"
+import { useRouter } from "next/navigation";
 
 type Location = {
     label: string;
@@ -26,27 +28,35 @@ type Location = {
     page: string;
 }
 
-
 export default function MultiSelectInput({ location }: FilterProps) {
+    const router = useRouter()
     const { neighbors } = location
     const [open, setOpen] = useState(false)
     const [search, setSearch] = useState("")
     const [locations, setLocations] = useState<Location[]>([])
     const inputRef = useRef<HTMLInputElement>(null)
 
-    const router = useRouter()
-    const searchParams = useSearchParams()
-    const ids = searchParams.getAll('ids')
+    const [{ ids }, setQueryStates] = useQueryStates(searchParams, {
+        shallow: false,
+        scroll: true
+    })
 
-    const updateSearchParams = (newId: string) => {
-        const current = new URLSearchParams(searchParams.toString());
-        if (ids.length === 0) {
-            current.append('ids', location.id)
+    const handleAppendLocation = (selectedId: string) => {
+        const currentIds = ids || [];
+        if (currentIds.length === 0) {
+            setQueryStates({ ids: [location.id, selectedId] });
+        } else if (!currentIds.includes(selectedId)) {
+            setQueryStates({ ids: [...currentIds, selectedId] });
+        } else {
+            console.log('ID already exists, not adding');
+            return; // Exit early if no change
         }
-        if (!ids.includes(newId)) {
-            current.append('ids', newId);
-        }
-        router.push(`?${current.toString()}`);
+        
+        // Manually refresh the route to trigger data fetching
+        router.refresh();
+        
+        setSearch("");
+        setOpen(false);
     };
 
     const handleSearch = async (value: string) => {
@@ -68,12 +78,6 @@ export default function MultiSelectInput({ location }: FilterProps) {
                 page: location.page,
             }));
         });
-    };
-
-    const handleAppendLocation = async (selectedLocation: Location) => {
-        updateSearchParams(selectedLocation.id);
-        setSearch("");
-        setOpen(false);
     };
 
     return (
@@ -132,7 +136,7 @@ export default function MultiSelectInput({ location }: FilterProps) {
                                                     className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors duration-200"
                                                     onClick={(e) => {
                                                         e.stopPropagation()
-                                                        handleAppendLocation(neighbor)
+                                                        handleAppendLocation(neighbor.id)
                                                     }}
                                                 >
                                                     Aggiungi
@@ -163,7 +167,7 @@ export default function MultiSelectInput({ location }: FilterProps) {
                                                     className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors duration-200"
                                                     onClick={(e) => {
                                                         e.stopPropagation()
-                                                        handleAppendLocation(address)
+                                                        handleAppendLocation(address.id)
                                                     }}
                                                 >
                                                     Aggiungi

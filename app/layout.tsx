@@ -23,7 +23,7 @@ export default function RootLayout({
 }>) {
   const shouldInjectToolbar = process.env.NODE_ENV === 'development';
   return (
-    <html lang="en">
+    <html lang="it">
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",

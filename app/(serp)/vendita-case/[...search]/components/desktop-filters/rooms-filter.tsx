@@ -1,59 +1,52 @@
 import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
-import { useRouter } from "next/navigation"
 import { FilterButton } from "../filter-button-popover"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { useQueryStates } from "nuqs"
+import { searchParams } from "@/lib/nuqs/searchParams"
 
 export function RoomsFilter() {
-    const router = useRouter()
-    const searchParams = useSearchParams()
-    const [rooms, setRooms] = useState<string[]>(searchParams.get('rooms')?.split(',') || [])
-    const [bathrooms, setBathrooms] = useState<string[]>(searchParams.get('bathrooms')?.split(',') || [])
-    const [isOpen, setIsOpen] = useState(false)
+    const [{ rooms, bathrooms }, setQueryStates] = useQueryStates(
+        { 
+            rooms: searchParams.rooms,
+            bathrooms: searchParams.bathrooms
+        },
+        { shallow: false }
+    )
 
-    const isRoomsFilterActive = rooms.length > 0 || bathrooms.length > 0
+    const [isOpen, setIsOpen] = useState(false)
+    const [selectedRooms, setSelectedRooms] = useState<string[]>(rooms || [])
+    const [selectedBathrooms, setSelectedBathrooms] = useState<string[]>(bathrooms || [])
+
+    const isRoomsFilterActive = (rooms && rooms.length > 0) || (bathrooms && bathrooms.length > 0)
     const formattedRoomsRange = isRoomsFilterActive
-        ? `${rooms.sort((a, b) => parseInt(a) - parseInt(b)).join(', ')} camere / ${bathrooms.sort((a, b) => parseInt(a) - parseInt(b)).join(', ')} bagni`
+        ? `${(rooms || []).sort((a, b) => parseInt(a) - parseInt(b)).join(', ')} camere / ${(bathrooms || []).sort((a, b) => parseInt(a) - parseInt(b)).join(', ')} bagni`
         : 'Locali'
 
     const handleDelete = () => {
-        const params = new URLSearchParams(searchParams);
-        setRooms([]);
-        setBathrooms([]);
-        params.delete('rooms');
-        params.delete('bathrooms');
-        router.push(`?${params.toString()}`);
-    };
+        setQueryStates({ rooms: null, bathrooms: null })
+        setSelectedRooms([])
+        setSelectedBathrooms([])
+    }
 
     const handleApply = () => {
-        const params = new URLSearchParams(searchParams)
-        
-        rooms.forEach(room => {
-            params.append('rooms', room)
+        setQueryStates({
+            rooms: selectedRooms.length > 0 ? selectedRooms : null,
+            bathrooms: selectedBathrooms.length > 0 ? selectedBathrooms : null
         })
-
-        bathrooms.forEach(bathroom => {
-            params.append('bathrooms', bathroom)
-        })
-
-        if (rooms.length === 0) {
-            params.delete('rooms')
-        }
-
-        if (bathrooms.length === 0) {
-            params.delete('bathrooms')
-        }
-
         setIsOpen(false)
-        router.push(`?${params.toString()}`)
     }
+
+    useEffect(() => {
+        setSelectedRooms(rooms || [])
+        setSelectedBathrooms(bathrooms || [])
+    }, [rooms, bathrooms])
 
     return (
         <FilterButton label={formattedRoomsRange}
             onDelete={handleDelete}
-            showDeleteIcon={isRoomsFilterActive}
+            showDeleteIcon={isRoomsFilterActive ?? false}
             open={isOpen}
             setOpen={setIsOpen}
         >
@@ -65,13 +58,13 @@ export function RoomsFilter() {
                             <Label
                                 key={room}
                                 className={`flex items-center justify-center space-x-2 cursor-pointer p-2 rounded-lg transition-colors duration-200 ${
-                                    rooms.includes(room) ? 'bg-primary text-white' : 'bg-gray-100 hover:bg-gray-200'
+                                    selectedRooms.includes(room) ? 'bg-primary text-white' : 'bg-gray-100 hover:bg-gray-200'
                                 }`}
                             >
                                 <Checkbox
-                                    checked={rooms.includes(room)}
+                                    checked={selectedRooms.includes(room)}
                                     onCheckedChange={(checked) => {
-                                        setRooms(prev => 
+                                        setSelectedRooms(prev => 
                                             checked 
                                                 ? [...prev, room]
                                                 : prev.filter(r => r !== room)
@@ -91,13 +84,13 @@ export function RoomsFilter() {
                             <Label
                                 key={bathroom}
                                 className={`flex items-center justify-center space-x-2 cursor-pointer p-2 rounded-lg transition-colors duration-200 ${
-                                    bathrooms.includes(bathroom) ? 'bg-primary text-white' : 'bg-gray-100 hover:bg-gray-200'
+                                    selectedBathrooms.includes(bathroom) ? 'bg-primary text-white' : 'bg-gray-100 hover:bg-gray-200'
                                 }`}
                             >
                                 <Checkbox
-                                    checked={bathrooms.includes(bathroom)}
+                                    checked={selectedBathrooms.includes(bathroom)}
                                     onCheckedChange={(checked) => {
-                                        setBathrooms(prev => 
+                                        setSelectedBathrooms(prev => 
                                             checked 
                                                 ? [...prev, bathroom]
                                                 : prev.filter(b => b !== bathroom)

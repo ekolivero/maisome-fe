@@ -10,11 +10,12 @@ import { HouseListing } from "./components/house-listing";
 import SEO from "./components/seo";
 import { fetchLookupData } from "./utils/fetch";
 import { fetchHouses } from "./utils/fetch";
+
 export type SearchParamsProps = operations["houses_by_id_houses_location_ids__get"]["parameters"]["query"];
 
 type Props = {
     params: { search: string[] }
-    searchParams: SearchParamsProps
+    searchParams: Record<string, string | string[] | undefined>
 }
 
 export async function generateMetadata(
@@ -23,9 +24,10 @@ export async function generateMetadata(
 ): Promise<Metadata> {
 
     const hasMultipleLocations = searchParams.ids !== undefined && searchParams.ids.length > 1;
+    const parsedSearchParams = searchParamsCache.parse(searchParams);
 
     const { data: lookupData } = await fetchLookupData(params.search)
-    const { data: housesData } = await fetchHouses(hasMultipleLocations ? searchParams.ids : [lookupData?.location.id!])
+    const { data: housesData } = await fetchHouses(hasMultipleLocations ? parsedSearchParams.ids! : [lookupData?.location.id!])
 
     const formattedTitle = `${housesData?.total_results} case in vendita a ${lookupData?.location.label}`
 
@@ -44,7 +46,7 @@ export async function generateMetadata(
 
 export default async function Page({ params: { search }, searchParams }: { params: { search: string[] }, searchParams: Record<string, string | string[] | undefined> }) {
     const { data: lookupData } = await fetchLookupData(search)
-    searchParamsCache.parse(searchParams);
+    const parsedSearchParams = searchParamsCache.parse(searchParams);
     const { location } = lookupData!;
 
     return (
@@ -53,7 +55,7 @@ export default async function Page({ params: { search }, searchParams }: { param
                 <Header location={location} />
                 <div className="mt-6 w-full md:max-w-screen-2xl mx-auto">
                     <div className="flex h-full flex-col gap-6">
-                        <Suspense fallback={<LoadingListingCard />} key={`${JSON.stringify(searchParams)}`}>
+                        <Suspense fallback={<LoadingListingCard />} key={`${JSON.stringify(parsedSearchParams)}`}>
                             <BreadcrumbsParentAndChildren location={lookupData?.location!} />
                             <HeaderTitle location={lookupData?.location!} />
                             <HouseListing search={search} />

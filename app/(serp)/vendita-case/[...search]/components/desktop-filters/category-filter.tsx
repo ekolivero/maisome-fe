@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Warehouse, Home, Building2, Castle, HouseIcon, Factory } from "lucide-react"
-import { useSearchParams } from "next/navigation"
-import { useRouter } from "next/navigation"
+import { useQueryStates } from "nuqs"
 import { FilterButton } from "../filter-button-popover"
+import { searchParams } from "@/lib/nuqs/searchParams"
 
 const propertyTypes = [
     { name: "Rustico", icon: Warehouse },
@@ -15,22 +15,22 @@ const propertyTypes = [
 ]
 
 export function CategoryFilter() {
-    const router = useRouter()
-    const searchParams = useSearchParams()
-    const [categories, setCategories] = useState<string[]>(searchParams.get('categories')?.split(',') || [])
-    const [isOpen, setIsOpen] = useState(false)
-    const [selectedCategories, setSelectedCategories] = useState<string[]>(categories)
+    const [{ categories }, setQueryStates] = useQueryStates(
+        { categories: searchParams.categories },
+        { shallow: false }
+    )
 
-    const isCategoryFilterActive = categories.length > 0
+    const [isOpen, setIsOpen] = useState(false)
+    const [selectedCategories, setSelectedCategories] = useState<string[]>(categories || [])
+
+    const isCategoryFilterActive = categories && categories.length > 0
     const formattedCategory = isCategoryFilterActive
         ? `${categories[0]}${categories.length > 1 ? ` + ${categories.length - 1}` : ''}`
         : "Tipologia"
 
     const handleDelete = () => {
-        const params = new URLSearchParams(searchParams)
-        setCategories([])
-        params.delete('categories')
-        router.push(`?${params.toString()}`)
+        setQueryStates({ categories: null })
+        setSelectedCategories([])
     }
 
     const handleToggleCategory = (selectedCategory: string) => {
@@ -42,25 +42,19 @@ export function CategoryFilter() {
     }
 
     const handleApply = () => {
-        const params = new URLSearchParams(searchParams)
-        if (selectedCategories.length > 0) {
-            params.delete('categories')
-            selectedCategories.forEach(category => {
-                params.append('categories', category)
-            })
-        } else {
-            params.delete('categories')
-        }
-        setCategories(selectedCategories)
-        router.push(`?${params.toString()}`)
+        setQueryStates({ categories: selectedCategories.length > 0 ? selectedCategories : null })
         setIsOpen(false)
     }
+
+    useEffect(() => {
+        setSelectedCategories(categories || [])
+    }, [categories])
 
     return (
         <FilterButton 
             label={formattedCategory}
             onDelete={handleDelete}
-            showDeleteIcon={isCategoryFilterActive}
+            showDeleteIcon={isCategoryFilterActive ?? false}
             open={isOpen}
             setOpen={setIsOpen}
         >

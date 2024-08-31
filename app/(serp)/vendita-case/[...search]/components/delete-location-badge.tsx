@@ -5,8 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation';
-import { useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
+import { useQueryStates } from "nuqs"
+import { searchParams } from "@/lib/nuqs/searchParams"
 
 export default function DeleteLocationBadge({
     resolvedLocations
@@ -14,15 +15,14 @@ export default function DeleteLocationBadge({
     resolvedLocations: any[]
 }) {
     const router = useRouter()
-    const searchParams = useSearchParams()
+    const [{ ids }, setQueryStates] = useQueryStates(
+        { ids: searchParams.ids },
+        { shallow: false }
+    )
 
     const removeLocation = useCallback(async (locationToRemove: string) => {
-        const current = new URLSearchParams(Array.from(searchParams.entries()))
-
-        const ids = current.getAll('ids')
-        current.delete('ids')
-
-        const remainingIds = ids.filter(id => id !== locationToRemove)
+        const currentIds = ids || [];
+        const remainingIds = currentIds.filter(id => id !== locationToRemove)
 
         if (remainingIds.length === 1) {
             try {
@@ -38,22 +38,16 @@ export default function DeleteLocationBadge({
             } catch (error) {
                 console.error('Error fetching location page:', error);
                 // If there's an error, fall back to updating the URL with the remaining ID
-                current.append('ids', remainingIds[0]!);
+                setQueryStates({ ids: remainingIds });
             }
         } else if (remainingIds.length > 1) {
-            // If there are still multiple IDs, add them back to the URL
-            remainingIds.forEach(id => {
-                current.append('ids', id)
-            })
+            // If there are still multiple IDs, update the query state
+            setQueryStates({ ids: remainingIds });
+        } else {
+            // If no IDs remain, set ids to null
+            setQueryStates({ ids: null });
         }
-
-        // Create the new URL
-        const search = current.toString()
-        const query = search ? `?${search}` : ""
-
-        // Update the URL
-        router.push(`${window.location.pathname}${query}`)
-    }, [searchParams, router])
+    }, [ids, setQueryStates, router])
 
     return (
         <div className="flex flex-wrap gap-2">

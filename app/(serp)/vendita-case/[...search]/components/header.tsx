@@ -37,10 +37,6 @@ export default function SmartFilter({ location }: FilterProps) {
                                 <CategoryFilter />
                                 <RoomsFilter />
                             </div>
-                            {/* <FilterButton label="Filtra categoria" ContentComponent={CategoryFilterContent} />
-                                <FilterButton label="Filtra camere" ContentComponent={RoomsFilterContent} />
-                                <FilterButton label="Filtra stato" ContentComponent={StatusFilterContent} />
-                                <FilterButton label="Altri filtri" ContentComponent={OtherFiltersContent} /> */}
                         </div>
                     </div>
                 </div>

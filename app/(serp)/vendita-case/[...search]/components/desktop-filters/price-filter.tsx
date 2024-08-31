@@ -1,45 +1,42 @@
 import { useState, useRef, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { useSearchParams } from "next/navigation"
-import { useRouter } from "next/navigation"
+import { useQueryStates } from "nuqs"
 import { FilterButton } from "../filter-button-popover"
+import { searchParams } from "@/lib/nuqs/searchParams"
 
 export function PriceFilter() {
-    const router = useRouter()
-    const searchParams = useSearchParams()
-    const [priceMin, setPriceMin] = useState<number | null>(searchParams.get('price_min') ? Number(searchParams.get('price_min')) : null)
-    const [priceMax, setPriceMax] = useState<number | null>(searchParams.get('price_max') ? Number(searchParams.get('price_max')) : null)
-    const [appliedPriceMin, setAppliedPriceMin] = useState<number | null>(searchParams.get('price_min') ? Number(searchParams.get('price_min')) : null)
-    const [appliedPriceMax, setAppliedPriceMax] = useState<number | null>(searchParams.get('price_max') ? Number(searchParams.get('price_max')) : null)
+    const [{ price_min, price_max }, setQueryStates] = useQueryStates(
+        { 
+            price_min: searchParams.price_min, 
+            price_max: searchParams.price_max 
+        },
+        { shallow: false }
+    )
+
+    const [tempPriceMin, setTempPriceMin] = useState<number | null>(price_min ?? null)
+    const [tempPriceMax, setTempPriceMax] = useState<number | null>(price_max ?? null)
     const [isOpen, setIsOpen] = useState(false)
 
     const maxPriceRef = useRef<HTMLInputElement>(null);
 
     const formatPrice = (price: number) => price.toLocaleString('it-IT') + ' €';
-    const isPriceFilterActive = appliedPriceMin !== null || appliedPriceMax !== null;
+    const isPriceFilterActive = price_min !== null || price_max !== null;
     const formattedPriceRange = isPriceFilterActive
-        ? `${appliedPriceMin ? formatPrice(appliedPriceMin) : 'Min'} - ${appliedPriceMax ? formatPrice(appliedPriceMax) : 'Max'}`
+        ? `${price_min ? formatPrice(price_min) : 'Min'} - ${price_max ? formatPrice(price_max) : 'Max'}`
         : 'Prezzo';
 
     useEffect(() => {
-        // Ensure priceMin and priceMax are always in the correct order
-        if (priceMin !== null && priceMax !== null && priceMin > priceMax) {
-            setPriceMin(priceMax);
-            setPriceMax(priceMin);
+        if (tempPriceMin !== null && tempPriceMax !== null && tempPriceMin > tempPriceMax) {
+            setTempPriceMin(tempPriceMax);
+            setTempPriceMax(tempPriceMin);
         }
-        // eslint-disable-next-line
     }, [isOpen]);
 
     const handleDelete = () => {
-        const params = new URLSearchParams(searchParams);
-        setPriceMin(null);
-        setPriceMax(null);
-        setAppliedPriceMin(null);
-        setAppliedPriceMax(null);
-        params.delete('price_min');
-        params.delete('price_max');
-        router.push(`?${params.toString()}`);
+        setQueryStates({ price_min: null, price_max: null })
+        setTempPriceMin(null)
+        setTempPriceMax(null)
     };
 
     useEffect(() => {
@@ -49,39 +46,15 @@ export function PriceFilter() {
     }, []);
 
     const handleApply = () => {
-        const params = new URLSearchParams(searchParams)
-        let newPriceMin = priceMin
-        let newPriceMax = priceMax
+        let newPriceMin = tempPriceMin
+        let newPriceMax = tempPriceMax
 
-        if (newPriceMin !== null && newPriceMax !== null) {
-            if (newPriceMin > newPriceMax) {
-                [newPriceMin, newPriceMax] = [newPriceMax, newPriceMin]
-            }
-            params.set('price_min', newPriceMin.toString())
-            params.set('price_max', newPriceMax.toString())
-            setAppliedPriceMin(newPriceMin)
-            setAppliedPriceMax(newPriceMax)
-        } else if (newPriceMin !== null) {
-            params.set('price_min', newPriceMin.toString())
-            params.delete('price_max')
-            setAppliedPriceMin(newPriceMin)
-            setAppliedPriceMax(null)
-        } else if (newPriceMax !== null) {
-            params.set('price_max', newPriceMax.toString())
-            params.delete('price_min')
-            setAppliedPriceMin(null)
-            setAppliedPriceMax(newPriceMax)
-        } else {
-            params.delete('price_min')
-            params.delete('price_max')
-            setAppliedPriceMin(null)
-            setAppliedPriceMax(null)
+        if (newPriceMin !== null && newPriceMax !== null && newPriceMin > newPriceMax) {
+            [newPriceMin, newPriceMax] = [newPriceMax, newPriceMin]
         }
 
-        setPriceMin(newPriceMin)
-        setPriceMax(newPriceMax)
+        setQueryStates({ price_min: newPriceMin, price_max: newPriceMax })
         setIsOpen(false)
-        router.push(`?${params.toString()}`)
     }
 
     return (
@@ -95,26 +68,26 @@ export function PriceFilter() {
             <div className="flex space-x-2 mt-2">
                 <Input
                     placeholder="Min"
-                    value={priceMin?.toLocaleString('it-IT') || ''}
+                    value={tempPriceMin?.toLocaleString('it-IT') || ''}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         const value = e.target.value.replace(/\./g, '');
                         if (!/^\d*$/.test(value)) {
                             return;
                         }
-                        setPriceMin(value ? Number(value) : null);
+                        setTempPriceMin(value ? Number(value) : null);
                     }}
                     className="flex-1 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:!ring-transparent"
                 />
                 <Input
                     ref={maxPriceRef}
                     placeholder="Max"
-                    value={priceMax?.toLocaleString('it-IT') || ''}
+                    value={tempPriceMax?.toLocaleString('it-IT') || ''}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         const value = e.target.value.replace(/\./g, '');
                         if (!/^\d*$/.test(value)) {
                             return;
                         }
-                        setPriceMax(value ? Number(value) : null);
+                        setTempPriceMax(value ? Number(value) : null);
                     }}
                     className="flex-1 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:!ring-transparent"
                 />
