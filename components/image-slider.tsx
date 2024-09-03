@@ -15,7 +15,17 @@ export function ImagesSliderDemo() {
             />
             <div className="absolute inset-0 bg-black/50" />
             <div className="relative flex h-full flex-col items-center justify-center px-4 text-center">
-                <h1 className="mb-4 text-3xl font-bold text-white sm:text-4xl md:text-5xl max-w-screen-sm">
+                {/* Add logo */}
+                <div className="absolute top-4 md:top-8 left-1/2 transform -translate-x-1/2">
+                    <Image
+                        src="/no_bg.png"
+                        alt="Logo"
+                        width={150}
+                        height={50}
+                        priority
+                    />
+                </div>
+                <h1 className="mb-4 text-3xl text-white sm:text-4xl md:text-5xl max-w-screen-sm font-[900] tracking-tight">
                 Trova oggi la tua casa dei sogni
                 </h1>
                 <div className="w-full max-w-md mt-8">
