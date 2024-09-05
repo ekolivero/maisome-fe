@@ -1,12 +1,13 @@
 'use client'
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
-import Image from "next/image"
 import { components } from "@/app/types/schema"
 import dynamic from 'next/dynamic';
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MapIcon, HouseIcon } from "lucide-react";
+import { ImageCarousel } from './image-carousel';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 const MapView = dynamic(() => import('./map-view').then((mod) => mod.MapView), {
     loading: () => <Skeleton />,
@@ -15,42 +16,34 @@ const MapView = dynamic(() => import('./map-view').then((mod) => mod.MapView), {
 
 export default function ListingCard({ house, index }: { house: components["schemas"]["House"], index: number }) {
     return (
-        <Card className="w-full h-[375px] rounded-lg overflow-hidden shadow-md transition-all hover:shadow-xl hover:cursor-pointer relative group">
-            <Link href={house.link} className="block h-full" prefetch={false} target="_blank" rel="nofollow noopener noreferrer">
-                <Tabs defaultValue="list" className="w-full h-full">
-                    <div className="relative">
-                        <TabsContent value="list" className="mt-0">
-                            <Image
-                                unoptimized
-                                src={house.image}
-                                alt="Property Image"
-                                width={400}
-                                height={240}
-                                className="w-full h-60 object-cover rounded-b-lg"
-                                priority={index < 4}
-                            />
-                        </TabsContent>
-                        <TabsContent value="map" className="mt-0 h-60">
-                            <MapView lat={house.location.coordinates.latitude} long={house.location.coordinates.longitude} />
-                        </TabsContent>
-                        <div className="absolute top-2 right-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
-                            <TabsList className="bg-white/80 backdrop-blur-sm rounded-full p-1 shadow-lg" onClick={(e) => e.preventDefault()}>
-                                <TabsTrigger
-                                    value="list"
-                                    className="data-[state=inactive]:flex data-[state=active]:hidden items-center p-2 rounded-full transition-all hover:bg-white"
-                                >
-                                    <HouseIcon className="h-5 w-5 mr-1" /> Vedi offerta
-                                </TabsTrigger>
-                                <TabsTrigger
-                                    value="map"
-                                    className="data-[state=inactive]:flex data-[state=active]:hidden items-center p-2 rounded-full transition-all hover:bg-white"
-                                >
-                                    <MapIcon className="h-5 w-5 mr-1" /> Vedi su mappa
-                                </TabsTrigger>
-                            </TabsList>
-                        </div>
+        <Card className="w-full rounded-lg overflow-hidden shadow-md transition-all hover:shadow-xl hover:cursor-pointer relative group">
+            <Tabs defaultValue="list" className="w-full h-full">
+                <div className="relative">
+                    <TabsContent value="list" className="mt-0">
+                        <ImageCarousel images={house.images} priority={index < 6} mainImage={house.image} />
+                    </TabsContent>
+                    <TabsContent value="map" className="mt-0 h-60">
+                        <MapView lat={house.location.coordinates.latitude} long={house.location.coordinates.longitude} />
+                    </TabsContent>
+                    <div className="absolute top-2 right-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+                        <TabsList className="bg-white/80 backdrop-blur-sm rounded-full p-1 shadow-lg hidden md:flex" onClick={(e) => e.preventDefault()}>
+                            <TabsTrigger
+                                value="list"
+                                className="data-[state=inactive]:flex data-[state=active]:hidden items-center p-2 rounded-full transition-all hover:bg-white"
+                            >
+                                <HouseIcon className="h-5 w-5 mr-1" /> Vedi offerta
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="map"
+                                className="data-[state=inactive]:flex data-[state=active]:hidden items-center p-2 rounded-full transition-all hover:bg-white"
+                            >
+                                <MapIcon className="h-5 w-5 mr-1" /> Vedi su mappa
+                            </TabsTrigger>
+                        </TabsList>
                     </div>
-                    <CardContent className="p-6 bg-background">
+                </div>
+                    <CardContent className="px-2 pt-4 pb-2 md:p-6 bg-background">
+                        <Link href={house.link} className="block" prefetch={false} target="_blank" rel="nofollow noopener noreferrer">
                         <div className="flex justify-between items-start mb-2">
                             <div>
                                 <h5 className="text-sm md:text-md font-semibold line-clamp-1">
@@ -76,9 +69,29 @@ export default function ListingCard({ house, index }: { house: components["schem
                                 <span> {house.surface.text}</span>
                             </div>
                         </div>
+                        </Link>
+                        <Accordion type="single" collapsible className="mt-2 pt-2 md:hidden">
+                            <AccordionItem value="item-1" className="border-none">
+                                <AccordionTrigger 
+                                    onClick={(e) => e.stopPropagation()} 
+                                    className="flex items-center justify-between py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors duration-200"
+                                >
+                                    <span className="flex items-center">
+                                        Vedi su mappa
+                                    </span>
+                                </AccordionTrigger>
+                                <AccordionContent className="pt-2">
+                                    <div className="overflow-hidden shadow-md">
+                                        <MapView 
+                                            lat={house.location.coordinates.latitude} 
+                                            long={house.location.coordinates.longitude} 
+                                        />
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
                     </CardContent>
-                </Tabs>
-            </Link>
+            </Tabs>
         </Card>
     )
 }
@@ -149,27 +162,6 @@ function RulerIcon(props: any) {
             <path d="m11.5 9.5 2-2" />
             <path d="m8.5 6.5 2-2" />
             <path d="m17.5 15.5 2-2" />
-        </svg>
-    )
-}
-
-
-function XIcon(props: any) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M18 6 6 18" />
-            <path d="m6 6 12 12" />
         </svg>
     )
 }

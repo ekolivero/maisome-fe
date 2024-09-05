@@ -51,7 +51,7 @@ export default async function Page({ params: { search }, searchParams }: { param
 
     return (
         <>
-            <div className="flex flex-1 w-full dark:bg-black bg-white  dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex-col">
+            <div className="flex flex-1 w-full flex-col">
                 <Header location={location} />
                 <div className="mt-6 w-full md:max-w-screen-2xl mx-auto">
                     <div className="flex h-full flex-col gap-6">

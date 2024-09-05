@@ -98,7 +98,7 @@ export function BreadcrumbsParentAndChildren({
                                     <BreadcrumbPage className="flex items-center">
                                         {item.level === 1 ? (
                                             <>
-                                                <span className="hidden md:inline">Provincia di </span>
+                                                <span className="hidden md:inline mr-1">Provincia di </span>
                                                 <span className="inline-block max-w-[15ch] truncate md:max-w-none">{item.label}</span>
                                             </>
                                         ) : <span className="inline-block max-w-[15ch] truncate md:max-w-none">{item.label}</span>}

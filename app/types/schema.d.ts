@@ -134,6 +134,7 @@ export interface components {
             key: string;
             /** Count */
             count: number;
+            range?: components["schemas"]["FeatureRange"] | null;
         };
         /** FeatureAggregationResponse */
         FeatureAggregationResponse: {
@@ -143,6 +144,13 @@ export interface components {
             aggregation: {
                 [key: string]: components["schemas"]["FeatureAggregationBucket"][];
             };
+        };
+        /** FeatureRange */
+        FeatureRange: {
+            /** Min */
+            min: number | null;
+            /** Max */
+            max: number | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -184,6 +192,8 @@ export interface components {
             link: string;
             /** Image */
             image: string;
+            /** Images */
+            images: components["schemas"]["Image"][];
             /** Category */
             category: string;
             price: components["schemas"]["Price"];
@@ -221,6 +231,15 @@ export interface components {
             total_results: number;
             /** Total Pages */
             total_pages: number;
+        };
+        /** Image */
+        Image: {
+            /** Id */
+            id: string;
+            /** Url */
+            url: string;
+            /** Caption */
+            caption: string;
         };
         /** Location */
         Location: {

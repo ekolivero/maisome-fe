@@ -44,6 +44,7 @@
     "cmdk": "^1.0.0",
     "cobe": "^0.6.3",
     "dedent": "^1.5.3",
+    "embla-carousel-fade": "^8.2.1",
     "embla-carousel-react": "^8.1.6",
     "framer-motion": "^11.2.14",
     "google": "link:@next/third-parties/google",
