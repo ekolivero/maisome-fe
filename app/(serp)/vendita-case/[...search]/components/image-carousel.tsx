@@ -2,16 +2,10 @@
 
 import * as React from "react"
 import Image from "next/image"
-import { Card, CardContent } from "@/components/ui/card"
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-} from "@/components/ui/carousel"
 import { cn } from "@/lib/utils"
 import { components } from "@/app/types/schema"
-import Fade from "embla-carousel-fade"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import useEmblaCarousel from 'embla-carousel-react'
 
 interface ImageCarouselProps {
     images: components["schemas"]["Image"][];
@@ -21,7 +15,11 @@ interface ImageCarouselProps {
 
 export function ImageCarousel({ images, priority, mainImage }: ImageCarouselProps) {
     const [currentIndex, setCurrentIndex] = React.useState(0)
-    const [emblaApi, setEmblaApi] = React.useState<any | null>(null)
+    const [emblaRef, emblaApi] = useEmblaCarousel({
+        align: "start",
+        loop: true,
+        // @ts-ignore
+    }, [])
 
     const allImages = React.useMemo(() => {
         return [
@@ -43,6 +41,10 @@ export function ImageCarousel({ images, priority, mainImage }: ImageCarouselProp
         onSelect()
         emblaApi.on("select", onSelect)
         emblaApi.on("reInit", onSelect)
+        return () => {
+            emblaApi.off("select", onSelect)
+            emblaApi.off("reInit", onSelect)
+        }
     }, [emblaApi, onSelect])
 
     const scrollPrev = React.useCallback(() => {
@@ -54,71 +56,76 @@ export function ImageCarousel({ images, priority, mainImage }: ImageCarouselProp
     }, [emblaApi])
 
     const renderNavigationDots = () => {
-        const totalDots = 3 // Show only 3 dots
-        const halfDots = Math.floor(totalDots / 2)
+        const totalImages = allImages.length;
+        const maxVisibleDots = 3;
+        const showAllDots = totalImages <= maxVisibleDots;
 
-        let startDot = Math.max(0, currentIndex - halfDots)
-        let endDot = Math.min(allImages.length - 1, startDot + totalDots - 1)
+        let startIndex: number;
+        let endIndex: number;
 
-        if (endDot - startDot < totalDots - 1) {
-            startDot = Math.max(0, endDot - totalDots + 1)
+        if (showAllDots) {
+            startIndex = 0;
+            endIndex = totalImages - 1;
+        } else {
+            const halfVisible = Math.floor(maxVisibleDots / 2);
+            
+            if (currentIndex <= halfVisible) {
+                startIndex = 0;
+                endIndex = maxVisibleDots - 1;
+            } else if (currentIndex >= totalImages - halfVisible - 1) {
+                startIndex = totalImages - maxVisibleDots;
+                endIndex = totalImages - 1;
+            } else {
+                startIndex = currentIndex - halfVisible;
+                endIndex = currentIndex + halfVisible;
+            }
         }
 
         return (
-            <>
-                {startDot > 0 && <div className="w-2 h-2 rounded-full bg-white/50" />}
-                {Array.from({ length: endDot - startDot + 1 }, (_, i) => i + startDot).map((idx) => (
-                    <div
-                        key={idx}
-                        className={cn(
-                            "w-2 h-2 rounded-full transition-all duration-300 ease-in-out",
-                            currentIndex === idx ? "bg-white scale-125" : "bg-white/50"
-                        )}
-                    />
-                ))}
-                {endDot < allImages.length - 1 && <div className="w-2 h-2 rounded-full bg-white/50" />}
-            </>
-        )
-    }
+            <div className="flex items-center justify-center space-x-2 bg-black bg-opacity-20 rounded-full px-3 py-2" role="navigation" aria-label="Image navigation">
+                {!showAllDots && startIndex > 0 && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-white/50" aria-hidden="true" />
+                )}
+                {Array.from({ length: showAllDots ? totalImages : maxVisibleDots }).map((_, index) => {
+                    const dotIndex = startIndex + index;
+                    const isActive = dotIndex === currentIndex;
+                    return (
+                        <span
+                            key={dotIndex}
+                            className={cn(
+                                "h-2 w-2 rounded-full transition-all duration-300",
+                                isActive ? "bg-white scale-125" : "bg-white/50"
+                            )}
+                            role="button"
+                            aria-label={`Go to image ${dotIndex + 1} of ${totalImages}`}
+                            aria-current={isActive ? 'true' : 'false'}
+                        />
+                    );
+                })}
+                {!showAllDots && endIndex < totalImages - 1 && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-white/50" aria-hidden="true" />
+                )}
+            </div>
+        );
+    };
 
     return (
         <div className="relative p-0 w-full max-w-md mx-auto h-[240px] group hover:cursor-default min-w-full">
-            <Carousel
-                setApi={setEmblaApi}
-                opts={{
-                    align: "start",
-                    loop: true,
-                }}
-                className="w-full"
-                // @ts-ignore
-                plugins={[Fade()]}
-            >
-                <CarouselContent>
+            <div ref={emblaRef} className="overflow-hidden w-full">
+                <div className="flex">
                     {allImages.map((image, index) => (
-                        <CarouselItem key={index} className="pl-0 w-full">
-                            <div className="relative aspect-square h-[240px] w-full">
-                                <Image
-                                    src={index === 0 ? image.url : image.url.replace("m-c.jpg", "xs-c.jpg")}
-                                    alt={image.alt || `Property Image ${index + 1}`}
-                                    fill
-                                    className="object-cover"
-                                    unoptimized
-                                    priority={index === 0 && priority}
-                                />
-                            </div>
-                        </CarouselItem>
+                        <div key={index} className="flex-[0_0_100%] min-w-0 relative aspect-square h-[240px]">
+                            <Image
+                                src={index === 0 ? image.url : image.url.replace("m-c.jpg", "xs-c.jpg")}
+                                alt={image.alt || `Property Image ${index + 1}`}
+                                fill
+                                className="object-cover"
+                                unoptimized
+                                priority={index === 0 && priority}
+                            />
+                        </div>
                     ))}
-                </CarouselContent>
-            </Carousel>
-            <div className="absolute inset-0 flex sm:hidden">
-                <div
-                    className="w-1/2 h-[240px] cursor-pointer"
-                    onClick={scrollPrev}
-                />
-                <div
-                    className="w-1/2 h-[240px] cursor-pointer"
-                    onClick={scrollNext}
-                />
+                </div>
             </div>
             <div className="hidden sm:flex absolute top-1/2 left-2 right-2 -translate-y-1/2 justify-between">
                 <button
@@ -134,7 +141,7 @@ export function ImageCarousel({ images, priority, mainImage }: ImageCarouselProp
                     <ChevronRight className="h-9 w-9 text-white" />
                 </button>
             </div>
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center space-x-2 pointer-events-none">
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center pointer-events-none">
                 {renderNavigationDots()}
             </div>
         </div>
