@@ -21,9 +21,10 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "cdn.sanity.io",
-      }
+      },
     ],
   },
+  transpilePackages: ["@mep-agency/next-iubenda"],
 };
 
 const withVercelToolbar = require("@vercel/toolbar/plugins/next")();

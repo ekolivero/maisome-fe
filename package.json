@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^0.0.34",
+    "@mep-agency/next-iubenda": "1.0.0-alpha5",
     "@next/third-parties": "^14.2.5",
     "@portabletext/react": "^3.1.0",
     "@radix-ui/react-accordion": "^1.2.0",

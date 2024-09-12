@@ -10,6 +10,7 @@ import { HouseListing } from "./components/house-listing";
 import SEO from "./components/seo";
 import { fetchLookupData } from "./utils/fetch";
 import { fetchHouses } from "./utils/fetch";
+import { FooterComponent } from "@/components/footer";
 
 export type SearchParamsProps = operations["houses_by_id_houses_location_ids__get"]["parameters"]["query"];
 
@@ -63,6 +64,7 @@ export default async function Page({ params: { search }, searchParams }: { param
                         </Suspense>
                     </div>
                 </div>
+                <FooterComponent />
             </div>
         </>
     )

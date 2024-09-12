@@ -8,6 +8,9 @@ dependencies:
   '@ai-sdk/openai':
     specifier: ^0.0.34
     version: 0.0.34(zod@3.23.8)
+  '@mep-agency/next-iubenda':
+    specifier: 1.0.0-alpha5
+    version: 1.0.0-alpha5(next@14.2.6)(react@18.3.1)
   '@next/third-parties':
     specifier: ^14.2.5
     version: 14.2.5(next@14.2.6)(react@18.3.1)
@@ -2633,6 +2636,16 @@ packages:
     resolution: {integrity: sha512-pu0K1jCIdnQ12aWNaAVU5bzi7Bd1w54J3ECgANPmYLtQKP0HBj2cE/5coBD66MT10xbtIuUr7tg0Shbsvk0mDA==}
     dependencies:
       '@lezer/common': 1.2.1
+    dev: false
+
+  /@mep-agency/next-iubenda@1.0.0-alpha5(next@14.2.6)(react@18.3.1):
+    resolution: {integrity: sha512-UR6i0Dwb1gcOhrSkLRyY8C8xJdvvIxnZt5921MzV7AzAt7/7ZqvR9qrryk2EDIOxyoRS5fsbtkoKc9cvCPCsMw==}
+    peerDependencies:
+      next: '>= 13.0.0'
+      react: '>= 18.2.0'
+    dependencies:
+      next: 14.2.6(@babel/core@7.24.7)(react-dom@18.3.1)(react@18.3.1)
+      react: 18.3.1
     dev: false
 
   /@next/env@14.2.6:

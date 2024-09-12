@@ -4,7 +4,14 @@ import "./globals.css";
 import { cn } from "@/lib/utils"
 import { Analytics } from '@vercel/analytics/react';
 import { VercelToolbar } from '@vercel/toolbar/next';
+import { IubendaProvider, IubendaCookieSolutionBannerConfigInterface } from '@mep-agency/next-iubenda';
 
+const iubendaBannerConfig: IubendaCookieSolutionBannerConfigInterface = {
+  siteId: 3761822, // Your site ID
+  cookiePolicyId: 63674272, // Your cookie policy ID
+  lang: 'it',
+  // See https://www.iubenda.com/en/help/1205-how-to-configure-your-cookie-solution-advanced-guide
+};
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -30,9 +37,11 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        {children}
-        {shouldInjectToolbar && <VercelToolbar />}
-        <Analytics />
+        <IubendaProvider bannerConfig={iubendaBannerConfig}>
+          {children}
+          {shouldInjectToolbar && <VercelToolbar />}
+          <Analytics />
+        </IubendaProvider>
       </body>
     </html>
   );
