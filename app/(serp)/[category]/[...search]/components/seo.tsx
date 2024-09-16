@@ -12,44 +12,6 @@ import { serialize } from "@/lib/nuqs/searchParams";
 
 type Location = components["schemas"]["Location"];
 
-function mapPriceRange(key: string): { min: number | null; max: number | null } {
-    if (key === 'Prezzo su richiesta') {
-        return { min: null, max: null };
-    }
-
-    const match = key.match(/(\d+(?:\.\d+)?)/g);
-    if (match) {
-        if (key.startsWith('fino a')) {
-            return { min: 0, max: parseInt(match[0].replace('.', '')) };
-        } else if (match.length === 2) {
-            return {
-                min: parseInt(match[0].replace('.', '')),
-                max: parseInt(match[1]!.replace('.', ''))
-            };
-        }
-    }
-    return { min: null, max: null };
-}
-
-function mapSurfaceRange(key: string): { min: number | null; max: number | null } {
-    if (key === 'oltre 201 m²') {
-        return { min: 201, max: null };
-    }
-
-    const match = key.match(/(\d+)/g);
-    if (match) {
-        if (key.startsWith('fino a')) {
-            return { min: 0, max: parseInt(match[0]) };
-        } else if (match.length === 2) {
-            return {
-                min: parseInt(match[0]),
-                max: parseInt(match[1]!)
-            };
-        }
-    }
-    return { min: null, max: null };
-}
-
 export default async function SEO({
     location,
     city,
@@ -70,7 +32,6 @@ export default async function SEO({
 
     if (!data?.aggregation) return null
 
-
     const topThreeRooms = data.aggregation.rooms!
         .sort((a, b) => b.count - a.count)
         .slice(0, 3);
@@ -82,17 +43,7 @@ export default async function SEO({
 
     const categoryHouses = data.aggregation.category!
 
-    const priceHouses = data.aggregation.price!.map(price => ({
-        ...price,
-        range: mapPriceRange(price.key)
-    }));
-
     const furnitureHouses = data.aggregation.furniture!
-
-    const surfaceHouses = data.aggregation.surface!.map(surface => ({
-        ...surface,
-        range: mapSurfaceRange(surface.key)
-    }));
 
     let formattedLocationName = "";
 
@@ -168,21 +119,23 @@ export default async function SEO({
                     </AccordionTrigger>
                     <AccordionContent className="flex flex-col gap-2">
                         {
-                            priceHouses
+                            data.aggregation.price!
                                 .sort((a, b) => {
                                     if (a.key === 'Prezzo su richiesta') return 1;
                                     if (b.key === 'Prezzo su richiesta') return -1;
-                                    return (a.range.min ?? 0) - (b.range.min ?? 0);
+                                    return (a.range?.min ?? 0) - (b.range?.min ?? 0);
                                 })
                                 .map((price, index) => (
                                     <Link key={index} href={`/vendita-case/${page}${serialize({
-                                        price_min: price.range.min,
-                                        price_max: price.range.max
+                                        price_min: price?.range?.min,
+                                        price_max: price?.range?.max
                                     })}`}>
                                         <div className="flex flex-row justify-between">
                                             <p className="text-md text-blue-500">
                                                 {price.key === 'Prezzo su richiesta' ? 'Prezzo su richiesta' :
-                                                    `Case ${price.range.min === 0 ? 'fino a' : price.range.max ? 'da' : ''} ${price.range.min?.toLocaleString() ?? ''}${price.range.max ? ` a ${price.range.max.toLocaleString()}€` : ''} in ${formattedLocationName}`}
+                                                    price?.range?.min === 0 ? `Case fino a ${price?.range?.max?.toLocaleString()}€` :
+                                                    price?.range?.max === null ? `Case oltre ${price?.range?.min?.toLocaleString()}€` :
+                                                    `Case da ${price?.range?.min?.toLocaleString()}€ a ${price?.range?.max?.toLocaleString()}€`} in {formattedLocationName}
                                             </p>
                                             <p className="text-md text-muted-foreground"> {price.count} risultati </p>
                                         </div>
@@ -201,7 +154,7 @@ export default async function SEO({
                     <AccordionContent className="flex flex-col gap-2">
                         {
                             categoryHouses.map((category, index) => (
-                                <Link key={index} href={`/vendita-case/${page}${serialize({ categories: [category.key] })}`}>
+                                <Link key={index} href={`/vendita-${category.key.toLowerCase().replace(/\s+/g, '-')}/${page}`}>
                                     <div className="flex flex-row justify-between">
                                         <p className="text-md  text-blue-500"> {category.key} in {formattedLocationName}</p>
                                         <p className="text-md text-muted-foreground"> {category.count} risultati </p>
@@ -220,18 +173,18 @@ export default async function SEO({
                     </AccordionTrigger>
                     <AccordionContent className="flex flex-col gap-2">
                         {
-                            surfaceHouses
-                                .sort((a, b) => (a.range.min ?? 0) - (b.range.min ?? 0))
+                            data.aggregation.surface!
+                                .sort((a, b) => (a.range?.min ?? 0) - (b.range?.min ?? 0))
                                 .map((surface, index) => (
                                     <Link key={index} href={`/vendita-case/${page}${serialize({
-                                        surface_min: surface.range.min,
-                                        surface_max: surface.range.max
+                                        surface_min: surface.range?.min,
+                                        surface_max: surface.range?.max
                                     })}`}>
                                         <div className="flex flex-row justify-between items-center">
                                             <p className="text-md text-blue-500">
-                                                {surface.range.min === 0 ? `Case fino a ${surface.range.max} mq` :
-                                                 surface.range.max === null ? `Case oltre ${surface.range.min} mq` :
-                                                 `Case da ${surface.range.min} a ${surface.range.max} mq`} in {formattedLocationName}
+                                                {surface.range?.min === 0 ? `Case fino a ${surface.range?.max} mq` :
+                                                 surface.range?.max === null ? `Case oltre ${surface.range?.min} mq` :
+                                                 `Case da ${surface.range?.min} a ${surface.range?.max} mq`} in {formattedLocationName}
                                             </p>
                                             <p className="text-md text-muted-foreground"> {surface.count} risultati </p>
                                         </div>
