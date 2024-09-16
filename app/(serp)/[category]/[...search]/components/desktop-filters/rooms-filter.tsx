@@ -3,50 +3,59 @@ import { FilterButton } from "../filter-button-popover"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { useQueryStates } from "nuqs"
-import { searchParams } from "@/lib/nuqs/searchParams"
+import { useRouter, usePathname } from 'next/navigation'
 
 export function RoomsFilter() {
-    const [{ rooms, bathrooms }, setQueryStates] = useQueryStates(
-        { 
-            rooms: searchParams.rooms,
-            bathrooms: searchParams.bathrooms
-        },
-        { shallow: false }
-    )
-
     const [isOpen, setIsOpen] = useState(false)
-    const [selectedRooms, setSelectedRooms] = useState<string[]>(rooms || [])
-    const [selectedBathrooms, setSelectedBathrooms] = useState<string[]>(bathrooms || [])
+    const [selectedRooms, setSelectedRooms] = useState<string[]>([])
+    const [selectedBathrooms, setSelectedBathrooms] = useState<string[]>([])
+    const router = useRouter()
+    const pathname = usePathname()
 
-    const isRoomsFilterActive = (rooms && rooms.length > 0) || (bathrooms && bathrooms.length > 0)
+    const isRoomsFilterActive = selectedRooms.length > 0 || selectedBathrooms.length > 0
     const formattedRoomsRange = isRoomsFilterActive
-        ? `${(rooms || []).sort((a, b) => parseInt(a) - parseInt(b)).join(', ')} camere / ${(bathrooms || []).sort((a, b) => parseInt(a) - parseInt(b)).join(', ')} bagni`
+        ? `${selectedRooms.sort((a, b) => parseInt(a) - parseInt(b)).join(', ')} camere / ${selectedBathrooms.sort((a, b) => parseInt(a) - parseInt(b)).join(', ')} bagni`
         : 'Locali'
 
     const handleDelete = () => {
-        setQueryStates({ rooms: null, bathrooms: null })
         setSelectedRooms([])
         setSelectedBathrooms([])
+        updateURL([], [])
     }
 
     const handleApply = () => {
-        setQueryStates({
-            rooms: selectedRooms.length > 0 ? selectedRooms : null,
-            bathrooms: selectedBathrooms.length > 0 ? selectedBathrooms : null
-        })
+        updateURL()
         setIsOpen(false)
     }
 
+    const updateURL = (rooms = selectedRooms, bathrooms = selectedBathrooms) => {
+        const currentPath = pathname.split('/')
+        const location = currentPath.slice(2).join('/') // Get the current location
+        const baseURL = `/vendita-case/${location}` // Always use "vendita-case"
+        
+        const params = new URLSearchParams(window.location.search)
+        if (rooms.length > 0) params.set('rooms', rooms.join(','))
+        else params.delete('rooms')
+        if (bathrooms.length > 0) params.set('bathrooms', bathrooms.join(','))
+        else params.delete('bathrooms')
+
+        const newURL = `${baseURL}${params.toString() ? '?' + params.toString() : ''}`
+        router.push(newURL)
+    }
+
     useEffect(() => {
-        setSelectedRooms(rooms || [])
-        setSelectedBathrooms(bathrooms || [])
-    }, [rooms, bathrooms])
+        const params = new URLSearchParams(window.location.search)
+        const roomsParam = params.get('rooms')
+        const bathroomsParam = params.get('bathrooms')
+
+        if (roomsParam) setSelectedRooms(roomsParam.split(','))
+        if (bathroomsParam) setSelectedBathrooms(bathroomsParam.split(','))
+    }, [])
 
     return (
         <FilterButton label={formattedRoomsRange}
             onDelete={handleDelete}
-            showDeleteIcon={isRoomsFilterActive ?? false}
+            showDeleteIcon={isRoomsFilterActive}
             open={isOpen}
             setOpen={setIsOpen}
         >

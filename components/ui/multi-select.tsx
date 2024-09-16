@@ -13,7 +13,7 @@ import {
     CommandList,
     CommandSeparator,
 } from "@/components/ui/command"
-import { FilterProps } from "@/app/(serp)/vendita-case/[...search]/components/header";
+import { FilterProps } from "@/app/(serp)/[category]/[...search]/components/header";
 import { PlusIcon, SearchIcon } from 'lucide-react'
 import { PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "./button";

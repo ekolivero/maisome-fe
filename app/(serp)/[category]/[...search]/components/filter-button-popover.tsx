@@ -17,7 +17,7 @@ export function FilterButton({ label, children, onDelete, showDeleteIcon, open, 
         <Popover open={open} onOpenChange={setOpen}>
             <div className="flex items-center">
                 <PopoverTrigger asChild>
-                    <Button size="lg" variant={"outline"} className="text-sm px-2 py-1 h-[58px] relative" onClick={() => setOpen && setOpen(!open)}>
+                    <Button size="lg" variant={"outline"} className="text-sm px-2 py-1 h-[58px] relative min-w-[100px]" onClick={() => setOpen && setOpen(!open)}>
                         {label}
                         {showDeleteIcon ? (
                             <XIcon

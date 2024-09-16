@@ -1,12 +1,12 @@
-import HouseList from "@/app/(serp)/vendita-case/[...search]/components/house-list";
+import HouseList from "@/app/(serp)/[category]/[...search]/components/house-list";
 import { notFound } from "next/navigation";
-import { NeighboorsCarousel } from "@/app/(serp)/vendita-case/[...search]/components/neighbors-carousel";
-import client from "@/app/utils/client";
-import { createItemListJsonLD } from "@/app/(serp)/vendita-case/[...search]/utils/breadcrumb";
+import { NeighboorsCarousel } from "@/app/(serp)/[category]/[...search]/components/neighbors-carousel";
+import { createItemListJsonLD } from "@/app/(serp)/[category]/[...search]/utils/breadcrumb";
 import { searchParamsCache } from "@/lib/nuqs/searchParams";
 import { fetchHouses, fetchLookupData } from "../utils/fetch";
+import { HouseTypeInfo } from "@/lib/types/house-enum";
 
-export async function HouseListing({ search }: { search: string[] }) {
+export async function HouseListing({ search, category }: { search: string[], category: HouseTypeInfo }) {
 
     const searchParams = searchParamsCache.all();
 
@@ -18,7 +18,7 @@ export async function HouseListing({ search }: { search: string[] }) {
 
     const hasIds = searchParams.ids !== null;
 
-    const { data, error } = await fetchHouses(hasIds ? searchParams.ids! : [locationId])
+    const { data, error } = await fetchHouses(hasIds ? searchParams.ids! : [locationId], category.singular)
 
     if (error) return notFound();
 

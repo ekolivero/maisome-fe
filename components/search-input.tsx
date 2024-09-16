@@ -1,3 +1,4 @@
+'use client'
 import { Input } from "./ui/input";
 import {
     Popover,
