@@ -123,7 +123,7 @@ export default async function sitemap({
 
   region.province.forEach((province) => {
     sitemap.push({
-      url: `${BASE_URL}/vendita-${houseType.toLowerCase()}/${province.url.replace("-provincia", "")}`,
+      url: `${BASE_URL}/vendita-${houseType.toLowerCase()}/${province.url}`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
