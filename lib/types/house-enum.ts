@@ -65,7 +65,7 @@ function getHouseTypeFromString(input: string): HouseTypeInfo {
     }
 }
 
-export { HouseType };
+export { HouseType, houseTypeInfo };
 export type { HouseTypeInfo };
 export { getHouseTypeFromString };
 

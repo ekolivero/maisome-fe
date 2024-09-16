@@ -1,0 +1,824 @@
+[
+  {
+    "id": "index"
+  },
+  {
+    "id": "monolocale"
+  },
+  {
+    "id": "monolocale__abruzzo"
+  },
+  {
+    "id": "monolocale__basilicata"
+  },
+  {
+    "id": "monolocale__calabria"
+  },
+  {
+    "id": "monolocale__campania"
+  },
+  {
+    "id": "monolocale__emilia-romagna"
+  },
+  {
+    "id": "monolocale__friuli-venezia-giulia"
+  },
+  {
+    "id": "monolocale__lazio"
+  },
+  {
+    "id": "monolocale__liguria"
+  },
+  {
+    "id": "monolocale__lombardia"
+  },
+  {
+    "id": "monolocale__marche"
+  },
+  {
+    "id": "monolocale__molise"
+  },
+  {
+    "id": "monolocale__piemonte"
+  },
+  {
+    "id": "monolocale__puglia"
+  },
+  {
+    "id": "monolocale__sardegna"
+  },
+  {
+    "id": "monolocale__sicilia"
+  },
+  {
+    "id": "monolocale__toscana"
+  },
+  {
+    "id": "monolocale__trentino-alto-adige"
+  },
+  {
+    "id": "monolocale__umbria"
+  },
+  {
+    "id": "monolocale__valle-d-aosta"
+  },
+  {
+    "id": "monolocale__veneto"
+  },
+  {
+    "id": "bilocale"
+  },
+  {
+    "id": "bilocale__abruzzo"
+  },
+  {
+    "id": "bilocale__basilicata"
+  },
+  {
+    "id": "bilocale__calabria"
+  },
+  {
+    "id": "bilocale__campania"
+  },
+  {
+    "id": "bilocale__emilia-romagna"
+  },
+  {
+    "id": "bilocale__friuli-venezia-giulia"
+  },
+  {
+    "id": "bilocale__lazio"
+  },
+  {
+    "id": "bilocale__liguria"
+  },
+  {
+    "id": "bilocale__lombardia"
+  },
+  {
+    "id": "bilocale__marche"
+  },
+  {
+    "id": "bilocale__molise"
+  },
+  {
+    "id": "bilocale__piemonte"
+  },
+  {
+    "id": "bilocale__puglia"
+  },
+  {
+    "id": "bilocale__sardegna"
+  },
+  {
+    "id": "bilocale__sicilia"
+  },
+  {
+    "id": "bilocale__toscana"
+  },
+  {
+    "id": "bilocale__trentino-alto-adige"
+  },
+  {
+    "id": "bilocale__umbria"
+  },
+  {
+    "id": "bilocale__valle-d-aosta"
+  },
+  {
+    "id": "bilocale__veneto"
+  },
+  {
+    "id": "trilocale"
+  },
+  {
+    "id": "trilocale__abruzzo"
+  },
+  {
+    "id": "trilocale__basilicata"
+  },
+  {
+    "id": "trilocale__calabria"
+  },
+  {
+    "id": "trilocale__campania"
+  },
+  {
+    "id": "trilocale__emilia-romagna"
+  },
+  {
+    "id": "trilocale__friuli-venezia-giulia"
+  },
+  {
+    "id": "trilocale__lazio"
+  },
+  {
+    "id": "trilocale__liguria"
+  },
+  {
+    "id": "trilocale__lombardia"
+  },
+  {
+    "id": "trilocale__marche"
+  },
+  {
+    "id": "trilocale__molise"
+  },
+  {
+    "id": "trilocale__piemonte"
+  },
+  {
+    "id": "trilocale__puglia"
+  },
+  {
+    "id": "trilocale__sardegna"
+  },
+  {
+    "id": "trilocale__sicilia"
+  },
+  {
+    "id": "trilocale__toscana"
+  },
+  {
+    "id": "trilocale__trentino-alto-adige"
+  },
+  {
+    "id": "trilocale__umbria"
+  },
+  {
+    "id": "trilocale__valle-d-aosta"
+  },
+  {
+    "id": "trilocale__veneto"
+  },
+  {
+    "id": "quadrilocale"
+  },
+  {
+    "id": "quadrilocale__abruzzo"
+  },
+  {
+    "id": "quadrilocale__basilicata"
+  },
+  {
+    "id": "quadrilocale__calabria"
+  },
+  {
+    "id": "quadrilocale__campania"
+  },
+  {
+    "id": "quadrilocale__emilia-romagna"
+  },
+  {
+    "id": "quadrilocale__friuli-venezia-giulia"
+  },
+  {
+    "id": "quadrilocale__lazio"
+  },
+  {
+    "id": "quadrilocale__liguria"
+  },
+  {
+    "id": "quadrilocale__lombardia"
+  },
+  {
+    "id": "quadrilocale__marche"
+  },
+  {
+    "id": "quadrilocale__molise"
+  },
+  {
+    "id": "quadrilocale__piemonte"
+  },
+  {
+    "id": "quadrilocale__puglia"
+  },
+  {
+    "id": "quadrilocale__sardegna"
+  },
+  {
+    "id": "quadrilocale__sicilia"
+  },
+  {
+    "id": "quadrilocale__toscana"
+  },
+  {
+    "id": "quadrilocale__trentino-alto-adige"
+  },
+  {
+    "id": "quadrilocale__umbria"
+  },
+  {
+    "id": "quadrilocale__valle-d-aosta"
+  },
+  {
+    "id": "quadrilocale__veneto"
+  },
+  {
+    "id": "appartamento"
+  },
+  {
+    "id": "appartamento__abruzzo"
+  },
+  {
+    "id": "appartamento__basilicata"
+  },
+  {
+    "id": "appartamento__calabria"
+  },
+  {
+    "id": "appartamento__campania"
+  },
+  {
+    "id": "appartamento__emilia-romagna"
+  },
+  {
+    "id": "appartamento__friuli-venezia-giulia"
+  },
+  {
+    "id": "appartamento__lazio"
+  },
+  {
+    "id": "appartamento__liguria"
+  },
+  {
+    "id": "appartamento__lombardia"
+  },
+  {
+    "id": "appartamento__marche"
+  },
+  {
+    "id": "appartamento__molise"
+  },
+  {
+    "id": "appartamento__piemonte"
+  },
+  {
+    "id": "appartamento__puglia"
+  },
+  {
+    "id": "appartamento__sardegna"
+  },
+  {
+    "id": "appartamento__sicilia"
+  },
+  {
+    "id": "appartamento__toscana"
+  },
+  {
+    "id": "appartamento__trentino-alto-adige"
+  },
+  {
+    "id": "appartamento__umbria"
+  },
+  {
+    "id": "appartamento__valle-d-aosta"
+  },
+  {
+    "id": "appartamento__veneto"
+  },
+  {
+    "id": "loft"
+  },
+  {
+    "id": "loft__abruzzo"
+  },
+  {
+    "id": "loft__basilicata"
+  },
+  {
+    "id": "loft__calabria"
+  },
+  {
+    "id": "loft__campania"
+  },
+  {
+    "id": "loft__emilia-romagna"
+  },
+  {
+    "id": "loft__friuli-venezia-giulia"
+  },
+  {
+    "id": "loft__lazio"
+  },
+  {
+    "id": "loft__liguria"
+  },
+  {
+    "id": "loft__lombardia"
+  },
+  {
+    "id": "loft__marche"
+  },
+  {
+    "id": "loft__molise"
+  },
+  {
+    "id": "loft__piemonte"
+  },
+  {
+    "id": "loft__puglia"
+  },
+  {
+    "id": "loft__sardegna"
+  },
+  {
+    "id": "loft__sicilia"
+  },
+  {
+    "id": "loft__toscana"
+  },
+  {
+    "id": "loft__trentino-alto-adige"
+  },
+  {
+    "id": "loft__umbria"
+  },
+  {
+    "id": "loft__valle-d-aosta"
+  },
+  {
+    "id": "loft__veneto"
+  },
+  {
+    "id": "terratetto"
+  },
+  {
+    "id": "terratetto__abruzzo"
+  },
+  {
+    "id": "terratetto__basilicata"
+  },
+  {
+    "id": "terratetto__calabria"
+  },
+  {
+    "id": "terratetto__campania"
+  },
+  {
+    "id": "terratetto__emilia-romagna"
+  },
+  {
+    "id": "terratetto__friuli-venezia-giulia"
+  },
+  {
+    "id": "terratetto__lazio"
+  },
+  {
+    "id": "terratetto__liguria"
+  },
+  {
+    "id": "terratetto__lombardia"
+  },
+  {
+    "id": "terratetto__marche"
+  },
+  {
+    "id": "terratetto__molise"
+  },
+  {
+    "id": "terratetto__piemonte"
+  },
+  {
+    "id": "terratetto__puglia"
+  },
+  {
+    "id": "terratetto__sardegna"
+  },
+  {
+    "id": "terratetto__sicilia"
+  },
+  {
+    "id": "terratetto__toscana"
+  },
+  {
+    "id": "terratetto__trentino-alto-adige"
+  },
+  {
+    "id": "terratetto__umbria"
+  },
+  {
+    "id": "terratetto__valle-d-aosta"
+  },
+  {
+    "id": "terratetto__veneto"
+  },
+  {
+    "id": "villa"
+  },
+  {
+    "id": "villa__abruzzo"
+  },
+  {
+    "id": "villa__basilicata"
+  },
+  {
+    "id": "villa__calabria"
+  },
+  {
+    "id": "villa__campania"
+  },
+  {
+    "id": "villa__emilia-romagna"
+  },
+  {
+    "id": "villa__friuli-venezia-giulia"
+  },
+  {
+    "id": "villa__lazio"
+  },
+  {
+    "id": "villa__liguria"
+  },
+  {
+    "id": "villa__lombardia"
+  },
+  {
+    "id": "villa__marche"
+  },
+  {
+    "id": "villa__molise"
+  },
+  {
+    "id": "villa__piemonte"
+  },
+  {
+    "id": "villa__puglia"
+  },
+  {
+    "id": "villa__sardegna"
+  },
+  {
+    "id": "villa__sicilia"
+  },
+  {
+    "id": "villa__toscana"
+  },
+  {
+    "id": "villa__trentino-alto-adige"
+  },
+  {
+    "id": "villa__umbria"
+  },
+  {
+    "id": "villa__valle-d-aosta"
+  },
+  {
+    "id": "villa__veneto"
+  },
+  {
+    "id": "villa_bifamiliare"
+  },
+  {
+    "id": "villa_bifamiliare__abruzzo"
+  },
+  {
+    "id": "villa_bifamiliare__basilicata"
+  },
+  {
+    "id": "villa_bifamiliare__calabria"
+  },
+  {
+    "id": "villa_bifamiliare__campania"
+  },
+  {
+    "id": "villa_bifamiliare__emilia-romagna"
+  },
+  {
+    "id": "villa_bifamiliare__friuli-venezia-giulia"
+  },
+  {
+    "id": "villa_bifamiliare__lazio"
+  },
+  {
+    "id": "villa_bifamiliare__liguria"
+  },
+  {
+    "id": "villa_bifamiliare__lombardia"
+  },
+  {
+    "id": "villa_bifamiliare__marche"
+  },
+  {
+    "id": "villa_bifamiliare__molise"
+  },
+  {
+    "id": "villa_bifamiliare__piemonte"
+  },
+  {
+    "id": "villa_bifamiliare__puglia"
+  },
+  {
+    "id": "villa_bifamiliare__sardegna"
+  },
+  {
+    "id": "villa_bifamiliare__sicilia"
+  },
+  {
+    "id": "villa_bifamiliare__toscana"
+  },
+  {
+    "id": "villa_bifamiliare__trentino-alto-adige"
+  },
+  {
+    "id": "villa_bifamiliare__umbria"
+  },
+  {
+    "id": "villa_bifamiliare__valle-d-aosta"
+  },
+  {
+    "id": "villa_bifamiliare__veneto"
+  },
+  {
+    "id": "villa_a_schiera"
+  },
+  {
+    "id": "villa_a_schiera__abruzzo"
+  },
+  {
+    "id": "villa_a_schiera__basilicata"
+  },
+  {
+    "id": "villa_a_schiera__calabria"
+  },
+  {
+    "id": "villa_a_schiera__campania"
+  },
+  {
+    "id": "villa_a_schiera__emilia-romagna"
+  },
+  {
+    "id": "villa_a_schiera__friuli-venezia-giulia"
+  },
+  {
+    "id": "villa_a_schiera__lazio"
+  },
+  {
+    "id": "villa_a_schiera__liguria"
+  },
+  {
+    "id": "villa_a_schiera__lombardia"
+  },
+  {
+    "id": "villa_a_schiera__marche"
+  },
+  {
+    "id": "villa_a_schiera__molise"
+  },
+  {
+    "id": "villa_a_schiera__piemonte"
+  },
+  {
+    "id": "villa_a_schiera__puglia"
+  },
+  {
+    "id": "villa_a_schiera__sardegna"
+  },
+  {
+    "id": "villa_a_schiera__sicilia"
+  },
+  {
+    "id": "villa_a_schiera__toscana"
+  },
+  {
+    "id": "villa_a_schiera__trentino-alto-adige"
+  },
+  {
+    "id": "villa_a_schiera__umbria"
+  },
+  {
+    "id": "villa_a_schiera__valle-d-aosta"
+  },
+  {
+    "id": "villa_a_schiera__veneto"
+  },
+  {
+    "id": "casa_indipendente"
+  },
+  {
+    "id": "casa_indipendente__abruzzo"
+  },
+  {
+    "id": "casa_indipendente__basilicata"
+  },
+  {
+    "id": "casa_indipendente__calabria"
+  },
+  {
+    "id": "casa_indipendente__campania"
+  },
+  {
+    "id": "casa_indipendente__emilia-romagna"
+  },
+  {
+    "id": "casa_indipendente__friuli-venezia-giulia"
+  },
+  {
+    "id": "casa_indipendente__lazio"
+  },
+  {
+    "id": "casa_indipendente__liguria"
+  },
+  {
+    "id": "casa_indipendente__lombardia"
+  },
+  {
+    "id": "casa_indipendente__marche"
+  },
+  {
+    "id": "casa_indipendente__molise"
+  },
+  {
+    "id": "casa_indipendente__piemonte"
+  },
+  {
+    "id": "casa_indipendente__puglia"
+  },
+  {
+    "id": "casa_indipendente__sardegna"
+  },
+  {
+    "id": "casa_indipendente__sicilia"
+  },
+  {
+    "id": "casa_indipendente__toscana"
+  },
+  {
+    "id": "casa_indipendente__trentino-alto-adige"
+  },
+  {
+    "id": "casa_indipendente__umbria"
+  },
+  {
+    "id": "casa_indipendente__valle-d-aosta"
+  },
+  {
+    "id": "casa_indipendente__veneto"
+  },
+  {
+    "id": "rustico"
+  },
+  {
+    "id": "rustico__abruzzo"
+  },
+  {
+    "id": "rustico__basilicata"
+  },
+  {
+    "id": "rustico__calabria"
+  },
+  {
+    "id": "rustico__campania"
+  },
+  {
+    "id": "rustico__emilia-romagna"
+  },
+  {
+    "id": "rustico__friuli-venezia-giulia"
+  },
+  {
+    "id": "rustico__lazio"
+  },
+  {
+    "id": "rustico__liguria"
+  },
+  {
+    "id": "rustico__lombardia"
+  },
+  {
+    "id": "rustico__marche"
+  },
+  {
+    "id": "rustico__molise"
+  },
+  {
+    "id": "rustico__piemonte"
+  },
+  {
+    "id": "rustico__puglia"
+  },
+  {
+    "id": "rustico__sardegna"
+  },
+  {
+    "id": "rustico__sicilia"
+  },
+  {
+    "id": "rustico__toscana"
+  },
+  {
+    "id": "rustico__trentino-alto-adige"
+  },
+  {
+    "id": "rustico__umbria"
+  },
+  {
+    "id": "rustico__valle-d-aosta"
+  },
+  {
+    "id": "rustico__veneto"
+  },
+  {
+    "id": "case"
+  },
+  {
+    "id": "case__abruzzo"
+  },
+  {
+    "id": "case__basilicata"
+  },
+  {
+    "id": "case__calabria"
+  },
+  {
+    "id": "case__campania"
+  },
+  {
+    "id": "case__emilia-romagna"
+  },
+  {
+    "id": "case__friuli-venezia-giulia"
+  },
+  {
+    "id": "case__lazio"
+  },
+  {
+    "id": "case__liguria"
+  },
+  {
+    "id": "case__lombardia"
+  },
+  {
+    "id": "case__marche"
+  },
+  {
+    "id": "case__molise"
+  },
+  {
+    "id": "case__piemonte"
+  },
+  {
+    "id": "case__puglia"
+  },
+  {
+    "id": "case__sardegna"
+  },
+  {
+    "id": "case__sicilia"
+  },
+  {
+    "id": "case__toscana"
+  },
+  {
+    "id": "case__trentino-alto-adige"
+  },
+  {
+    "id": "case__umbria"
+  },
+  {
+    "id": "case__valle-d-aosta"
+  },
+  {
+    "id": "case__veneto"
+  }
+]

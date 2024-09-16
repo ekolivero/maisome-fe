@@ -1,8 +1,11 @@
 import fs from "fs";
 import path from "path";
 import type { MetadataRoute } from "next";
+import { houseTypeInfo } from "../lib/types/house-enum";
 
-const BASE_URL = `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}` ?? "http://localhost:3000";
+const BASE_URL =
+  `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}` ||
+  "http://localhost:3000";
 
 type Region = {
   name: string;
@@ -45,12 +48,17 @@ export async function generateSitemaps() {
   const data = loadJsonData("app/sitemap/sitemap.json");
   const sitemaps = [{ id: "index" }];
 
-  data.forEach((region) => {
-    sitemaps.push({ id: region.url });
-    region.province.forEach((province) => {
-      sitemaps.push({ id: `${region.url}__${province.url}` }); // Use double underscore as separator
+  Object.keys(houseTypeInfo).forEach((houseType) => {
+    const formattedHouseType = houseType.toLowerCase().replace(/ /g, '_');
+    sitemaps.push({ id: formattedHouseType });
+    data.forEach((region) => {
+      sitemaps.push({ id: `${formattedHouseType}__${region.url}` });
     });
   });
+
+  // Store the generated sitemap list in a file
+  const sitemapListPath = path.join(process.cwd(), "app/sitemap/sitemap-list.json");
+  fs.writeFileSync(sitemapListPath, JSON.stringify(sitemaps, null, 2));
 
   return sitemaps;
 }
@@ -65,63 +73,69 @@ export default async function sitemap({
   if (id === "index") {
     return [
       {
-        url: BASE_URL,
+        url: `${BASE_URL}`,
         lastModified: new Date(),
         changeFrequency: "daily",
         priority: 1.0,
       },
-      ...data.map((region) => ({
-        url: `${BASE_URL}/sitemap/${region.url}.xml`,
+      ...Object.keys(houseTypeInfo).map((key) => ({
+        url: `${BASE_URL}/sitemap/${key.toLowerCase().replace(/ /g, '-')}.xml`,
         lastModified: new Date(),
-        changeFrequency: "yearly",
-        priority: 0.8,
+        changeFrequency: "daily",
+        priority: 0.9,
       })),
     ] as MetadataRoute.Sitemap;
   }
 
-  const [regionUrl, provinceUrl] = id.split("__"); // Split using double underscore
-  const region = data.find((r) => r.url === regionUrl);
+  const [houseType, regionUrl] = id.split("__");
+  const houseTypeKey = Object.keys(houseTypeInfo).find(
+    (key) => key.toLowerCase().replace(/ /g, '_') === houseType
+  );
 
-  if (!region) {
+  if (!houseTypeKey) {
     return [];
   }
 
-  if (!provinceUrl) {
-    return region.province.map((province) => ({
-      url: `${BASE_URL}/sitemap/${region.url}__${province.url}.xml`, // Use double underscore in URL
+
+  if (!regionUrl) {
+    return data.map((region) => ({
+      url: `${BASE_URL}/sitemap/${houseType}__${region.url}.xml`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     })) as MetadataRoute.Sitemap;
   }
 
-  const province = region.province.find((p) => p.url === provinceUrl);
+  const region = data.find((r) => r.url === regionUrl);
 
-  if (!province) {
+  if (!region) {
     return [];
   }
 
   const sitemap: SitemapItem[] = [
     {
-      url: `${BASE_URL}/${region.url}/${province.url.replace(
-        "-provincia",
-        ""
-      )}`,
+      url: `${BASE_URL}/vendita-${houseType.toLowerCase()}/${region.url}`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.7,
     },
   ];
 
-  province.comuni.forEach((comune) => {
+  region.province.forEach((province) => {
     sitemap.push({
-      url: `${BASE_URL}/vendita-case/${province.url.replace(
-        "-provincia",
-        ""
-      )}/${comune.url.split("/").pop()}`,
+      url: `${BASE_URL}/vendita-${houseType.toLowerCase()}/${province.url.replace("-provincia", "")}`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
+    });
+
+    province.comuni.forEach((comune) => {
+      sitemap.push({
+        url: `${BASE_URL}/vendita-${houseType.toLowerCase()}/${province.url.replace("-provincia", "")}/${comune.url.split("/").pop()}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.5,
+      });
     });
   });
 
