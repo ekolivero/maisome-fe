@@ -47,20 +47,15 @@ export async function generateSitemaps() {
   const data = loadJsonData("app/sitemap/sitemap.json");
   const sitemaps = [{ id: "index" }];
 
-  // For each region, create a region sitemap, and for each province, create a province sitemap
+  // Add region and province sitemaps
   data.forEach((region) => {
-    sitemaps.push({ id: `region-${region.url}` }); // region sitemap (e.g., region-piemonte.xml)
-
+    sitemaps.push({ id: `region-${region.url}` });
     region.province.forEach((province) => {
-      sitemaps.push({ id: `province-${region.url}-${province.url}` }); // province sitemap (e.g., province-piemonte-alessandria.xml)
+      sitemaps.push({ id: `province-${region.url}-${province.url}` });
     });
   });
 
-  // Save the generated sitemap list
-  const sitemapListPath = path.join(
-    process.cwd(),
-    "app/sitemap/sitemap-list.json"
-  );
+  const sitemapListPath = path.join(process.cwd(), "app/sitemap/sitemap-list.json");
   fs.writeFileSync(sitemapListPath, JSON.stringify(sitemaps, null, 2));
 
   return sitemaps;
@@ -74,52 +69,83 @@ export default async function sitemap({
   const data = loadJsonData("app/sitemap/sitemap.json");
 
   if (id === "index") {
-    // Index sitemap that links to each region’s sitemap
+    // Root sitemap with homepage and region pages
     return [
       {
-        url: `${BASE_URL}`,
+        url: BASE_URL,
         lastModified: new Date(),
         changeFrequency: "daily",
         priority: 1.0,
       },
+      // Add region pages
       ...data.map((region) => ({
-        url: `${BASE_URL}/sitemap/${region.url}.xml`,
+        url: `${BASE_URL}/${region.url}`,
         lastModified: new Date(),
-        changeFrequency: "monthly" as const,
+        changeFrequency: "weekly" as const,
+        priority: 0.9,
+      })),
+      // Links to region sitemaps
+      ...data.map((region) => ({
+        url: `${BASE_URL}/sitemap/region-${region.url}.xml`,
+        lastModified: new Date(),
+        changeFrequency: "daily" as const,
         priority: 0.8,
       })),
     ];
   }
 
   if (id.startsWith("region-")) {
-    // Extract the region URL
     const regionUrl = id.replace("region-", "");
     const region = data.find((r) => r.url === regionUrl);
 
     if (!region) return [];
 
-    return region.province.map((province) => ({
-      url: `${BASE_URL}/sitemap/${region.url}/${province.url}.xml`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    })) as MetadataRoute.Sitemap;
+    return [
+      // Add province pages
+      ...region.province.map((province) => ({
+        url: `${BASE_URL}/${region.url}/${province.url}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      })),
+      // Links to province sitemaps
+      ...region.province.map((province) => ({
+        url: `${BASE_URL}/sitemap/province-${region.url}-${province.url}.xml`,
+        lastModified: new Date(),
+        changeFrequency: "daily" as const,
+        priority: 0.7,
+      })),
+    ];
   }
 
   if (id.startsWith("province-")) {
     // Extract the region and province URLs
-    const [, regionUrl, provinceUrl] = id.split("-");
+    // The current split isn't handling the full province URL correctly
+    const parts = id.replace("province-", "").split("-");
+    const regionUrl = parts[0];
+    const provinceUrl = parts.slice(1).join("-"); // Handle province URLs that might contain hyphens
+    
     const region = data.find((r) => r.url === regionUrl);
     const province = region?.province.find((p) => p.url === provinceUrl);
 
-    if (!province) return [];
+    if (!province || !region) return [];
 
-    return province.comuni.map((comune) => ({
-      url: `${BASE_URL}/vendita-case/${regionUrl}/${provinceUrl}/${comune.url}`,
-      lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 0.9,
-    })) as MetadataRoute.Sitemap;
+    return [
+      // Add the province landing page
+      {
+        url: `${BASE_URL}/${region.url}/${province.url}`,
+        lastModified: new Date(),
+        changeFrequency: "daily" as const,
+        priority: 0.7,
+      },
+      // Add all comuni pages for this province
+      ...province.comuni.map((comune) => ({
+        url: `${BASE_URL}/${region.url}/${province.url}/${comune.url}`,
+        lastModified: new Date(),
+        changeFrequency: "daily" as const,
+        priority: 0.6,
+      })),
+    ];
   }
 
   return [];
