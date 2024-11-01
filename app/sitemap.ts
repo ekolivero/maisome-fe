@@ -133,14 +133,14 @@ export default async function sitemap({
     return [
       // Add the province landing page
       {
-        url: `${BASE_URL}/${region.url}/${province.url}`,
+        url: `${BASE_URL}/vendita-case/${region.url}/${province.url}`,
         lastModified: new Date(),
         changeFrequency: "daily" as const,
         priority: 0.7,
       },
       // Add all comuni pages for this province
       ...province.comuni.map((comune) => ({
-        url: `${BASE_URL}/${region.url}/${province.url}/${comune.url}`,
+        url: `${BASE_URL}/vendita-case/${region.url}/${province.url}/${comune.url}`,
         lastModified: new Date(),
         changeFrequency: "daily" as const,
         priority: 0.6,
