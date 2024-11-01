@@ -21,14 +21,6 @@ type Province = {
 type Comune = {
   name: string;
   url: string;
-  macrozone?: {
-    name: string;
-    url: string;
-    microzone: {
-      name: string;
-      url: string;
-    }[];
-  }[];
 };
 
 type SitemapItem = {
@@ -63,7 +55,10 @@ export async function generateSitemaps() {
     });
   });
 
-  const sitemapListPath = path.join(process.cwd(), "app/sitemap/sitemap-list.json");
+  const sitemapListPath = path.join(
+    process.cwd(),
+    "app/sitemap/sitemap-list.json"
+  );
   fs.writeFileSync(sitemapListPath, JSON.stringify(sitemaps, null, 2));
 
   return sitemaps;
@@ -85,10 +80,10 @@ export default async function sitemap({
         priority: 1.0,
       },
       ...data.map((region) => ({
-        url: `${BASE_URL}/vendita-case/${region.url}`,
+        url: `${BASE_URL}/vendita-case/${region.url}.xml`,
         lastModified: new Date(),
         changeFrequency: "monthly" as const,
-        priority: 0.8,
+        priority: 0.5,
       })),
     ];
   }
@@ -104,10 +99,10 @@ export default async function sitemap({
         url: `${BASE_URL}/vendita-case/${region.url}`,
         lastModified: new Date(),
         changeFrequency: "weekly",
-        priority: 0.7,
+        priority: 0.5,
       },
       ...region.province.map((province) => ({
-        url: `${BASE_URL}/vendita-case/${region.url}/${province.url}`,
+        url: `${BASE_URL}/vendita-case/${region.url}/${province.url}.xml`,
         lastModified: new Date(),
         changeFrequency: "weekly" as const,
         priority: 0.6,
@@ -134,34 +129,10 @@ export default async function sitemap({
       ...province.comuni.map((comune) => ({
         url: `${BASE_URL}/vendita-case/${region.url}/${province.url}/${comune.url}`,
         lastModified: new Date(),
-        changeFrequency: "weekly" as const,
-        priority: 0.5,
+        changeFrequency: "daily" as const,
+        priority: 0.8,
       })),
     ];
-
-    province.comuni.forEach((comune) => {
-      if (comune.macrozone) {
-        comune.macrozone.forEach((macrozone) => {
-          sitemap.push({
-            url: `${BASE_URL}/vendita-case/${region.url}/${province.url}/${macrozone.url}`,
-            lastModified: new Date(),
-            changeFrequency: "weekly",
-            priority: 0.4,
-          });
-
-          if (macrozone.microzone) {
-            macrozone.microzone.forEach((microzone) => {
-              sitemap.push({
-                url: `${BASE_URL}/vendita-case/${region.url}/${province.url}/${microzone.url}`,
-                lastModified: new Date(),
-                changeFrequency: "weekly",
-                priority: 0.3,
-              });
-            });
-          }
-        });
-      }
-    });
 
     return sitemap;
   }
