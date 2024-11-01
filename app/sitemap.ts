@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import type { MetadataRoute } from "next";
-import { houseTypeInfo } from "../lib/types/house-enum";
 
 const BASE_URL =
   `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}` ||
@@ -48,16 +47,15 @@ export async function generateSitemaps() {
   const data = loadJsonData("app/sitemap/sitemap.json");
   const sitemaps = [{ id: "index" }];
 
-  Object.keys(houseTypeInfo).forEach((houseType) => {
-    const formattedHouseType = houseType.toLowerCase().replace(/ /g, '_');
-    sitemaps.push({ id: formattedHouseType });
-    data.forEach((region) => {
-      sitemaps.push({ id: `${formattedHouseType}__${region.url}` });
-    });
+  data.forEach((region) => {
+    sitemaps.push({ id: `region__${region.url}` });
   });
 
   // Store the generated sitemap list in a file
-  const sitemapListPath = path.join(process.cwd(), "app/sitemap/sitemap-list.json");
+  const sitemapListPath = path.join(
+    process.cwd(),
+    "app/sitemap/sitemap-list.json"
+  );
   fs.writeFileSync(sitemapListPath, JSON.stringify(sitemaps, null, 2));
 
   return sitemaps;
@@ -78,34 +76,16 @@ export default async function sitemap({
         changeFrequency: "daily",
         priority: 1.0,
       },
-      ...Object.keys(houseTypeInfo).map((key) => ({
-        url: `${BASE_URL}/sitemap/${key.toLowerCase().replace(/ /g, '-')}.xml`,
+      ...data.map((region) => ({
+        url: `${BASE_URL}/vendita-case/${region.url}`,
         lastModified: new Date(),
-        changeFrequency: "daily",
-        priority: 0.9,
+        changeFrequency: "monthly",
+        priority: 0.8,
       })),
     ] as MetadataRoute.Sitemap;
   }
 
-  const [houseType, regionUrl] = id.split("__");
-  const houseTypeKey = Object.keys(houseTypeInfo).find(
-    (key) => key.toLowerCase().replace(/ /g, '_') === houseType
-  );
-
-  if (!houseTypeKey) {
-    return [];
-  }
-
-
-  if (!regionUrl) {
-    return data.map((region) => ({
-      url: `${BASE_URL}/sitemap/${houseType}__${region.url}.xml`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    })) as MetadataRoute.Sitemap;
-  }
-
+  const [, regionUrl] = id.split("__");
   const region = data.find((r) => r.url === regionUrl);
 
   if (!region) {
@@ -114,7 +94,7 @@ export default async function sitemap({
 
   const sitemap: SitemapItem[] = [
     {
-      url: `${BASE_URL}/vendita-${houseType.toLowerCase()}/${region.url}`,
+      url: `${BASE_URL}/vendita-case/${region.url}`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.7,
@@ -123,7 +103,7 @@ export default async function sitemap({
 
   region.province.forEach((province) => {
     sitemap.push({
-      url: `${BASE_URL}/vendita-${houseType.toLowerCase()}/${province.url}`,
+      url: `${BASE_URL}/vendita-case/${region.url}/${province.url}`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
@@ -131,7 +111,7 @@ export default async function sitemap({
 
     province.comuni.forEach((comune) => {
       sitemap.push({
-        url: `${BASE_URL}/vendita-${houseType.toLowerCase()}/${province.url.replace("-provincia", "")}/${comune.url.split("/").pop()}`,
+        url: `${BASE_URL}/vendita-case/${region.url}/${province.url}/${comune.url}`,
         lastModified: new Date(),
         changeFrequency: "weekly",
         priority: 0.5,
