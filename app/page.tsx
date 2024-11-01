@@ -14,11 +14,11 @@ export default async function Home({
   searchParams
 }: PageProps) {
 
-  const { q: query } = searchParamsCache.parse(await searchParams)
+  // const { q: query } = searchParamsCache.parse(await searchParams)
 
-  if (query) {
-    await getFilters({ q: query || "" })
-  }
+  // if (query) {
+  //   await getFilters({ q: query || "" })
+  // }
 
   return (
     <main className="flex flex-col">
