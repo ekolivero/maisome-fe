@@ -1,8 +1,25 @@
 import { ImagesSliderDemo } from "@/components/image-slider";
 import SeoRegionAndProvince from "@/components/seo-region-and-province";
 import { FooterComponent } from "@/components/footer";
+import { type SearchParams } from 'nuqs/server'
+import { searchParamsCache } from '@/lib/nuqs/searchParams'
+import { getFilters } from "@/ai/actions/filters";
 
-export default function Home() {
+type PageProps = {
+  searchParams: Promise<SearchParams> // Next.js 15+: async searchParams prop
+}
+
+
+export default async function Home({ 
+  searchParams
+}: PageProps) {
+
+  const { q: query } = searchParamsCache.parse(await searchParams)
+
+  if (query) {
+    await getFilters({ q: query || "" })
+  }
+
   return (
     <main className="flex flex-col">
       <ImagesSliderDemo />

@@ -23,6 +23,7 @@ export const searchParams = {
   balcony: parseAsString,
   page_number: parseAsInteger,
   per_page: parseAsInteger,
+  q: parseAsString,
 };
 
 export const searchParamsCache = createSearchParamsCache({
