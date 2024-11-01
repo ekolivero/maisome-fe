@@ -47,11 +47,11 @@ export async function generateSitemaps() {
   const data = loadJsonData("app/sitemap/sitemap.json");
   const sitemaps = [{ id: "index" }];
 
-  // Add region and province sitemaps
+  // Add region and province sitemaps with simplified IDs
   data.forEach((region) => {
-    sitemaps.push({ id: `region-${region.url}` });
+    sitemaps.push({ id: region.url });
     region.province.forEach((province) => {
-      sitemaps.push({ id: `province-${region.url}-${province.url}` });
+      sitemaps.push({ id: province.url });
     });
   });
 
@@ -69,7 +69,6 @@ export default async function sitemap({
   const data = loadJsonData("app/sitemap/sitemap.json");
 
   if (id === "index") {
-    // Root sitemap with homepage and region pages
     return [
       {
         url: BASE_URL,
@@ -84,9 +83,9 @@ export default async function sitemap({
         changeFrequency: "weekly" as const,
         priority: 0.9,
       })),
-      // Links to region sitemaps
+      // Links to region sitemaps with simplified URLs
       ...data.map((region) => ({
-        url: `${BASE_URL}/sitemap/region-${region.url}.xml`,
+        url: `${BASE_URL}/sitemap/${region.url}.xml`,
         lastModified: new Date(),
         changeFrequency: "daily" as const,
         priority: 0.8,
@@ -94,23 +93,19 @@ export default async function sitemap({
     ];
   }
 
-  if (id.startsWith("region-")) {
-    const regionUrl = id.replace("region-", "");
-    const region = data.find((r) => r.url === regionUrl);
-
-    if (!region) return [];
-
+  // Find if ID matches a region
+  const region = data.find((r) => r.url === id);
+  if (region) {
     return [
-      // Add province pages
       ...region.province.map((province) => ({
-        url: `${BASE_URL}/${region.url}/${province.url}`,
+        url: `${BASE_URL}/vendita-case/${province.url}`,
         lastModified: new Date(),
         changeFrequency: "weekly" as const,
         priority: 0.8,
       })),
-      // Links to province sitemaps
+      // Links to province sitemaps with simplified URLs
       ...region.province.map((province) => ({
-        url: `${BASE_URL}/sitemap/province-${region.url}-${province.url}.xml`,
+        url: `${BASE_URL}/sitemap/${province.url}.xml`,
         lastModified: new Date(),
         changeFrequency: "daily" as const,
         priority: 0.7,
@@ -118,34 +113,25 @@ export default async function sitemap({
     ];
   }
 
-  if (id.startsWith("province-")) {
-    // Extract the region and province URLs
-    // The current split isn't handling the full province URL correctly
-    const parts = id.replace("province-", "").split("-");
-    const regionUrl = parts[0];
-    const provinceUrl = parts.slice(1).join("-"); // Handle province URLs that might contain hyphens
-    
-    const region = data.find((r) => r.url === regionUrl);
-    const province = region?.province.find((p) => p.url === provinceUrl);
-
-    if (!province || !region) return [];
-
-    return [
-      // Add the province landing page
-      {
-        url: `${BASE_URL}/vendita-case/${region.url}/${province.url}`,
-        lastModified: new Date(),
-        changeFrequency: "daily" as const,
-        priority: 0.7,
-      },
-      // Add all comuni pages for this province
-      ...province.comuni.map((comune) => ({
-        url: `${BASE_URL}/vendita-case/${region.url}/${province.url}/${comune.url}`,
-        lastModified: new Date(),
-        changeFrequency: "daily" as const,
-        priority: 0.6,
-      })),
-    ];
+  // Find if ID matches a province
+  for (const region of data) {
+    const province = region.province.find((p) => p.url === id);
+    if (province) {
+      return [
+        {
+          url: `${BASE_URL}/vendita-case/${province.url}`,
+          lastModified: new Date(),
+          changeFrequency: "daily" as const,
+          priority: 0.7,
+        },
+        ...province.comuni.map((comune) => ({
+          url: `${BASE_URL}/vendita-case/${comune.url}`,
+          lastModified: new Date(),
+          changeFrequency: "daily" as const,
+          priority: 0.6,
+        })),
+      ];
+    }
   }
 
   return [];
