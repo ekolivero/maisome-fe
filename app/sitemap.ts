@@ -47,14 +47,16 @@ export async function generateSitemaps() {
   const data = loadJsonData("app/sitemap/sitemap.json");
   const sitemaps = [{ id: "index" }];
 
+  // For each region, create a region sitemap, and for each province, create a province sitemap
   data.forEach((region) => {
-    sitemaps.push({ id: `region__${region.url}` });
+    sitemaps.push({ id: `region-${region.url}` }); // region sitemap (e.g., region-piemonte.xml)
 
     region.province.forEach((province) => {
-      sitemaps.push({ id: `province__${region.url}__${province.url}` });
+      sitemaps.push({ id: `province-${region.url}-${province.url}` }); // province sitemap (e.g., province-piemonte-alessandria.xml)
     });
   });
 
+  // Save the generated sitemap list
   const sitemapListPath = path.join(
     process.cwd(),
     "app/sitemap/sitemap-list.json"
@@ -72,6 +74,7 @@ export default async function sitemap({
   const data = loadJsonData("app/sitemap/sitemap.json");
 
   if (id === "index") {
+    // Index sitemap that links to each region’s sitemap
     return [
       {
         url: `${BASE_URL}`,
@@ -80,61 +83,43 @@ export default async function sitemap({
         priority: 1.0,
       },
       ...data.map((region) => ({
-        url: `${BASE_URL}/vendita-case/${region.url}.xml`,
+        url: `${BASE_URL}/sitemap/${region.url}.xml`,
         lastModified: new Date(),
         changeFrequency: "monthly" as const,
-        priority: 0.5,
+        priority: 0.8,
       })),
     ];
   }
 
-  if (id.startsWith("region__")) {
-    const [, regionUrl] = id.split("__");
+  if (id.startsWith("region-")) {
+    // Extract the region URL
+    const regionUrl = id.replace("region-", "");
     const region = data.find((r) => r.url === regionUrl);
 
     if (!region) return [];
 
-    const sitemap: SitemapItem[] = [
-      {
-        url: `${BASE_URL}/vendita-case/${region.url}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.5,
-      },
-      ...region.province.map((province) => ({
-        url: `${BASE_URL}/vendita-case/${region.url}/${province.url}.xml`,
-        lastModified: new Date(),
-        changeFrequency: "weekly" as const,
-        priority: 0.6,
-      })),
-    ];
-
-    return sitemap;
+    return region.province.map((province) => ({
+      url: `${BASE_URL}/sitemap/${region.url}/${province.url}.xml`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })) as MetadataRoute.Sitemap;
   }
 
-  if (id.startsWith("province__")) {
-    const [, regionUrl, provinceUrl] = id.split("__");
+  if (id.startsWith("province-")) {
+    // Extract the region and province URLs
+    const [, regionUrl, provinceUrl] = id.split("-");
     const region = data.find((r) => r.url === regionUrl);
     const province = region?.province.find((p) => p.url === provinceUrl);
 
-    if (!region || !province) return [];
+    if (!province) return [];
 
-    const sitemap: SitemapItem[] = [
-      {
-        url: `${BASE_URL}/vendita-case/${region.url}/${province.url}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.6,
-      },
-      ...province.comuni.map((comune) => ({
-        url: `${BASE_URL}/vendita-case/${region.url}/${province.url}/${comune.url}`,
-        lastModified: new Date(),
-        changeFrequency: "daily" as const,
-        priority: 0.8,
-      })),
-    ];
-
-    return sitemap;
+    return province.comuni.map((comune) => ({
+      url: `${BASE_URL}/vendita-case/${regionUrl}/${provinceUrl}/${comune.url}`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.9,
+    })) as MetadataRoute.Sitemap;
   }
 
   return [];

@@ -3,30 +3,30 @@
     "id": "index"
   },
   {
-    "id": "region__piemonte"
+    "id": "region-piemonte"
   },
   {
-    "id": "province__piemonte__alessandria-provincia"
+    "id": "province-piemonte-alessandria-provincia"
   },
   {
-    "id": "province__piemonte__asti-provincia"
+    "id": "province-piemonte-asti-provincia"
   },
   {
-    "id": "province__piemonte__biella-provincia"
+    "id": "province-piemonte-biella-provincia"
   },
   {
-    "id": "province__piemonte__cuneo-provincia"
+    "id": "province-piemonte-cuneo-provincia"
   },
   {
-    "id": "province__piemonte__novara-provincia"
+    "id": "province-piemonte-novara-provincia"
   },
   {
-    "id": "province__piemonte__torino-provincia"
+    "id": "province-piemonte-torino-provincia"
   },
   {
-    "id": "province__piemonte__verbania-provincia"
+    "id": "province-piemonte-verbania-provincia"
   },
   {
-    "id": "province__piemonte__vercelli-provincia"
+    "id": "province-piemonte-vercelli-provincia"
   }
 ]
