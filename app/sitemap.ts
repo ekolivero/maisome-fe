@@ -21,6 +21,14 @@ type Province = {
 type Comune = {
   name: string;
   url: string;
+  macrozone?: {
+    name: string;
+    url: string;
+    microzone: {
+      name: string;
+      url: string;
+    }[];
+  }[];
 };
 
 type SitemapItem = {
@@ -49,13 +57,13 @@ export async function generateSitemaps() {
 
   data.forEach((region) => {
     sitemaps.push({ id: `region__${region.url}` });
+
+    region.province.forEach((province) => {
+      sitemaps.push({ id: `province__${region.url}__${province.url}` });
+    });
   });
 
-  // Store the generated sitemap list in a file
-  const sitemapListPath = path.join(
-    process.cwd(),
-    "app/sitemap/sitemap-list.json"
-  );
+  const sitemapListPath = path.join(process.cwd(), "app/sitemap/sitemap-list.json");
   fs.writeFileSync(sitemapListPath, JSON.stringify(sitemaps, null, 2));
 
   return sitemaps;
@@ -79,45 +87,84 @@ export default async function sitemap({
       ...data.map((region) => ({
         url: `${BASE_URL}/vendita-case/${region.url}`,
         lastModified: new Date(),
-        changeFrequency: "monthly",
+        changeFrequency: "monthly" as const,
         priority: 0.8,
       })),
-    ] as MetadataRoute.Sitemap;
+    ];
   }
 
-  const [, regionUrl] = id.split("__");
-  const region = data.find((r) => r.url === regionUrl);
+  if (id.startsWith("region__")) {
+    const [, regionUrl] = id.split("__");
+    const region = data.find((r) => r.url === regionUrl);
 
-  if (!region) {
-    return [];
-  }
+    if (!region) return [];
 
-  const sitemap: SitemapItem[] = [
-    {
-      url: `${BASE_URL}/vendita-case/${region.url}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.7,
-    },
-  ];
-
-  region.province.forEach((province) => {
-    sitemap.push({
-      url: `${BASE_URL}/vendita-case/${region.url}/${province.url}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.6,
-    });
-
-    province.comuni.forEach((comune) => {
-      sitemap.push({
-        url: `${BASE_URL}/vendita-case/${region.url}/${province.url}/${comune.url}`,
+    const sitemap: SitemapItem[] = [
+      {
+        url: `${BASE_URL}/vendita-case/${region.url}`,
         lastModified: new Date(),
         changeFrequency: "weekly",
-        priority: 0.5,
-      });
-    });
-  });
+        priority: 0.7,
+      },
+      ...region.province.map((province) => ({
+        url: `${BASE_URL}/vendita-case/${region.url}/${province.url}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.6,
+      })),
+    ];
 
-  return sitemap as MetadataRoute.Sitemap;
+    return sitemap;
+  }
+
+  if (id.startsWith("province__")) {
+    const [, regionUrl, provinceUrl] = id.split("__");
+    const region = data.find((r) => r.url === regionUrl);
+    const province = region?.province.find((p) => p.url === provinceUrl);
+
+    if (!region || !province) return [];
+
+    const sitemap: SitemapItem[] = [
+      {
+        url: `${BASE_URL}/vendita-case/${region.url}/${province.url}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.6,
+      },
+      ...province.comuni.map((comune) => ({
+        url: `${BASE_URL}/vendita-case/${region.url}/${province.url}/${comune.url}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.5,
+      })),
+    ];
+
+    province.comuni.forEach((comune) => {
+      if (comune.macrozone) {
+        comune.macrozone.forEach((macrozone) => {
+          sitemap.push({
+            url: `${BASE_URL}/vendita-case/${region.url}/${province.url}/${macrozone.url}`,
+            lastModified: new Date(),
+            changeFrequency: "weekly",
+            priority: 0.4,
+          });
+
+          if (macrozone.microzone) {
+            macrozone.microzone.forEach((microzone) => {
+              sitemap.push({
+                url: `${BASE_URL}/vendita-case/${region.url}/${province.url}/${microzone.url}`,
+                lastModified: new Date(),
+                changeFrequency: "weekly",
+                priority: 0.3,
+              });
+            });
+          }
+        });
+      }
+    });
+
+    return sitemap;
+  }
+
+  return [];
 }

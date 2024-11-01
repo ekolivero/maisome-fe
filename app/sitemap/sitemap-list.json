@@ -4,5 +4,29 @@
   },
   {
     "id": "region__piemonte"
+  },
+  {
+    "id": "province__piemonte__alessandria-provincia"
+  },
+  {
+    "id": "province__piemonte__asti-provincia"
+  },
+  {
+    "id": "province__piemonte__biella-provincia"
+  },
+  {
+    "id": "province__piemonte__cuneo-provincia"
+  },
+  {
+    "id": "province__piemonte__novara-provincia"
+  },
+  {
+    "id": "province__piemonte__torino-provincia"
+  },
+  {
+    "id": "province__piemonte__verbania-provincia"
+  },
+  {
+    "id": "province__piemonte__vercelli-provincia"
   }
 ]
