@@ -54,6 +54,7 @@
     "next-sanity": "9",
     "nuqs": "^1.17.8",
     "openapi-fetch": "^0.11.1",
+    "posthog-js": "^1.181.0",
     "qss": "^3.0.0",
     "react": "^18",
     "react-dom": "^18",
