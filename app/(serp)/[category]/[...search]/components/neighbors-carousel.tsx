@@ -1,4 +1,5 @@
 import * as React from "react"
+import Link from "next/link"
 
 import { components } from "@/app/types/schema"
 import { Carousel, Card } from "@/components/ui/card-carousel";
@@ -22,7 +23,7 @@ export async function NeighboorsCarousel({ neighbor }: { neighbor: components["s
     }))
 
     const cards = neighborsData?.map((card, index) => (
-        <Card key={index} card={card} index={index} layout/>
+        <Card key={index} card={card} index={index} layout page={neighbor.page}/>
     ));
 
     if (!cards) return null;
@@ -32,7 +33,12 @@ export async function NeighboorsCarousel({ neighbor }: { neighbor: components["s
             <div className="flex items-center justify-between px-2">
                 <div className="space-y-1">
                     <h2 className="text-xl md:text-2xl font-semibold tracking-tight">
-                        Cerca a {neighbor.label}
+                        <Link 
+                            href={`/vendita-case/${neighbor.page}`} 
+                            className="hover:underline"
+                        >
+                            Cerca a {neighbor.label}
+                        </Link>
                     </h2>
                     <p className="text-sm md:text-xl md text-muted-foreground">
                         Scopri case in vendita

@@ -45,18 +45,9 @@ export async function HeaderTitle({
 
     return (
         <div className="w-full px-4 justify-center align-middle">
-            <h1 className="text-2xl font-bold mb-2 text-primary">
+            <h1 className="text-xl md:text-2xl font-bold mb-2 text-primary">
                 {totalResults?.toLocaleString('it-IT')} {category.plural} in Vendita {hasMultipleLocations ? 'nelle Zone Selezionate' : `a ${location.label}`}
             </h1>
-            {hasMultipleLocations ? (
-                <p className="text-lg text-gray-600 mb-4">
-                    Esplora le migliori opportunità immobiliari di {category.plural.toLowerCase()} nelle aree da te scelte
-                </p>
-            ) : (
-                <p className="text-lg text-gray-600 mb-4">
-                    Scopri le migliori offerte di {category.plural.toLowerCase()} a {location.label}
-                </p>
-            )}
             <div className="mt-2">
                 {hasMultipleLocations && (
                     <DeleteLocationBadge resolvedLocations={resolvedLocations} />

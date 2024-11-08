@@ -32,7 +32,6 @@ export default async function SeoRegionAndProvince() {
 
     if (!data?.aggregation) return null
 
-
     const { aggregation } = data 
 
     const [leftColumn, rightColumn] = balanceColumns(aggregation)

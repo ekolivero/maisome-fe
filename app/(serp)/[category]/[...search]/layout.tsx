@@ -1,12 +1,5 @@
-import { Inter as FontSans } from "next/font/google"
-import { cn } from "@/lib/utils"
 import { CSPostHogProvider } from './providers'
-
-
-const fontSans = FontSans({
-    subsets: ["latin"],
-    variable: "--font-sans",
-})
+import { GeistSans } from 'geist/font/sans';
 
 export default function RootLayout({
     children,
@@ -14,15 +7,12 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="it">
+        <html lang="it" className={GeistSans.className}>
             <CSPostHogProvider>
-            <body
-                className={cn(
-                    "min-h-screen bg-background font-sans antialiased",
-                    fontSans.variable
-                )}
-            >
-                {children}    
+                <body
+                    className={`antialiased`}
+                >
+                    {children}
                 </body>
             </CSPostHogProvider>
         </html>

@@ -80,7 +80,13 @@ export default async function SEO({
                     <AccordionContent className="flex flex-col gap-2">
                         {
                             topThreeRooms.map((room, index) => (
-                                <Link key={index} href={`/vendita-case/${page}${serialize({ rooms: [room.key] })}`}>
+                                <Link 
+                                    key={index} 
+                                    href={`/vendita-case/${page}${serialize({ rooms: [room.key] })}`} 
+                                    rel="nofollow"
+                                    title={`${room.key} stanze in vendita a ${formattedLocationName} - ${room.count} risultati`}
+                                    aria-label={`Cerca case con ${room.key} stanze in vendita a ${formattedLocationName}`}
+                                >
                                     <div className="flex flex-row justify-between">
                                         <p className="text-md text-blue-500"> {room.key} stanze in vendita a {formattedLocationName}</p>
                                         <p className="text-md text-muted-foreground"> {room.count} risultati </p>
@@ -100,7 +106,13 @@ export default async function SEO({
                     <AccordionContent className="flex flex-col gap-2">
                         {
                             topThreeConditions.map((condition, index) => (
-                                <Link key={index} href={`/vendita-case/${page}${serialize({ condition: condition.key })}`}>
+                                <Link 
+                                    key={index} 
+                                    href={`/vendita-case/${page}${serialize({ condition: condition.key })}`} 
+                                    rel="nofollow"
+                                    title={`Stato ${condition.key} in ${formattedLocationName} - ${condition.count} risultati`}
+                                    aria-label={`Cerca case con stato ${condition.key} in ${formattedLocationName}`}
+                                >
                                     <div className="flex flex-row justify-between">
                                         <p className="text-md  text-blue-500"> Stato {condition.key} in {formattedLocationName}</p>
                                         <p className="text-md text-muted-foreground"> {condition.count} risultati </p>
@@ -126,10 +138,22 @@ export default async function SEO({
                                     return (a.range?.min ?? 0) - (b.range?.min ?? 0);
                                 })
                                 .map((price, index) => (
-                                    <Link key={index} href={`/vendita-case/${page}${serialize({
-                                        price_min: price?.range?.min,
-                                        price_max: price?.range?.max
-                                    })}`}>
+                                    <Link 
+                                        key={index} 
+                                        href={`/vendita-case/${page}${serialize({
+                                            price_min: price?.range?.min,
+                                            price_max: price?.range?.max
+                                        })}`} 
+                                        rel="nofollow"
+                                        title={`${price.key === 'Prezzo su richiesta' ? 'Prezzo su richiesta' :
+                                                    price?.range?.min === 0 ? `Case fino a ${price?.range?.max?.toLocaleString()}€` :
+                                                    price?.range?.max === null ? `Case oltre ${price?.range?.min?.toLocaleString()}€` :
+                                                    `Case da ${price?.range?.min?.toLocaleString()}€ a ${price?.range?.max?.toLocaleString()}€`} in ${formattedLocationName} - ${price.count} risultati`}
+                                        aria-label={`Cerca case con ${price.key === 'Prezzo su richiesta' ? 'prezzo su richiesta' :
+                                                    price?.range?.min === 0 ? `fini a ${price?.range?.max?.toLocaleString()}€` :
+                                                    price?.range?.max === null ? `oltre ${price?.range?.min?.toLocaleString()}€` :
+                                                    `da ${price?.range?.min?.toLocaleString()}€ a ${price?.range?.max?.toLocaleString()}€`} in ${formattedLocationName}`}
+                                    >
                                         <div className="flex flex-row justify-between">
                                             <p className="text-md text-blue-500">
                                                 {price.key === 'Prezzo su richiesta' ? 'Prezzo su richiesta' :
@@ -154,7 +178,13 @@ export default async function SEO({
                     <AccordionContent className="flex flex-col gap-2">
                         {
                             categoryHouses.map((category, index) => (
-                                <Link key={index} href={`/vendita-${category.key.toLowerCase().replace(/\s+/g, '-')}/${page}`}>
+                                <Link 
+                                    key={index} 
+                                    href={`/vendita-${category.key.toLowerCase().replace(/\s+/g, '-')}/${page}`} 
+                                    rel="nofollow"
+                                    title={`${category.key} in ${formattedLocationName} - ${category.count} risultati`}
+                                    aria-label={`Cerca case con tipologia ${category.key} in ${formattedLocationName}`}
+                                >
                                     <div className="flex flex-row justify-between">
                                         <p className="text-md  text-blue-500"> {category.key} in {formattedLocationName}</p>
                                         <p className="text-md text-muted-foreground"> {category.count} risultati </p>
@@ -176,10 +206,20 @@ export default async function SEO({
                             data.aggregation.surface!
                                 .sort((a, b) => (a.range?.min ?? 0) - (b.range?.min ?? 0))
                                 .map((surface, index) => (
-                                    <Link key={index} href={`/vendita-case/${page}${serialize({
-                                        surface_min: surface.range?.min,
-                                        surface_max: surface.range?.max
-                                    })}`}>
+                                    <Link 
+                                        key={index} 
+                                        href={`/vendita-case/${page}${serialize({
+                                            surface_min: surface.range?.min,
+                                            surface_max: surface.range?.max
+                                        })}`} 
+                                        rel="nofollow"
+                                        title={`${surface.range?.min === 0 ? `Case fino a ${surface.range?.max} mq` :
+                                                 surface.range?.max === null ? `Case oltre ${surface.range?.min} mq` :
+                                                 `Case da ${surface.range?.min} a ${surface.range?.max} mq`} in ${formattedLocationName} - ${surface.count} risultati`}
+                                        aria-label={`Cerca case con superficie ${surface.range?.min === 0 ? `fino a ${surface.range?.max} mq` :
+                                                 surface.range?.max === null ? `oltre ${surface.range?.min} mq` :
+                                                 `da ${surface.range?.min} a ${surface.range?.max} mq`} in ${formattedLocationName}`}
+                                    >
                                         <div className="flex flex-row justify-between items-center">
                                             <p className="text-md text-blue-500">
                                                 {surface.range?.min === 0 ? `Case fino a ${surface.range?.max} mq` :
@@ -203,7 +243,13 @@ export default async function SEO({
                     <AccordionContent className="flex flex-col gap-2">
                         {
                             furnitureHouses.map((furniture, index) => (
-                                <Link key={index} href={`/vendita-case/${page}${serialize({ furniture: furniture.key || null })}`}>
+                                <Link 
+                                    key={index} 
+                                    href={`/vendita-case/${page}${serialize({ furniture: furniture.key || null })}`} 
+                                    rel="nofollow"
+                                    title={`Case ${furniture.key || "Non arredate"} in ${formattedLocationName} - ${furniture.count} risultati`}
+                                    aria-label={`Cerca case con arredo ${furniture.key || "Non arredate"} in ${formattedLocationName}`}
+                                >
                                     <div className="flex flex-row justify-between items-center">
                                         <p className="text-md text-blue-500"> Case {furniture.key || "Non arredate"} in {formattedLocationName}</p>
                                         <p className="text-md text-muted-foreground"> {furniture.count} risultati </p>
@@ -223,7 +269,12 @@ export default async function SEO({
                     <AccordionContent className="flex flex-col gap-2">
                         {
                             location?.neighbors?.map((neightboors, index) => (
-                                <Link key={index} href={`/vendita-case/${neightboors.page}`}>
+                                <Link 
+                                    key={index} 
+                                    href={`/vendita-case/${neightboors.page}`}
+                                    title={`Case in vendita a ${neightboors.label}`}
+                                    aria-label={`Cerca case in vendita a ${neightboors.label}`}
+                                >
                                         <p className="text-md text-blue-500"> Case in vendita a {neightboors.label} </p>
                                 </Link>
                             ))

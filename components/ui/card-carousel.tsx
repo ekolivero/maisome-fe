@@ -12,9 +12,10 @@ import {
     IconX,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
+import {  motion } from "framer-motion";
 import Image, { ImageProps } from "next/image";
 import { useOutsideClick } from "@/lib/hooks/use-outside-click";
+import Link from "next/link";
 
 interface CarouselProps {
     items: JSX.Element[];
@@ -157,10 +158,12 @@ export const Card = ({
     card,
     index,
     layout = false,
+    page
 }: {
     card: Card;
     index: number;
     layout?: boolean;
+    page?: string;
 }) => {
     const [open, setOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -195,50 +198,10 @@ export const Card = ({
     };
 
     return (
-        <>
-            <AnimatePresence>
-                {open && (
-                    <div className="fixed inset-0 h-screen z-50 overflow-auto">
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="bg-black/80 backdrop-blur-lg h-full w-full fixed inset-0"
-                        />
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            ref={containerRef}
-                            layoutId={layout ? `card-${card.title}` : undefined}
-                            className="max-w-5xl mx-auto bg-white dark:bg-neutral-900 h-fit my-64 p-4 md:p-10 rounded-3xl font-sans relative"
-                        >
-                            <button
-                                className="sticky top-4 h-8 w-8 right-0 ml-auto bg-black dark:bg-white rounded-full flex items-center justify-center"
-                                onClick={handleClose}
-                            >
-                                <IconX className="h-6 w-6 text-neutral-100 dark:text-neutral-900" />
-                            </button>
-                            <motion.p
-                                layoutId={layout ? `category-${card.title}` : undefined}
-                                className="text-base font-medium text-black dark:text-white"
-                            >
-                                {card.category}
-                            </motion.p>
-                            <motion.p
-                                layoutId={layout ? `title-${card.title}` : undefined}
-                                className="text-2xl md:text-5xl font-semibold text-neutral-700 mt-4 dark:text-white"
-                            >
-                                {card.title}
-                            </motion.p>
-                            <div className="py-10">{card.content}</div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+        <Link href={`/vendita-case/${page}`} title={card.title} aria-label={card.title}>
             <motion.button
                 layoutId={layout ? `card-${card.title}` : undefined}
-                onClick={handleOpen}
+                onClick={() => console.log("Should navigate")}
                 className="rounded-3xl bg-gray-100 dark:bg-neutral-900 h-80 w-56 md:h-[28rem] md:w-80 overflow-hidden flex flex-col items-start justify-start relative z-10"
             >
                 <div className="absolute h-full top-0 inset-x-0 bg-gradient-to-b from-black/50 via-transparent to-transparent z-30 pointer-events-none" />
@@ -263,7 +226,7 @@ export const Card = ({
                     className="object-cover absolute z-10 inset-0"
                 />
             </motion.button>
-        </>
+        </Link>
     );
 };
 

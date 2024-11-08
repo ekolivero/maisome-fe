@@ -79,7 +79,7 @@ export function BreadcrumbsParentAndChildren({
     };
 
     return (
-        <Breadcrumb className={`${hasMultipleLocations ? "hidden" : "px-4 flex items-center"}`}>
+        <Breadcrumb className={`${hasMultipleLocations ? "hidden" : "px-4 flex items-center"} hidden md:flex`}>
             <BreadcrumbList className="flex items-center">
                 <BreadcrumbItem>
                     <BreadcrumbLink href="/" className="flex items-center">

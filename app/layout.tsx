@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Inter as FontSans } from "next/font/google"
 import "./globals.css";
-import { cn } from "@/lib/utils"
 import { Analytics } from '@vercel/analytics/react';
 import { VercelToolbar } from '@vercel/toolbar/next';
 import { IubendaProvider, IubendaCookieSolutionBannerConfigInterface } from '@mep-agency/next-iubenda';
+import { GeistSans } from 'geist/font/sans';
+
 
 const iubendaBannerConfig: IubendaCookieSolutionBannerConfigInterface = {
   siteId: 3761822, // Your site ID
@@ -13,10 +13,6 @@ const iubendaBannerConfig: IubendaCookieSolutionBannerConfigInterface = {
   // See https://www.iubenda.com/en/help/1205-how-to-configure-your-cookie-solution-advanced-guide
 };
 
-const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-})
 
 export const metadata: Metadata = {
   title: "Maisome - Case in vendita",
@@ -30,12 +26,9 @@ export default function RootLayout({
 }>) {
   const shouldInjectToolbar = process.env.NODE_ENV === 'development';
   return (
-    <html lang="it">
+    <html lang="it" className={GeistSans.className}>
       <body
-        className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
-        )}
+        className={`antialiased`}
       >
         <IubendaProvider bannerConfig={iubendaBannerConfig}>
           {children}

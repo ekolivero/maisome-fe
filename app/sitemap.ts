@@ -76,12 +76,12 @@ export default async function sitemap({
         changeFrequency: "daily",
         priority: 1.0,
       },
-      // Add region pages
+      // Region pages with lower priority
       ...data.map((region) => ({
-        url: `${BASE_URL}/${region.url}`,
+        url: `${BASE_URL}/vendita-case/${region.url}`,
         lastModified: new Date(),
         changeFrequency: "weekly" as const,
-        priority: 0.9,
+        priority: 0.7,
       })),
       // Links to region sitemaps with simplified URLs
       ...data.map((region) => ({
@@ -93,7 +93,7 @@ export default async function sitemap({
     ];
   }
 
-  // Find if ID matches a region
+  // Region sitemap
   const region = data.find((r) => r.url === id);
   if (region) {
     return [
@@ -113,7 +113,7 @@ export default async function sitemap({
     ];
   }
 
-  // Find if ID matches a province
+  // Province sitemap
   for (const region of data) {
     const province = region.province.find((p) => p.url === id);
     if (province) {
@@ -122,13 +122,13 @@ export default async function sitemap({
           url: `${BASE_URL}/vendita-case/${province.url}`,
           lastModified: new Date(),
           changeFrequency: "daily" as const,
-          priority: 0.7,
+          priority: 0.8,
         },
         ...province.comuni.map((comune) => ({
           url: `${BASE_URL}/vendita-case/${comune.url}`,
           lastModified: new Date(),
           changeFrequency: "daily" as const,
-          priority: 0.6,
+          priority: 0.9,
         })),
       ];
     }
