@@ -9,7 +9,7 @@ export default function SEOMainPage() {
                     <div key={region.url} className="space-y-4">
                         <h2 className="text-2xl font-semibold">
                             <Link 
-                                href={`/${region.url}`}
+                                href={`/vendita-case/${region.url}`}
                                 className="text-blue-600 hover:text-blue-800"
                                 title={`Immobili in ${region.name}`}
                             >
@@ -22,7 +22,7 @@ export default function SEOMainPage() {
                                 <div key={province.url} className="p-4 bg-gray-50 rounded-lg">
                                     <h3 className="font-medium mb-3">
                                         <Link 
-                                            href={`/${province.url}`}
+                                            href={`/vendita-case/${province.url}`}
                                             className="text-blue-600 hover:text-blue-800"
                                             title={`Immobili in vendita e affitto a ${province.name}`}
                                         >
@@ -35,7 +35,7 @@ export default function SEOMainPage() {
                                             {province.comuni.slice(0, 5).map((comune) => (
                                                 <li key={comune.url}>
                                                     <Link 
-                                                        href={`/${comune.url}`}
+                                                        href={`/vendita-case/${comune.url}`}
                                                         className="text-gray-600 hover:text-blue-600"
                                                         title={`Case a ${comune.name}`}
                                                     >
@@ -54,7 +54,7 @@ export default function SEOMainPage() {
                                                     {province.comuni.slice(5).map((comune) => (
                                                         <li key={comune.url}>
                                                             <Link 
-                                                                href={`/${comune.url}`}
+                                                                href={`/vendita-case/${comune.url}`}
                                                                 className="text-gray-600 hover:text-blue-600"
                                                                 title={`Case a ${comune.name}`}
                                                             >
