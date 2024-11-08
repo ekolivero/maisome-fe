@@ -3,7 +3,7 @@ import sitemapData from '@/app/sitemap/sitemap.json'
 
 export default function SEOMainPage() {
     return (
-        <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="max-w-full md:max-w-7xl md:mx-auto px-4 py-8">
             <div className="grid gap-8" role="navigation" aria-label="Navigazione regioni e province">
                 {sitemapData.map((region) => (
                     <div key={region.url} className="space-y-4">
