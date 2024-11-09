@@ -4,14 +4,14 @@ Allow: /$
 
 # Allow only specific paths under /vendita-case for Piemonte and its provinces
 Allow: /vendita-case/piemonte/
-Allow: /vendita-case/piemonte/torino/
-Allow: /vendita-case/piemonte/cuneo/
-Allow: /vendita-case/piemonte/alessandria/
-Allow: /vendita-case/piemonte/asti/
-Allow: /vendita-case/piemonte/biella/
-Allow: /vendita-case/piemonte/novara/
-Allow: /vendita-case/piemonte/verbania/
-Allow: /vendita-case/piemonte/vercelli/
+Allow: /vendita-case/torino/
+Allow: /vendita-case/cuneo/
+Allow: /vendita-case/alessandria/
+Allow: /vendita-case/asti/
+Allow: /vendita-case/biella/
+Allow: /vendita-case/novara/
+Allow: /vendita-case/verbania/
+Allow: /vendita-case/vercelli/
 
 # Block everything else
 Disallow: /
