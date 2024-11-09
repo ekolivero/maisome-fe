@@ -1,6 +1,24 @@
 User-agent: *
-Allow: /
-Sitemap: https://maisome.com/sitemap/index.xml
+# Allow only the main page
+Allow: /$
 
+# Allow only specific paths under /vendita-case for Piemonte and its provinces
+Allow: /vendita-case/piemonte/
+Allow: /vendita-case/piemonte/torino/
+Allow: /vendita-case/piemonte/cuneo/
+Allow: /vendita-case/piemonte/alessandria/
+Allow: /vendita-case/piemonte/asti/
+Allow: /vendita-case/piemonte/biella/
+Allow: /vendita-case/piemonte/novara/
+Allow: /vendita-case/piemonte/verbania/
+Allow: /vendita-case/piemonte/vercelli/
+
+# Block everything else
+Disallow: /
+
+# Specific rule for Amazonbot to block all
 User-agent: Amazonbot
 Disallow: /
+
+# Sitemap reference
+Sitemap: https://maisome.com/sitemap/index.xml
