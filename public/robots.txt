@@ -1,6 +1,7 @@
 User-agent: *
 # Allow only the main page
 Allow: /$
+Allow: /sitemap
 
 # Allow only specific paths under /vendita-case for Piemonte and its provinces
 Allow: /vendita-case/piemonte/
